@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 145 75% 36%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 145 20% 96%;
+    --secondary-foreground: 145 75% 20%;
+    --muted: 145 20% 96%;
+    --muted-foreground: 145 10% 46%;
+    --accent: 145 20% 96%;
+    --accent-foreground: 145 75% 36%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 145 20% 91%;
+    --input: 145 20% 91%;
+    --ring: 145 75% 36%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 145 30% 8%;
+    --foreground: 145 20% 98%;
+    --card: 145 30% 10%;
+    --card-foreground: 145 20% 98%;
+    --popover: 145 30% 8%;
+    --popover-foreground: 145 20% 98%;
+    --primary: 145 75% 42%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 145 30% 15%;
+    --secondary-foreground: 145 20% 98%;
+    --muted: 145 30% 15%;
+    --muted-foreground: 145 20% 65%;
+    --accent: 145 30% 15%;
+    --accent-foreground: 145 20% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 145 30% 15%;
+    --input: 145 30% 15%;
+    --ring: 145 75% 42%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
