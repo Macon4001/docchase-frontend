@@ -23,7 +23,9 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/register', {
+      // @ts-ignore
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiUrl}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -40,8 +42,13 @@ export default function RegisterPage() {
         return;
       }
 
-      // Redirect to login
-      router.push('/login?registered=true');
+      // Store token
+      if (data.token) {
+        localStorage.setItem('docchase_token', data.token);
+      }
+
+      // Redirect to dashboard
+      router.push('/dashboard');
     } catch (err) {
       setError('An error occurred. Please try again.');
     } finally {
