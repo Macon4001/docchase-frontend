@@ -40,16 +40,13 @@ export const authOptions: NextAuthOptions = {
 
           const data = await response.json();
 
-          // Store the API token in localStorage (if available)
-          if (typeof window !== 'undefined' && data.token) {
-            localStorage.setItem('docchase_token', data.token);
-          }
-
+          // Return user with API token
           return {
             id: data.accountant.id,
             email: data.accountant.email,
             name: data.accountant.practice_name,
-          };
+            apiToken: data.token,
+          } as any;
         } catch (error) {
           console.error('Login error:', error);
           return null;
@@ -64,15 +61,22 @@ export const authOptions: NextAuthOptions = {
     signIn: '/login',
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
+      // On sign in, store user ID and API token
       if (user) {
         token.id = user.id;
+        // Store API token from the user object (we'll add it in authorize)
+        if ((user as any).apiToken) {
+          token.apiToken = (user as any).apiToken;
+        }
       }
       return token;
     },
     async session({ session, token }) {
+      // Add user ID and API token to the session
       if (session.user) {
         session.user.id = token.id as string;
+        (session as any).apiToken = token.apiToken;
       }
       return session;
     },

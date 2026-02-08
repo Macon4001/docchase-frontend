@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Radius, ArrowLeft, AlertCircle } from 'lucide-react';
-import { AuthClient } from '@/lib/auth-client';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -23,10 +23,20 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await AuthClient.login(email, password);
-      router.push('/dashboard');
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError('Invalid email or password');
+      } else {
+        router.push('/dashboard');
+        router.refresh();
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Invalid email or password');
+      setError('An error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
