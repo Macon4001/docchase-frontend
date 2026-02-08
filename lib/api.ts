@@ -45,6 +45,11 @@ class ApiClient {
     return response.json();
   }
 
+  // Dashboard
+  async getDashboard() {
+    return this.request('/api/dashboard');
+  }
+
   // Clients
   async getClients() {
     return this.request('/api/clients');

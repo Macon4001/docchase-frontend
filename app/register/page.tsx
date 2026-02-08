@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Radius, ArrowLeft, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { AuthClient } from '@/lib/auth-client';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -23,41 +24,10 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      // Helper to ensure URL has protocol
-      const ensureAbsoluteUrl = (url: string | undefined): string => {
-        if (!url) return 'http://localhost:3001';
-        if (url.startsWith('http://') || url.startsWith('https://')) return url;
-        return `https://${url}`;
-      };
-
-      // @ts-ignore
-      const apiUrl = ensureAbsoluteUrl(process.env.NEXT_PUBLIC_API_URL);
-      const response = await fetch(`${apiUrl}/api/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          practice_name: practiceName,
-          email,
-          password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error || 'Registration failed');
-        return;
-      }
-
-      // Store token
-      if (data.token) {
-        localStorage.setItem('docchase_token', data.token);
-      }
-
-      // Redirect to dashboard
+      await AuthClient.register(practiceName, email, password);
       router.push('/dashboard');
     } catch (err) {
-      setError('An error occurred. Please try again.');
+      setError(err instanceof Error ? err.message : 'An error occurred. Please try again.');
     } finally {
       setLoading(false);
     }

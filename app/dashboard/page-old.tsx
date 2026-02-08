@@ -1,7 +1,7 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { redirect } from 'next/navigation';
+import { db } from '@/lib/db';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,34 +9,43 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatDistanceToNow } from 'date-fns';
-import { AuthClient } from '@/lib/auth-client';
-import { apiClient } from '@/lib/api';
 
-interface Campaign {
-  id: string;
-  name: string;
-  period: string;
-  document_type: string;
+async function getActiveCampaign(accountantId: string) {
+  const result = await db.query(
+    `SELECT * FROM campaigns
+     WHERE accountant_id = $1 AND status = 'active'
+     ORDER BY created_at DESC
+     LIMIT 1`,
+    [accountantId]
+  );
+  return result.rows[0] || null;
 }
 
-interface Client {
-  id: string;
-  name: string;
-  status: string;
-  updated_at: string;
-}
+async function getCampaignStats(campaignId: string) {
+  const result = await db.query(
+    `SELECT
+       COUNT(*)::int as total,
+       COUNT(*) FILTER (WHERE cc.status = 'received')::int as received,
+       COUNT(*) FILTER (WHERE cc.status = 'pending')::int as pending,
+       COUNT(*) FILTER (WHERE cc.status = 'stuck')::int as stuck
+     FROM campaign_clients cc
+     WHERE cc.campaign_id = $1`,
+    [campaignId]
+  );
 
-interface Stats {
-  total: number;
-  received: number;
-  pending: number;
-  stuck: number;
-  clients: Client[];
-}
+  const clientsResult = await db.query(
+    `SELECT c.id, c.name, cc.status, cc.updated_at
+     FROM campaign_clients cc
+     JOIN clients c ON cc.client_id = c.id
+     WHERE cc.campaign_id = $1
+     ORDER BY cc.updated_at DESC`,
+    [campaignId]
+  );
 
-interface DashboardData {
-  campaign: Campaign | null;
-  stats: Stats | null;
+  return {
+    ...result.rows[0],
+    clients: clientsResult.rows,
+  };
 }
 
 function StatusBadge({ status }: { status: string }) {
@@ -51,68 +60,15 @@ function StatusBadge({ status }: { status: string }) {
   return <Badge variant={config.variant}>{config.label}</Badge>;
 }
 
-export default function DashboardPage() {
-  const router = useRouter();
-  const [data, setData] = useState<DashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+export default async function DashboardPage() {
+  const session = await getServerSession(authOptions);
 
-  useEffect(() => {
-    const session = AuthClient.getSession();
-
-    if (!session) {
-      router.push('/login');
-      return;
-    }
-
-    // Set API token
-    apiClient.setToken(session.token);
-
-    // Load dashboard data
-    loadDashboard();
-  }, [router]);
-
-  const loadDashboard = async () => {
-    try {
-      setLoading(true);
-      const result = await apiClient.getDashboard();
-      setData(result);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load dashboard');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleLogout = () => {
-    AuthClient.logout();
-  };
-
-  const session = AuthClient.getSession();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading dashboard...</p>
-        </div>
-      </div>
-    );
+  if (!session?.user?.id) {
+    redirect('/login');
   }
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardContent className="pt-6">
-            <p className="text-red-600 mb-4">{error}</p>
-            <Button onClick={loadDashboard}>Retry</Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const campaign = await getActiveCampaign(session.user.id);
+  const stats = campaign ? await getCampaignStats(campaign.id) : null;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -120,14 +76,13 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold">DocChase</h1>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{session?.user.email}</span>
+            <span className="text-sm text-muted-foreground">{session.user.email}</span>
             <Link href="/clients">
               <Button variant="outline">Clients</Button>
             </Link>
             <Link href="/campaigns">
               <Button variant="outline">Campaigns</Button>
             </Link>
-            <Button variant="ghost" onClick={handleLogout}>Logout</Button>
           </div>
         </div>
       </header>
@@ -140,13 +95,13 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        {data?.campaign && data?.stats ? (
+        {campaign && stats ? (
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>{data.campaign.name}</CardTitle>
+                <CardTitle>{campaign.name}</CardTitle>
                 <CardDescription>
-                  {data.campaign.period} • {data.campaign.document_type.replace('_', ' ')}
+                  {campaign.period} • {campaign.document_type.replace('_', ' ')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -155,27 +110,27 @@ export default function DashboardPage() {
                     <div className="flex justify-between text-sm mb-2">
                       <span className="font-medium">Progress</span>
                       <span className="text-muted-foreground">
-                        {data.stats.received}/{data.stats.total} (
-                        {data.stats.total > 0 ? Math.round((data.stats.received / data.stats.total) * 100) : 0}
+                        {stats.received}/{stats.total} (
+                        {stats.total > 0 ? Math.round((stats.received / stats.total) * 100) : 0}
                         %)
                       </span>
                     </div>
                     <Progress
-                      value={data.stats.total > 0 ? (data.stats.received / data.stats.total) * 100 : 0}
+                      value={stats.total > 0 ? (stats.received / stats.total) * 100 : 0}
                     />
                   </div>
 
                   <div className="grid grid-cols-3 gap-4">
                     <div className="text-center p-4 bg-green-50 rounded-lg">
-                      <div className="text-2xl font-bold text-green-700">{data.stats.received}</div>
+                      <div className="text-2xl font-bold text-green-700">{stats.received}</div>
                       <div className="text-sm text-green-600">Received</div>
                     </div>
                     <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                      <div className="text-2xl font-bold text-yellow-700">{data.stats.pending}</div>
+                      <div className="text-2xl font-bold text-yellow-700">{stats.pending}</div>
                       <div className="text-sm text-yellow-600">Pending</div>
                     </div>
                     <div className="text-center p-4 bg-red-50 rounded-lg">
-                      <div className="text-2xl font-bold text-red-700">{data.stats.stuck}</div>
+                      <div className="text-2xl font-bold text-red-700">{stats.stuck}</div>
                       <div className="text-sm text-red-600">Stuck</div>
                     </div>
                   </div>
@@ -198,7 +153,7 @@ export default function DashboardPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {data.stats.clients.map((client) => (
+                    {stats.clients.map((client: any) => (
                       <TableRow key={client.id}>
                         <TableCell className="font-medium">{client.name}</TableCell>
                         <TableCell>
