@@ -23,8 +23,15 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
+      // Helper to ensure URL has protocol
+      const ensureAbsoluteUrl = (url: string | undefined): string => {
+        if (!url) return 'http://localhost:3001';
+        if (url.startsWith('http://') || url.startsWith('https://')) return url;
+        return `https://${url}`;
+      };
+
       // @ts-ignore
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const apiUrl = ensureAbsoluteUrl(process.env.NEXT_PUBLIC_API_URL);
       const response = await fetch(`${apiUrl}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

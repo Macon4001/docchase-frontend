@@ -1,7 +1,14 @@
 // API client for communicating with DocChase backend
 
+// Helper to ensure URL has protocol
+const ensureAbsoluteUrl = (url: string | undefined): string => {
+  if (!url) return 'http://localhost:3001';
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  return `https://${url}`;
+};
+
 // @ts-ignore - Next.js env vars are injected at build time
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = ensureAbsoluteUrl(process.env.NEXT_PUBLIC_API_URL);
 
 class ApiClient {
   private baseUrl: string;
