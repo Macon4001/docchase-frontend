@@ -1,30 +1,68 @@
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { redirect } from 'next/navigation';
-import { db } from '@/lib/db';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { apiClient } from '@/lib/api';
 
-async function getClients(accountantId: string) {
-  const result = await db.query(
-    `SELECT * FROM clients
-     WHERE accountant_id = $1
-     ORDER BY created_at DESC`,
-    [accountantId]
-  );
-  return result.rows;
+interface Client {
+  id: string;
+  name: string;
+  phone: string;
+  email: string | null;
+  status: string;
+  created_at: string;
 }
 
-export default async function ClientsPage() {
-  const session = await getServerSession(authOptions);
+export default function ClientsPage() {
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  const [clients, setClients] = useState<Client[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  if (!session?.user?.id) {
-    redirect('/login');
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
+      return;
+    }
+
+    if (status === 'authenticated' && session) {
+      loadClients();
+    }
+  }, [status, session, router]);
+
+  const loadClients = async () => {
+    try {
+      setLoading(true);
+      const token = (session as any)?.apiToken;
+      if (token) {
+        apiClient.setToken(token);
+      }
+      const data = await apiClient.getClients();
+      setClients(data.clients || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load clients');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading || status === 'loading') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading clients...</p>
+        </div>
+      </div>
+    );
   }
-
-  const clients = await getClients(session.user.id);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -45,25 +83,28 @@ export default async function ClientsPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold">Clients</h2>
-          <div className="flex gap-2">
-            <Link href="/clients/import">
-              <Button variant="outline">Import CSV</Button>
-            </Link>
-            <Link href="/clients/new">
-              <Button>Add Client</Button>
-            </Link>
-          </div>
+          <Button>Add Client</Button>
         </div>
+
+        {error && (
+          <Card className="mb-6 border-red-200 bg-red-50">
+            <CardContent className="pt-6">
+              <p className="text-red-600">{error}</p>
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardHeader>
-            <CardTitle>All Clients</CardTitle>
-            <CardDescription>
-              {clients.length} client{clients.length !== 1 ? 's' : ''} total
-            </CardDescription>
+            <CardTitle>All Clients ({clients.length})</CardTitle>
           </CardHeader>
           <CardContent>
-            {clients.length > 0 ? (
+            {clients.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground mb-4">No clients yet</p>
+                <Button>Add Your First Client</Button>
+              </div>
+            ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -71,46 +112,29 @@ export default async function ClientsPage() {
                     <TableHead>Phone</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Added</TableHead>
                     <TableHead></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {clients.map((client: any) => (
+                  {clients.map((client) => (
                     <TableRow key={client.id}>
                       <TableCell className="font-medium">{client.name}</TableCell>
                       <TableCell>{client.phone}</TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {client.email || '—'}
-                      </TableCell>
+                      <TableCell>{client.email || '-'}</TableCell>
                       <TableCell>
-                        <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            client.status === 'active'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-gray-100 text-gray-800'
-                          }`}
-                        >
+                        <Badge variant={client.status === 'active' ? 'default' : 'secondary'}>
                           {client.status}
-                        </span>
+                        </Badge>
                       </TableCell>
+                      <TableCell>{new Date(client.created_at).toLocaleDateString()}</TableCell>
                       <TableCell>
-                        <Link href={`/clients/${client.id}`}>
-                          <Button variant="ghost" size="sm">
-                            View
-                          </Button>
-                        </Link>
+                        <Button variant="ghost" size="sm">View</Button>
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground mb-4">No clients yet</p>
-                <Link href="/clients/new">
-                  <Button>Add Your First Client</Button>
-                </Link>
-              </div>
             )}
           </CardContent>
         </Card>
