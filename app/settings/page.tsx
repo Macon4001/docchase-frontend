@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { AuthClient } from '@/lib/auth-client';
 
 interface Settings {
   email: string;
@@ -57,15 +58,15 @@ export default function SettingsPage() {
 
   const fetchSettings = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
+      const session = AuthClient.getSession();
+      if (!session) {
         router.push('/login');
         return;
       }
 
       const response = await fetch('http://localhost:3001/api/settings', {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${session.token}`
         }
       });
 
@@ -96,11 +97,16 @@ export default function SettingsPage() {
     setMessage(null);
 
     try {
-      const token = localStorage.getItem('token');
+      const session = AuthClient.getSession();
+      if (!session) {
+        router.push('/login');
+        return;
+      }
+
       const response = await fetch('http://localhost:3001/api/settings', {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${session.token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -128,10 +134,15 @@ export default function SettingsPage() {
 
   const handleConnectGoogleDrive = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const session = AuthClient.getSession();
+      if (!session) {
+        router.push('/login');
+        return;
+      }
+
       const response = await fetch('http://localhost:3001/api/settings/google-auth', {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${session.token}`
         }
       });
 
@@ -155,11 +166,16 @@ export default function SettingsPage() {
     }
 
     try {
-      const token = localStorage.getItem('token');
+      const session = AuthClient.getSession();
+      if (!session) {
+        router.push('/login');
+        return;
+      }
+
       const response = await fetch('http://localhost:3001/api/settings/google', {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${session.token}`
         }
       });
 
