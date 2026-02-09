@@ -127,6 +127,9 @@ export default function DashboardPage() {
             <Link href="/campaigns">
               <Button variant="outline">Campaigns</Button>
             </Link>
+            <Link href="/settings">
+              <Button variant="outline">Settings</Button>
+            </Link>
             <Button variant="ghost" onClick={handleLogout}>Logout</Button>
           </div>
         </div>
