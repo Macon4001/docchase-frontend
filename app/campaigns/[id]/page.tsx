@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { apiClient } from '@/lib/api';
-import { Play, ArrowLeft, CheckCircle2, Clock, XCircle } from 'lucide-react';
+import { AuthClient } from '@/lib/auth-client';
+import { FileText, Users, Folder, Settings, LogOut, Play, ArrowLeft, CheckCircle2, Clock, XCircle, Edit } from 'lucide-react';
 
 interface Campaign {
   id: string;
@@ -21,6 +21,10 @@ interface Campaign {
   reminder_day_3: boolean;
   reminder_day_6: boolean;
   flag_after_day_9: boolean;
+  reminder_1_days?: number;
+  reminder_2_days?: number;
+  reminder_3_days?: number;
+  reminder_send_time?: string;
 }
 
 interface CampaignClient {
@@ -37,40 +41,45 @@ export default function CampaignDetailPage() {
   const router = useRouter();
   const params = useParams();
   const campaignId = params.id as string;
-  const { data: session, status } = useSession();
 
+  const [session, setSession] = useState<any>(null);
   const [campaign, setCampaign] = useState<Campaign | null>(null);
   const [clients, setClients] = useState<CampaignClient[]>([]);
+  const [stats, setStats] = useState<{
+    total_clients: number;
+    pending: number;
+    received: number;
+    stuck: number;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    const userSession = AuthClient.getSession();
+
+    if (!userSession) {
       router.push('/login');
       return;
     }
 
-    if (status === 'authenticated' && session) {
-      loadCampaignDetails();
-    }
-  }, [status, session, router, campaignId]);
+    setSession(userSession);
+    apiClient.setToken(userSession.token);
+    loadCampaignDetails();
+  }, [router, campaignId]);
+
+  const handleLogout = () => {
+    AuthClient.logout();
+  };
 
   const loadCampaignDetails = async () => {
     try {
-      const token = (session as any)?.apiToken;
-      if (token) {
-        apiClient.setToken(token);
-      }
+      const data = await apiClient.getCampaign(campaignId);
 
-      // For now, we'll just load the campaign
-      // TODO: Add endpoint to get campaign with clients
-      const campaignData = await apiClient.getCampaigns();
-      const foundCampaign = campaignData.campaigns?.find((c: Campaign) => c.id === campaignId);
-
-      if (foundCampaign) {
-        setCampaign(foundCampaign);
+      if (data.campaign) {
+        setCampaign(data.campaign);
+        setStats(data.stats || null);
       } else {
         setError('Campaign not found');
       }
@@ -90,11 +99,6 @@ export default function CampaignDetailPage() {
     setSuccessMessage(null);
 
     try {
-      const token = (session as any)?.apiToken;
-      if (token) {
-        apiClient.setToken(token);
-      }
-
       const result = await apiClient.startCampaign(campaign.id);
 
       if (result.success) {
@@ -114,20 +118,30 @@ export default function CampaignDetailPage() {
     }
   };
 
-  if (loading || status === 'loading') {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading campaign...</p>
+        </div>
       </div>
     );
   }
 
   if (!campaign) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <header className="bg-white border-b">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+        <header className="bg-white/80 backdrop-blur-lg border-b border-gray-200 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <h1 className="text-2xl font-bold">DocChase</h1>
+            <Link href="/dashboard" className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
+              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                <FileText className="w-6 h-6 text-white" />
+              </div>
+              <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                DocChase
+              </h1>
+            </Link>
           </div>
         </header>
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -146,20 +160,48 @@ export default function CampaignDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">DocChase</h1>
-          <div className="flex items-center gap-4">
-            <Link href="/dashboard">
-              <Button variant="outline">Dashboard</Button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+      {/* Modern Header */}
+      <header className="bg-white/80 backdrop-blur-lg border-b border-gray-200 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <Link href="/dashboard" className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
+              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                <FileText className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                  DocChase
+                </h1>
+                <p className="text-xs text-gray-500">{session?.user.practice_name || 'Dashboard'}</p>
+              </div>
             </Link>
-            <Link href="/clients">
-              <Button variant="outline">Clients</Button>
-            </Link>
-            <Link href="/campaigns">
-              <Button variant="outline">Campaigns</Button>
-            </Link>
+
+            <div className="flex items-center gap-2">
+              <span className="hidden sm:block text-sm text-gray-600 px-3 py-1.5 bg-gray-100 rounded-lg">
+                {session?.user.email}
+              </span>
+              <Link href="/clients">
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <Users className="w-4 h-4" />
+                  <span className="hidden sm:inline">Clients</span>
+                </Button>
+              </Link>
+              <Link href="/campaigns">
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <Folder className="w-4 h-4" />
+                  <span className="hidden sm:inline">Campaigns</span>
+                </Button>
+              </Link>
+              <Link href="/settings">
+                <Button variant="ghost" size="sm">
+                  <Settings className="w-4 h-4" />
+                </Button>
+              </Link>
+              <Button variant="ghost" size="sm" onClick={handleLogout}>
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -206,11 +248,22 @@ export default function CampaignDetailPage() {
                     >
                       {campaign.status}
                     </Badge>
+                    <Link href={`/campaigns/${campaign.id}/edit`}>
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        className="gap-2"
+                      >
+                        <Edit className="h-4 w-4" />
+                        Edit Campaign
+                      </Button>
+                    </Link>
                     {campaign.status === 'draft' && (
                       <Button
                         onClick={handleStartCampaign}
                         disabled={starting}
                         size="lg"
+                        className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400"
                       >
                         {starting ? (
                           <>
@@ -229,27 +282,77 @@ export default function CampaignDetailPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-4 md:grid-cols-3">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Created</p>
-                    <p className="text-lg font-medium">
-                      {new Date(campaign.created_at).toLocaleDateString()}
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground flex items-center gap-2">
+                      <Clock className="h-4 w-4" />
+                      Created
+                    </p>
+                    <p className="text-lg font-semibold text-gray-900">
+                      {new Date(campaign.created_at).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}
                     </p>
                   </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Reminders</p>
-                    <p className="text-lg font-medium">
-                      {[
-                        campaign.reminder_day_3 && 'Day 3',
-                        campaign.reminder_day_6 && 'Day 6',
-                        campaign.flag_after_day_9 && 'Flag Day 9'
-                      ].filter(Boolean).join(', ') || 'None'}
+
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      Document Type
                     </p>
+                    <Badge variant="secondary" className="text-sm font-medium">
+                      {campaign.document_type.replace('_', ' ').split(' ').map(word =>
+                        word.charAt(0).toUpperCase() + word.slice(1)
+                      ).join(' ')}
+                    </Badge>
                   </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Document Type</p>
-                    <p className="text-lg font-medium capitalize">
-                      {campaign.document_type.replace('_', ' ')}
+
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground flex items-center gap-2">
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                      </svg>
+                      Reminder Schedule
+                    </p>
+                    <div className="flex flex-wrap gap-1">
+                      {campaign.reminder_day_3 && (
+                        <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 text-xs">
+                          Day {campaign.reminder_1_days || 3}
+                        </Badge>
+                      )}
+                      {campaign.reminder_day_6 && (
+                        <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200 text-xs">
+                          Day {campaign.reminder_2_days || 6}
+                        </Badge>
+                      )}
+                      {campaign.flag_after_day_9 && (
+                        <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-200 text-xs">
+                          Flag Day {campaign.reminder_3_days || 9}
+                        </Badge>
+                      )}
+                      {!campaign.reminder_day_3 && !campaign.reminder_day_6 && !campaign.flag_after_day_9 && (
+                        <Badge variant="outline" className="text-xs">None</Badge>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground flex items-center gap-2">
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Send Time
+                    </p>
+                    <p className="text-lg font-semibold text-gray-900">
+                      {campaign.reminder_send_time ? (
+                        new Date(`2000-01-01T${campaign.reminder_send_time}`).toLocaleTimeString('en-US', {
+                          hour: 'numeric',
+                          minute: '2-digit',
+                          hour12: true
+                        })
+                      ) : '10:00 AM'}
                     </p>
                   </div>
                 </div>
@@ -276,14 +379,97 @@ export default function CampaignDetailPage() {
                     <p>Campaign not started yet</p>
                     <p className="text-sm mt-2">Start the campaign to begin collecting documents</p>
                   </div>
+                ) : stats ? (
+                  <div className="space-y-6">
+                    {/* Stats Overview */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="bg-gray-50 rounded-lg p-4 text-center">
+                        <p className="text-2xl font-bold text-gray-900">{stats.total_clients}</p>
+                        <p className="text-sm text-gray-600 mt-1">Total Clients</p>
+                      </div>
+                      <div className="bg-blue-50 rounded-lg p-4 text-center">
+                        <p className="text-2xl font-bold text-blue-700">{stats.pending}</p>
+                        <p className="text-sm text-blue-600 mt-1">Pending</p>
+                      </div>
+                      <div className="bg-emerald-50 rounded-lg p-4 text-center">
+                        <p className="text-2xl font-bold text-emerald-700">{stats.received}</p>
+                        <p className="text-sm text-emerald-600 mt-1">Received</p>
+                      </div>
+                      <div className="bg-orange-50 rounded-lg p-4 text-center">
+                        <p className="text-2xl font-bold text-orange-700">{stats.stuck}</p>
+                        <p className="text-sm text-orange-600 mt-1">Stuck</p>
+                      </div>
+                    </div>
+
+                    {/* Progress Bar */}
+                    {stats.total_clients > 0 && (
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm text-gray-600">
+                          <span>Progress</span>
+                          <span>{Math.round((stats.received / stats.total_clients) * 100)}% Complete</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                          <div className="flex h-full">
+                            <div
+                              className="bg-emerald-500 transition-all duration-500"
+                              style={{ width: `${(stats.received / stats.total_clients) * 100}%` }}
+                            />
+                            <div
+                              className="bg-orange-400 transition-all duration-500"
+                              style={{ width: `${(stats.stuck / stats.total_clients) * 100}%` }}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex gap-4 text-xs text-gray-600">
+                          <div className="flex items-center gap-1">
+                            <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+                            <span>Received ({stats.received})</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                            <span>Pending ({stats.pending})</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <div className="w-3 h-3 rounded-full bg-orange-400"></div>
+                            <span>Stuck ({stats.stuck})</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Status Messages */}
+                    {stats.received === stats.total_clients ? (
+                      <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 flex items-start gap-3">
+                        <CheckCircle2 className="h-5 w-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="text-sm font-medium text-emerald-900">All Documents Received!</p>
+                          <p className="text-xs text-emerald-700 mt-1">
+                            All clients have submitted their documents.
+                          </p>
+                        </div>
+                      </div>
+                    ) : stats.total_clients > 0 ? (
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
+                        <Clock className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="text-sm font-medium text-blue-900">Campaign In Progress</p>
+                          <p className="text-xs text-blue-700 mt-1">
+                            Waiting for {stats.pending} client{stats.pending !== 1 ? 's' : ''} to respond.
+                            {stats.stuck > 0 && ` ${stats.stuck} client${stats.stuck !== 1 ? 's' : ''} flagged as stuck.`}
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+                        <p className="text-sm text-gray-600">No clients in this campaign yet</p>
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <div className="text-center py-12 text-muted-foreground">
                     <CheckCircle2 className="h-12 w-12 mx-auto mb-4 text-green-600" />
                     <p className="text-lg font-medium text-foreground">Campaign Active!</p>
-                    <p className="text-sm mt-2">WhatsApp messages have been sent to all clients</p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Amy will automatically respond and process documents as they arrive
-                    </p>
+                    <p className="text-sm mt-2">Loading campaign statistics...</p>
                   </div>
                 )}
               </CardContent>

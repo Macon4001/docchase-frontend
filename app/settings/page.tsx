@@ -132,11 +132,14 @@ export default function SettingsPage() {
       }
 
       setMessage({ type: 'success', text: 'Settings saved successfully!' });
-      fetchSettings(); // Refresh settings
+
+      // Redirect to dashboard after a short delay to show success message
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 1000);
     } catch (error) {
       console.error('Error saving settings:', error);
       setMessage({ type: 'error', text: 'Failed to save settings' });
-    } finally {
       setSaving(false);
     }
   };
@@ -433,7 +436,7 @@ export default function SettingsPage() {
                   type="checkbox"
                   checked={notificationEmail}
                   onChange={(e) => setNotificationEmail(e.target.checked)}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                  className="w-4 h-4 text-emerald-600 rounded focus:ring-2 focus:ring-emerald-500"
                 />
                 <div>
                   <p className="font-medium text-gray-900">Email notifications</p>
@@ -446,7 +449,7 @@ export default function SettingsPage() {
                   type="checkbox"
                   checked={notificationStuck}
                   onChange={(e) => setNotificationStuck(e.target.checked)}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                  className="w-4 h-4 text-emerald-600 rounded focus:ring-2 focus:ring-emerald-500"
                 />
                 <div>
                   <p className="font-medium text-gray-900">Stuck client alerts</p>
@@ -467,7 +470,7 @@ export default function SettingsPage() {
             <button
               onClick={handleSaveSettings}
               disabled={saving}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
+              className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors disabled:bg-emerald-400 disabled:cursor-not-allowed"
             >
               {saving ? 'Saving...' : 'Save Changes'}
             </button>

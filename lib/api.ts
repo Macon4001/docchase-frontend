@@ -32,13 +32,18 @@ class ApiClient {
       headers['Authorization'] = `Bearer ${this.token}`;
     }
 
+    console.log('[ApiClient] Request:', endpoint, 'with token:', this.token ? `${this.token.substring(0, 10)}...` : 'none');
+
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       ...options,
       headers,
     });
 
+    console.log('[ApiClient] Response status:', response.status, 'for:', endpoint);
+
     if (!response.ok) {
       const error = await response.json().catch(() => ({ error: 'Request failed' }));
+      console.error('[ApiClient] Request failed:', response.status, error);
       throw new Error(error.error || 'Request failed');
     }
 
@@ -84,6 +89,10 @@ class ApiClient {
     return this.request('/api/campaigns');
   }
 
+  async getCampaign(id: string) {
+    return this.request(`/api/campaigns/${id}`);
+  }
+
   async createCampaign(data: {
     name: string;
     document_type?: string;
@@ -92,6 +101,11 @@ class ApiClient {
     reminder_day_3?: boolean;
     reminder_day_6?: boolean;
     flag_after_day_9?: boolean;
+    reminder_1_days?: number;
+    reminder_2_days?: number;
+    reminder_3_days?: number;
+    reminder_send_time?: string;
+    initial_message?: string;
   }) {
     return this.request('/api/campaigns', {
       method: 'POST',
@@ -102,6 +116,24 @@ class ApiClient {
   async startCampaign(id: string) {
     return this.request(`/api/campaigns/${id}/start`, {
       method: 'POST',
+    });
+  }
+
+  async updateCampaign(id: string, data: {
+    name?: string;
+    period?: string;
+    reminder_1_days?: number;
+    reminder_2_days?: number;
+    reminder_3_days?: number;
+    reminder_send_time?: string;
+    initial_message?: string;
+    reminder_day_3?: boolean;
+    reminder_day_6?: boolean;
+    flag_after_day_9?: boolean;
+  }) {
+    return this.request(`/api/campaigns/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
     });
   }
 }

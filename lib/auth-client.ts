@@ -30,12 +30,23 @@ export class AuthClient {
     const token = localStorage.getItem(this.TOKEN_KEY);
     const userStr = localStorage.getItem(this.USER_KEY);
 
-    if (!token || !userStr) return null;
+    console.log('[AuthClient] Getting session:', {
+      hasToken: !!token,
+      hasUser: !!userStr,
+      tokenLength: token?.length
+    });
+
+    if (!token || !userStr) {
+      console.log('[AuthClient] Missing token or user data');
+      return null;
+    }
 
     try {
       const user = JSON.parse(userStr);
+      console.log('[AuthClient] Session found for:', user.email);
       return { user, token };
-    } catch {
+    } catch (error) {
+      console.error('[AuthClient] Failed to parse user data:', error);
       return null;
     }
   }
@@ -44,14 +55,18 @@ export class AuthClient {
   static setSession(user: User, token: string) {
     if (typeof window === 'undefined') return;
 
+    console.log('[AuthClient] Setting session for:', user.email, 'token length:', token.length);
     localStorage.setItem(this.TOKEN_KEY, token);
     localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+    console.log('[AuthClient] Session saved successfully');
   }
 
   // Clear session from localStorage
   static clearSession() {
     if (typeof window === 'undefined') return;
 
+    console.log('[AuthClient] Clearing session');
+    console.trace('[AuthClient] Clear session called from:');
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
   }

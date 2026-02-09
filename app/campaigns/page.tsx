@@ -1,13 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { FileText, Users, Folder, Settings, LogOut, Plus, Edit } from 'lucide-react';
 import { apiClient } from '@/lib/api';
+import { AuthClient } from '@/lib/auth-client';
 
 interface Campaign {
   id: string;
@@ -20,27 +21,29 @@ interface Campaign {
 
 export default function CampaignsPage() {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const [session, setSession] = useState<any>(null);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    const userSession = AuthClient.getSession();
+
+    if (!userSession) {
       router.push('/login');
       return;
     }
 
-    if (status === 'authenticated' && session) {
-      loadCampaigns();
-    }
-  }, [status, session, router]);
+    setSession(userSession);
+    apiClient.setToken(userSession.token);
+    loadCampaigns();
+  }, [router]);
+
+  const handleLogout = () => {
+    AuthClient.logout();
+  };
 
   const loadCampaigns = async () => {
     try {
-      const token = (session as any)?.apiToken;
-      if (token) {
-        apiClient.setToken(token);
-      }
       const data = await apiClient.getCampaigns();
       setCampaigns(data.campaigns || []);
     } catch (err) {
@@ -50,70 +53,123 @@ export default function CampaignsPage() {
     }
   };
 
-  if (loading || status === 'loading') {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading campaigns...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">DocChase</h1>
-          <div className="flex items-center gap-4">
-            <Link href="/dashboard">
-              <Button variant="outline">Dashboard</Button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+      {/* Modern Header */}
+      <header className="bg-white/80 backdrop-blur-lg border-b border-gray-200 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <Link href="/dashboard" className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
+              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                <FileText className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                  DocChase
+                </h1>
+                <p className="text-xs text-gray-500">{session?.user.practice_name || 'Dashboard'}</p>
+              </div>
             </Link>
-            <Link href="/clients">
-              <Button variant="outline">Clients</Button>
-            </Link>
+
+            <div className="flex items-center gap-2">
+              <span className="hidden sm:block text-sm text-gray-600 px-3 py-1.5 bg-gray-100 rounded-lg">
+                {session?.user.email}
+              </span>
+              <Link href="/clients">
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <Users className="w-4 h-4" />
+                  <span className="hidden sm:inline">Clients</span>
+                </Button>
+              </Link>
+              <Link href="/campaigns">
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <Folder className="w-4 h-4" />
+                  <span className="hidden sm:inline">Campaigns</span>
+                </Button>
+              </Link>
+              <Link href="/settings">
+                <Button variant="ghost" size="sm">
+                  <Settings className="w-4 h-4" />
+                </Button>
+              </Link>
+              <Button variant="ghost" size="sm" onClick={handleLogout}>
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold">Campaigns</h2>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">Campaigns</h2>
           <Link href="/campaigns/new">
-            <Button>New Campaign</Button>
+            <Button className="gap-2 bg-emerald-600 hover:bg-emerald-700">
+              <Plus className="w-4 h-4" />
+              New Campaign
+            </Button>
           </Link>
         </div>
 
         {campaigns.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-16">
-              <p className="text-muted-foreground mb-4">No campaigns yet</p>
+              <p className="text-gray-600 mb-4">No campaigns yet</p>
               <Link href="/campaigns/new">
-                <Button>Create Your First Campaign</Button>
+                <Button className="bg-emerald-600 hover:bg-emerald-700">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create Your First Campaign
+                </Button>
               </Link>
             </CardContent>
           </Card>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {campaigns.map((campaign) => (
-              <Link key={campaign.id} href={`/campaigns/${campaign.id}`}>
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
-                  <CardHeader>
+              <Card key={campaign.id} className="hover:shadow-lg transition-shadow h-full">
+                <Link href={`/campaigns/${campaign.id}`}>
+                  <CardHeader className="cursor-pointer">
                     <CardTitle>{campaign.name}</CardTitle>
                     <CardDescription>
                       {campaign.period} • {campaign.document_type.replace('_', ' ')}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <div className="flex justify-between items-center">
-                      <Badge variant={campaign.status === 'active' ? 'default' : campaign.status === 'draft' ? 'secondary' : 'outline'}>
-                        {campaign.status}
-                      </Badge>
-                      <span className="text-sm text-muted-foreground">
-                        {new Date(campaign.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
+                </Link>
+                <CardContent>
+                  <div className="flex justify-between items-center mb-3">
+                    <Badge variant={campaign.status === 'active' ? 'default' : campaign.status === 'draft' ? 'secondary' : 'outline'}>
+                      {campaign.status}
+                    </Badge>
+                    <span className="text-sm text-muted-foreground">
+                      {new Date(campaign.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    <Link href={`/campaigns/${campaign.id}`} className="flex-1">
+                      <Button variant="outline" size="sm" className="w-full">
+                        View Details
+                      </Button>
+                    </Link>
+                    <Link href={`/campaigns/${campaign.id}/edit`}>
+                      <Button variant="outline" size="sm" className="gap-1">
+                        <Edit className="h-3 w-3" />
+                        Edit
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         )}

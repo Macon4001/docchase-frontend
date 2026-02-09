@@ -1,44 +1,56 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { FileText, Users, Folder, Settings, LogOut, ArrowLeft } from 'lucide-react';
 import { apiClient } from '@/lib/api';
 import { AuthClient } from '@/lib/auth-client';
 
-interface Client {
+interface Campaign {
   id: string;
   name: string;
-  phone: string;
-  email?: string;
+  document_type: string;
+  period: string;
+  status: string;
+  reminder_1_days?: number;
+  reminder_2_days?: number;
+  reminder_3_days?: number;
+  reminder_send_time?: string;
+  initial_message?: string;
+  reminder_day_3: boolean;
+  reminder_day_6: boolean;
+  flag_after_day_9: boolean;
 }
 
-export default function NewCampaignPage() {
+export default function EditCampaignPage() {
   const router = useRouter();
+  const params = useParams();
+  const campaignId = params.id as string;
+
   const [session, setSession] = useState<any>(null);
-  const [name, setName] = useState('');
-  const [period, setPeriod] = useState('');
-  const [clients, setClients] = useState<Client[]>([]);
-  const [selectedClientIds, setSelectedClientIds] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [loadingClients, setLoadingClients] = useState(true);
+  const [campaign, setCampaign] = useState<Campaign | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
-  // Custom reminder schedule settings
+  // Form fields
+  const [name, setName] = useState('');
+  const [period, setPeriod] = useState('');
   const [reminder1Days, setReminder1Days] = useState(3);
   const [reminder2Days, setReminder2Days] = useState(6);
   const [reminder3Days, setReminder3Days] = useState(9);
   const [reminderSendTime, setReminderSendTime] = useState('10:00');
-  const [initialMessage, setInitialMessage] = useState(
-    'Hi {client_name}, this is {practice_name}. We need your {document_type} for {period}. Please send them at your earliest convenience. Thank you!'
-  );
+  const [initialMessage, setInitialMessage] = useState('Hi {client_name}, this is {practice_name}. We need your {document_type} for {period}. Please send them at your earliest convenience. Thank you!');
+  const [reminderDay3, setReminderDay3] = useState(true);
+  const [reminderDay6, setReminderDay6] = useState(true);
+  const [flagAfterDay9, setFlagAfterDay9] = useState(true);
 
   useEffect(() => {
     const userSession = AuthClient.getSession();
@@ -50,79 +62,105 @@ export default function NewCampaignPage() {
 
     setSession(userSession);
     apiClient.setToken(userSession.token);
-    loadClients();
-  }, [router]);
+    loadCampaign();
+  }, [router, campaignId]);
 
   const handleLogout = () => {
     AuthClient.logout();
   };
 
-  const loadClients = async () => {
+  const loadCampaign = async () => {
     try {
-      const data = await apiClient.getClients();
-      setClients(data.clients || []);
+      const data = await apiClient.getCampaigns();
+      const foundCampaign = data.campaigns?.find((c: Campaign) => c.id === campaignId);
+
+      if (foundCampaign) {
+        setCampaign(foundCampaign);
+        setName(foundCampaign.name);
+        setPeriod(foundCampaign.period);
+        setReminder1Days(foundCampaign.reminder_1_days || 3);
+        setReminder2Days(foundCampaign.reminder_2_days || 6);
+        setReminder3Days(foundCampaign.reminder_3_days || 9);
+        setReminderSendTime(foundCampaign.reminder_send_time || '10:00');
+        setInitialMessage(foundCampaign.initial_message || 'Hi {client_name}, this is {practice_name}. We need your {document_type} for {period}. Please send them at your earliest convenience. Thank you!');
+        setReminderDay3(foundCampaign.reminder_day_3);
+        setReminderDay6(foundCampaign.reminder_day_6);
+        setFlagAfterDay9(foundCampaign.flag_after_day_9);
+      } else {
+        setError('Campaign not found');
+      }
     } catch (err) {
-      console.error('Failed to load clients:', err);
+      console.error('Failed to load campaign:', err);
+      setError('Failed to load campaign');
     } finally {
-      setLoadingClients(false);
-    }
-  };
-
-  const toggleClient = (clientId: string) => {
-    setSelectedClientIds(prev =>
-      prev.includes(clientId)
-        ? prev.filter(id => id !== clientId)
-        : [...prev, clientId]
-    );
-  };
-
-  const toggleAll = () => {
-    if (selectedClientIds.length === clients.length) {
-      setSelectedClientIds([]);
-    } else {
-      setSelectedClientIds(clients.map(c => c.id));
+      setLoading(false);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
-    if (selectedClientIds.length === 0) {
-      setError('Please select at least one client');
-      return;
-    }
-
-    setLoading(true);
+    setSaving(true);
 
     try {
-      await apiClient.createCampaign({
+      await apiClient.updateCampaign(campaignId, {
         name,
         period,
-        document_type: 'bank_statement',
-        client_ids: selectedClientIds,
         reminder_1_days: reminder1Days,
         reminder_2_days: reminder2Days,
         reminder_3_days: reminder3Days,
         reminder_send_time: reminderSendTime,
         initial_message: initialMessage,
+        reminder_day_3: reminderDay3,
+        reminder_day_6: reminderDay6,
+        flag_after_day_9: flagAfterDay9,
       });
 
-      router.push('/campaigns');
+      router.push(`/campaigns/${campaignId}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create campaign');
+      setError(err instanceof Error ? err.message : 'Failed to update campaign');
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
-  if (loadingClients) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading clients...</p>
+          <p className="text-gray-600 font-medium">Loading campaign...</p>
         </div>
+      </div>
+    );
+  }
+
+  if (!campaign) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+        <header className="bg-white/80 backdrop-blur-lg border-b border-gray-200 sticky top-0 z-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <Link href="/dashboard" className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
+              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                <FileText className="w-6 h-6 text-white" />
+              </div>
+              <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                DocChase
+              </h1>
+            </Link>
+          </div>
+        </header>
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Alert variant="destructive">
+            <AlertDescription>{error || 'Campaign not found'}</AlertDescription>
+          </Alert>
+          <Link href="/campaigns">
+            <Button variant="outline" className="mt-4">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Campaigns
+            </Button>
+          </Link>
+        </main>
       </div>
     );
   }
@@ -176,26 +214,34 @@ export default function NewCampaignPage() {
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link
-          href="/campaigns"
+          href={`/campaigns/${campaignId}`}
           className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-emerald-600 mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to campaigns
+          Back to campaign
         </Link>
 
         <Card>
           <CardHeader>
-            <CardTitle>Create New Campaign</CardTitle>
+            <CardTitle>Edit Campaign</CardTitle>
             <CardDescription>
-              Start a new document collection campaign for your clients
+              Update campaign settings and reminder schedule
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-600">
-                  {error}
-                </div>
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
+              {campaign.status !== 'draft' && (
+                <Alert className="bg-blue-50 border-blue-200">
+                  <AlertDescription className="text-blue-800">
+                    <strong>Note:</strong> This campaign is {campaign.status}. Changes will apply to future reminders.
+                  </AlertDescription>
+                </Alert>
               )}
 
               <div className="space-y-2">
@@ -220,7 +266,6 @@ export default function NewCampaignPage() {
                 />
               </div>
 
-              {/* Initial Message Template */}
               <div className="space-y-2">
                 <Label htmlFor="initialMessage">Initial Message Template</Label>
                 <Textarea
@@ -333,84 +378,20 @@ export default function NewCampaignPage() {
                 </div>
 
                 <div className="bg-white/60 rounded-lg p-3 text-xs text-gray-600">
-                  <strong className="text-gray-700">Example:</strong> With settings of 3, 6, and 9 days, clients will receive:
-                  <ul className="list-disc list-inside mt-1 space-y-0.5 ml-2">
-                    <li>First reminder after 3 days of no response</li>
-                    <li>Second reminder after 6 days of no response</li>
-                    <li>Flagged as "stuck" after 9 days of no response</li>
-                  </ul>
+                  <strong className="text-gray-700">Current settings:</strong> Reminders at {reminder1Days}, {reminder2Days}, and {reminder3Days} days
+                  {reminderSendTime && ` • Sent at ${reminderSendTime}`}
                 </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <Label>Select Clients</Label>
-                  {clients.length > 0 && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={toggleAll}
-                    >
-                      {selectedClientIds.length === clients.length ? 'Deselect All' : 'Select All'}
-                    </Button>
-                  )}
-                </div>
-
-                {loadingClients ? (
-                  <div className="flex items-center justify-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
-                  </div>
-                ) : clients.length === 0 ? (
-                  <div className="p-8 border-2 border-dashed rounded-lg text-center">
-                    <p className="text-muted-foreground mb-4">No clients yet</p>
-                    <Link href="/clients">
-                      <Button type="button" variant="outline" size="sm">
-                        Add Clients First
-                      </Button>
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="border rounded-lg divide-y max-h-64 overflow-y-auto">
-                    {clients.map((client) => (
-                      <div
-                        key={client.id}
-                        className="flex items-center space-x-3 p-3 hover:bg-emerald-50 transition-colors"
-                      >
-                        <Checkbox
-                          id={client.id}
-                          checked={selectedClientIds.includes(client.id)}
-                          onCheckedChange={() => toggleClient(client.id)}
-                          className="data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600"
-                        />
-                        <label
-                          htmlFor={client.id}
-                          className="flex-1 cursor-pointer"
-                        >
-                          <p className="font-medium text-gray-900">{client.name}</p>
-                          <p className="text-sm text-gray-600">{client.phone}</p>
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {selectedClientIds.length > 0 && (
-                  <p className="text-sm text-muted-foreground">
-                    {selectedClientIds.length} client{selectedClientIds.length !== 1 ? 's' : ''} selected
-                  </p>
-                )}
               </div>
 
               <div className="flex gap-4">
                 <Button
                   type="submit"
-                  disabled={loading || clients.length === 0}
+                  disabled={saving}
                   className="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400"
                 >
-                  {loading ? 'Creating...' : 'Create Campaign'}
+                  {saving ? 'Saving...' : 'Save Changes'}
                 </Button>
-                <Link href="/campaigns" className="flex-1">
+                <Link href={`/campaigns/${campaignId}`} className="flex-1">
                   <Button type="button" variant="outline" className="w-full">
                     Cancel
                   </Button>

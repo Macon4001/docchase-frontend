@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -11,8 +10,9 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus } from 'lucide-react';
+import { FileText, Users, Folder, Settings, LogOut, Plus } from 'lucide-react';
 import { apiClient } from '@/lib/api';
+import { AuthClient } from '@/lib/auth-client';
 
 interface Client {
   id: string;
@@ -25,7 +25,7 @@ interface Client {
 
 export default function ClientsPage() {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const [session, setSession] = useState<any>(null);
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -34,23 +34,25 @@ export default function ClientsPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    const userSession = AuthClient.getSession();
+
+    if (!userSession) {
       router.push('/login');
       return;
     }
 
-    if (status === 'authenticated' && session) {
-      loadClients();
-    }
-  }, [status, session, router]);
+    setSession(userSession);
+    apiClient.setToken(userSession.token);
+    loadClients();
+  }, [router]);
+
+  const handleLogout = () => {
+    AuthClient.logout();
+  };
 
   const loadClients = async () => {
     try {
       setLoading(true);
-      const token = (session as any)?.apiToken;
-      if (token) {
-        apiClient.setToken(token);
-      }
       const data = await apiClient.getClients();
       setClients(data.clients || []);
     } catch (err) {
@@ -66,11 +68,6 @@ export default function ClientsPage() {
     setError('');
 
     try {
-      const token = (session as any)?.apiToken;
-      if (token) {
-        apiClient.setToken(token);
-      }
-
       await apiClient.createClient({
         name: newClient.name,
         phone: newClient.phone,
@@ -87,39 +84,70 @@ export default function ClientsPage() {
     }
   };
 
-  if (loading || status === 'loading') {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading clients...</p>
+          <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading clients...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">DocChase</h1>
-          <div className="flex items-center gap-4">
-            <Link href="/dashboard">
-              <Button variant="outline">Dashboard</Button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+      {/* Modern Header */}
+      <header className="bg-white/80 backdrop-blur-lg border-b border-gray-200 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <Link href="/dashboard" className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
+              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                <FileText className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                  DocChase
+                </h1>
+                <p className="text-xs text-gray-500">{session?.user.practice_name || 'Dashboard'}</p>
+              </div>
             </Link>
-            <Link href="/campaigns">
-              <Button variant="outline">Campaigns</Button>
-            </Link>
+
+            <div className="flex items-center gap-2">
+              <span className="hidden sm:block text-sm text-gray-600 px-3 py-1.5 bg-gray-100 rounded-lg">
+                {session?.user.email}
+              </span>
+              <Link href="/clients">
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <Users className="w-4 h-4" />
+                  <span className="hidden sm:inline">Clients</span>
+                </Button>
+              </Link>
+              <Link href="/campaigns">
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <Folder className="w-4 h-4" />
+                  <span className="hidden sm:inline">Campaigns</span>
+                </Button>
+              </Link>
+              <Link href="/settings">
+                <Button variant="ghost" size="sm">
+                  <Settings className="w-4 h-4" />
+                </Button>
+              </Link>
+              <Button variant="ghost" size="sm" onClick={handleLogout}>
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold">Clients</h2>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">Clients</h2>
           <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="bg-emerald-600 hover:bg-emerald-700">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Client
               </Button>
@@ -163,7 +191,7 @@ export default function ClientsPage() {
                   />
                 </div>
                 <div className="flex gap-3 pt-4">
-                  <Button type="submit" disabled={saving} className="flex-1">
+                  <Button type="submit" disabled={saving} className="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400">
                     {saving ? 'Adding...' : 'Add Client'}
                   </Button>
                   <Button
@@ -195,10 +223,10 @@ export default function ClientsPage() {
           <CardContent>
             {clients.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-muted-foreground mb-4">No clients yet</p>
+                <p className="text-gray-600 mb-4">No clients yet</p>
                 <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
                   <DialogTrigger asChild>
-                    <Button>
+                    <Button className="bg-emerald-600 hover:bg-emerald-700">
                       <Plus className="mr-2 h-4 w-4" />
                       Add Your First Client
                     </Button>
@@ -242,7 +270,7 @@ export default function ClientsPage() {
                         />
                       </div>
                       <div className="flex gap-3 pt-4">
-                        <Button type="submit" disabled={saving} className="flex-1">
+                        <Button type="submit" disabled={saving} className="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400">
                           {saving ? 'Adding...' : 'Add Client'}
                         </Button>
                         <Button
