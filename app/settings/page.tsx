@@ -71,7 +71,16 @@ export default function SettingsPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch settings');
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('Settings API error:', response.status, errorData);
+
+        if (response.status === 401) {
+          // Token is invalid, logout
+          AuthClient.logout();
+          return;
+        }
+
+        throw new Error(errorData.error || `Failed to fetch settings (${response.status})`);
       }
 
       const data = await response.json();

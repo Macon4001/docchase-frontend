@@ -8,26 +8,79 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowLeft } from 'lucide-react';
 import { apiClient } from '@/lib/api';
+
+interface Client {
+  id: string;
+  name: string;
+  phone: string;
+  email?: string;
+}
 
 export default function NewCampaignPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [name, setName] = useState('');
   const [period, setPeriod] = useState('');
+  const [clients, setClients] = useState<Client[]>([]);
+  const [selectedClientIds, setSelectedClientIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingClients, setLoadingClients] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login');
+      return;
     }
-  }, [status, router]);
+
+    if (status === 'authenticated' && session) {
+      loadClients();
+    }
+  }, [status, session, router]);
+
+  const loadClients = async () => {
+    try {
+      const token = (session as any)?.apiToken;
+      if (token) {
+        apiClient.setToken(token);
+      }
+      const data = await apiClient.getClients();
+      setClients(data.clients || []);
+    } catch (err) {
+      console.error('Failed to load clients:', err);
+    } finally {
+      setLoadingClients(false);
+    }
+  };
+
+  const toggleClient = (clientId: string) => {
+    setSelectedClientIds(prev =>
+      prev.includes(clientId)
+        ? prev.filter(id => id !== clientId)
+        : [...prev, clientId]
+    );
+  };
+
+  const toggleAll = () => {
+    if (selectedClientIds.length === clients.length) {
+      setSelectedClientIds([]);
+    } else {
+      setSelectedClientIds(clients.map(c => c.id));
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (selectedClientIds.length === 0) {
+      setError('Please select at least one client');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -40,7 +93,7 @@ export default function NewCampaignPage() {
         name,
         period,
         document_type: 'bank_statement',
-        client_ids: [],
+        client_ids: selectedClientIds,
       });
 
       router.push('/campaigns');
@@ -113,8 +166,68 @@ export default function NewCampaignPage() {
                 />
               </div>
 
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <Label>Select Clients</Label>
+                  {clients.length > 0 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={toggleAll}
+                    >
+                      {selectedClientIds.length === clients.length ? 'Deselect All' : 'Select All'}
+                    </Button>
+                  )}
+                </div>
+
+                {loadingClients ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+                  </div>
+                ) : clients.length === 0 ? (
+                  <div className="p-8 border-2 border-dashed rounded-lg text-center">
+                    <p className="text-muted-foreground mb-4">No clients yet</p>
+                    <Link href="/clients">
+                      <Button type="button" variant="outline" size="sm">
+                        Add Clients First
+                      </Button>
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="border rounded-lg divide-y max-h-64 overflow-y-auto">
+                    {clients.map((client) => (
+                      <div
+                        key={client.id}
+                        className="flex items-center space-x-3 p-3 hover:bg-gray-50 cursor-pointer"
+                        onClick={() => toggleClient(client.id)}
+                      >
+                        <Checkbox
+                          id={client.id}
+                          checked={selectedClientIds.includes(client.id)}
+                          onCheckedChange={() => toggleClient(client.id)}
+                        />
+                        <label
+                          htmlFor={client.id}
+                          className="flex-1 cursor-pointer"
+                        >
+                          <p className="font-medium">{client.name}</p>
+                          <p className="text-sm text-muted-foreground">{client.phone}</p>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {selectedClientIds.length > 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    {selectedClientIds.length} client{selectedClientIds.length !== 1 ? 's' : ''} selected
+                  </p>
+                )}
+              </div>
+
               <div className="flex gap-4">
-                <Button type="submit" disabled={loading} className="flex-1">
+                <Button type="submit" disabled={loading || clients.length === 0} className="flex-1">
                   {loading ? 'Creating...' : 'Create Campaign'}
                 </Button>
                 <Link href="/campaigns" className="flex-1">

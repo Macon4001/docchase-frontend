@@ -94,24 +94,26 @@ export default function CampaignsPage() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {campaigns.map((campaign) => (
-              <Card key={campaign.id}>
-                <CardHeader>
-                  <CardTitle>{campaign.name}</CardTitle>
-                  <CardDescription>
-                    {campaign.period} • {campaign.document_type.replace('_', ' ')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-between items-center">
-                    <Badge variant={campaign.status === 'active' ? 'default' : 'secondary'}>
-                      {campaign.status}
-                    </Badge>
-                    <span className="text-sm text-muted-foreground">
-                      {new Date(campaign.created_at).toLocaleDateString()}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
+              <Link key={campaign.id} href={`/campaigns/${campaign.id}`}>
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+                  <CardHeader>
+                    <CardTitle>{campaign.name}</CardTitle>
+                    <CardDescription>
+                      {campaign.period} • {campaign.document_type.replace('_', ' ')}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex justify-between items-center">
+                      <Badge variant={campaign.status === 'active' ? 'default' : campaign.status === 'draft' ? 'secondary' : 'outline'}>
+                        {campaign.status}
+                      </Badge>
+                      <span className="text-sm text-muted-foreground">
+                        {new Date(campaign.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         )}
