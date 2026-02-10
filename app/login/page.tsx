@@ -50,7 +50,14 @@ function LoginForm() {
 
     try {
       await AuthClient.login(email, password);
-      router.push('/dashboard');
+
+      // Check if there's a redirect parameter
+      const redirect = searchParams.get('redirect');
+      if (redirect) {
+        router.push(redirect);
+      } else {
+        router.push('/dashboard');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred. Please try again.');
     } finally {
