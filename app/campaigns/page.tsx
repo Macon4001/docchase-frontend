@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Users, Folder, Settings, LogOut, Plus, Edit } from 'lucide-react';
+import { FileText, Users, Folder, Settings, LogOut, Plus, Edit, Play } from 'lucide-react';
 import { apiClient } from '@/lib/api';
 import { AuthClient } from '@/lib/auth-client';
 
@@ -24,6 +24,7 @@ export default function CampaignsPage() {
   const [session, setSession] = useState<any>(null);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
+  const [startingCampaignId, setStartingCampaignId] = useState<string | null>(null);
 
   useEffect(() => {
     const userSession = AuthClient.getSession();
@@ -50,6 +51,23 @@ export default function CampaignsPage() {
       console.error('Failed to load campaigns:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleStartCampaign = async (campaignId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setStartingCampaignId(campaignId);
+    try {
+      await apiClient.startCampaign(campaignId);
+      // Reload campaigns to update status
+      await loadCampaigns();
+    } catch (err) {
+      console.error('Failed to start campaign:', err);
+      alert('Failed to start campaign. Please try again.');
+    } finally {
+      setStartingCampaignId(null);
     }
   };
 
@@ -156,17 +174,48 @@ export default function CampaignsPage() {
                     </span>
                   </div>
                   <div className="flex gap-2">
-                    <Link href={`/campaigns/${campaign.id}`} className="flex-1">
-                      <Button variant="outline" size="sm" className="w-full">
-                        View Details
-                      </Button>
-                    </Link>
-                    <Link href={`/campaigns/${campaign.id}/edit`}>
-                      <Button variant="outline" size="sm" className="gap-1">
-                        <Edit className="h-3 w-3" />
-                        Edit
-                      </Button>
-                    </Link>
+                    {campaign.status === 'draft' ? (
+                      <>
+                        <Button
+                          onClick={(e) => handleStartCampaign(campaign.id, e)}
+                          disabled={startingCampaignId === campaign.id}
+                          size="sm"
+                          className="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400"
+                        >
+                          {startingCampaignId === campaign.id ? (
+                            <>
+                              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-1"></div>
+                              Starting...
+                            </>
+                          ) : (
+                            <>
+                              <Play className="mr-1 h-3 w-3" />
+                              Start
+                            </>
+                          )}
+                        </Button>
+                        <Link href={`/campaigns/${campaign.id}/edit`}>
+                          <Button variant="outline" size="sm" className="gap-1">
+                            <Edit className="h-3 w-3" />
+                            Edit
+                          </Button>
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        <Link href={`/campaigns/${campaign.id}`} className="flex-1">
+                          <Button variant="outline" size="sm" className="w-full">
+                            View Details
+                          </Button>
+                        </Link>
+                        <Link href={`/campaigns/${campaign.id}/edit`}>
+                          <Button variant="outline" size="sm" className="gap-1">
+                            <Edit className="h-3 w-3" />
+                            Edit
+                          </Button>
+                        </Link>
+                      </>
+                    )}
                   </div>
                 </CardContent>
               </Card>
