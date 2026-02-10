@@ -23,13 +23,21 @@ import {
   Sparkles,
   Radius
 } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { AuthClient } from "@/lib/auth-client";
 import AnimatedStepFlow from './components/AnimatedStepFlow';
 import PhoneMockup from './components/PhoneMockup';
 
 const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400"] });
 
 export default function Home() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    // Check if user is authenticated
+    const session = AuthClient.getSession();
+    setIsAuthenticated(!!session);
+  }, []);
   useEffect(() => {
     let animationFrame: number;
     let currentX = 15;
@@ -106,12 +114,20 @@ export default function Home() {
               <Link href="/pricing">
                 <Button variant="ghost">Pricing</Button>
               </Link>
-              <Link href="/login">
-                <Button variant="ghost">Sign In</Button>
-              </Link>
-              <Link href="/register">
-                <Button>Get Started</Button>
-              </Link>
+              {isAuthenticated ? (
+                <Link href="/dashboard">
+                  <Button>Dashboard</Button>
+                </Link>
+              ) : (
+                <>
+                  <Link href="/login">
+                    <Button variant="ghost">Sign In</Button>
+                  </Link>
+                  <Link href="/register">
+                    <Button>Get Started</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -212,17 +228,28 @@ export default function Home() {
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  <Link href="/register" className="w-full">
-                    <Button size="lg" className="w-full h-12 px-8 text-base shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700">
-                      Start Free Trial
-                      <ArrowRight className="ml-2 w-5 h-5" />
-                    </Button>
-                  </Link>
-                  <Link href="/login" className="w-full">
-                    <Button size="lg" variant="outline" className="w-full h-12 px-8 text-base hover:bg-primary/5 transition-colors border-2">
-                      Sign In
-                    </Button>
-                  </Link>
+                  {isAuthenticated ? (
+                    <Link href="/dashboard" className="w-full">
+                      <Button size="lg" className="w-full h-12 px-8 text-base shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700">
+                        Go to Dashboard
+                        <ArrowRight className="ml-2 w-5 h-5" />
+                      </Button>
+                    </Link>
+                  ) : (
+                    <>
+                      <Link href="/register" className="w-full">
+                        <Button size="lg" className="w-full h-12 px-8 text-base shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700">
+                          Start Free Trial
+                          <ArrowRight className="ml-2 w-5 h-5" />
+                        </Button>
+                      </Link>
+                      <Link href="/login" className="w-full">
+                        <Button size="lg" variant="outline" className="w-full h-12 px-8 text-base hover:bg-primary/5 transition-colors border-2">
+                          Sign In
+                        </Button>
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -472,17 +499,28 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-              <Link href="/register">
-                <Button size="lg" className="h-14 px-10 text-lg font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-2xl hover:shadow-3xl transition-all">
-                  Start Free Trial
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </Link>
-              <Link href="/login">
-                <Button size="lg" variant="outline" className="h-14 px-10 text-lg font-semibold border-2 hover:bg-gray-50">
-                  Sign In
-                </Button>
-              </Link>
+              {isAuthenticated ? (
+                <Link href="/dashboard">
+                  <Button size="lg" className="h-14 px-10 text-lg font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-2xl hover:shadow-3xl transition-all">
+                    Go to Dashboard
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                </Link>
+              ) : (
+                <>
+                  <Link href="/register">
+                    <Button size="lg" className="h-14 px-10 text-lg font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-2xl hover:shadow-3xl transition-all">
+                      Start Free Trial
+                      <ArrowRight className="w-5 h-5 ml-2" />
+                    </Button>
+                  </Link>
+                  <Link href="/login">
+                    <Button size="lg" variant="outline" className="h-14 px-10 text-lg font-semibold border-2 hover:bg-gray-50">
+                      Sign In
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
 
             <div className="flex flex-wrap justify-center items-center gap-6 text-muted-foreground">
