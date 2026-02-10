@@ -1,7 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { UserPlus, MessageSquare, FileText, Save, Repeat, CheckCircle, Upload, FolderOpen, Sparkles } from 'lucide-react';
+import { UserPlus, MessageSquare, FileText, Save, Repeat, CheckCircle, Upload, FolderOpen, Bell } from 'lucide-react';
+import { Playfair_Display } from 'next/font/google';
+
+const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400"] });
 
 interface StepProps {
   number: number;
@@ -14,9 +17,24 @@ interface StepProps {
 }
 
 const actorColors = {
-  you: { primary: '#3B82F6', light: 'rgba(59, 130, 246, 0.1)', border: 'rgba(59, 130, 246, 0.3)' },
-  amy: { primary: '#10B981', light: 'rgba(16, 185, 129, 0.1)', border: 'rgba(16, 185, 129, 0.3)' },
-  client: { primary: '#F59E0B', light: 'rgba(245, 158, 11, 0.1)', border: 'rgba(245, 158, 11, 0.3)' }
+  you: {
+    primary: '#15a349',
+    light: 'rgba(21, 163, 73, 0.08)',
+    border: 'rgba(21, 163, 73, 0.2)',
+    text: '#15a349'
+  },
+  amy: {
+    primary: '#15a349',
+    light: 'rgba(21, 163, 73, 0.08)',
+    border: 'rgba(21, 163, 73, 0.2)',
+    text: '#15a349'
+  },
+  client: {
+    primary: '#15a349',
+    light: 'rgba(21, 163, 73, 0.08)',
+    border: 'rgba(21, 163, 73, 0.2)',
+    text: '#15a349'
+  }
 };
 
 function StepSection({ number, actor, title, description, icon: Icon, animationComponent, reverse = false }: StepProps) {
@@ -54,30 +72,22 @@ function StepSection({ number, actor, title, description, icon: Icon, animationC
       }`}
       style={{ transitionDelay: '200ms' }}
     >
-      <div className="relative bg-white rounded-3xl p-8 lg:p-12 shadow-xl hover:shadow-2xl transition-shadow border-2" style={{ borderColor: colors.primary }}>
-        {/* Step number in top-right corner */}
-        <div
-          className="absolute -top-4 -right-4 w-14 h-14 rounded-2xl flex items-center justify-center shadow-xl"
-          style={{ background: colors.primary }}
-        >
-          <span className="text-2xl font-bold text-white">{number}</span>
-        </div>
-
-        {/* Header: Icon + Actor Badge combined */}
-        <div className="flex items-center gap-4 mb-6">
+      <div className="relative bg-white rounded-2xl p-10 lg:p-12 shadow-lg hover:shadow-xl transition-all border-2 border-gray-100">
+        {/* Step number badge */}
+        <div className="flex items-start gap-6 mb-6">
           <div
-            className="flex-shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg"
-            style={{ background: colors.primary }}
+            className="flex-shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center shadow-sm"
+            style={{ backgroundColor: colors.primary }}
           >
-            <Icon className="w-8 h-8 text-white" />
+            <span className={`text-2xl font-bold text-white ${playfair.className}`}>{number}</span>
           </div>
-          <div>
+          <div className="flex-1">
             <div
-              className="inline-block px-4 py-1.5 rounded-full text-sm font-bold"
+              className="inline-block px-4 py-2 rounded-full text-sm font-semibold mb-4"
               style={{
-                background: colors.light,
-                color: colors.primary,
-                border: `2px solid ${colors.border}`
+                backgroundColor: colors.light,
+                color: colors.text,
+                border: `1px solid ${colors.border}`
               }}
             >
               {actor === 'you' ? 'You' : actor === 'amy' ? 'Amy' : 'Client'}
@@ -86,17 +96,14 @@ function StepSection({ number, actor, title, description, icon: Icon, animationC
         </div>
 
         {/* Title */}
-        <h3 className="text-3xl lg:text-4xl font-bold mb-4" style={{ color: '#212b38' }}>
+        <h3 className={`text-3xl lg:text-4xl font-bold mb-4 ${playfair.className}`} style={{ color: '#212b38' }}>
           {title}
         </h3>
 
         {/* Description */}
-        <p className="text-lg text-gray-600 leading-relaxed">
+        <p className="text-base text-gray-600 leading-relaxed">
           {description}
         </p>
-
-        {/* Bottom accent line */}
-        <div className="mt-8 h-1 w-20 rounded-full" style={{ background: colors.primary }}></div>
       </div>
     </div>
   );
@@ -113,7 +120,7 @@ function StepSection({ number, actor, title, description, icon: Icon, animationC
   );
 
   return (
-    <div ref={sectionRef} className="relative py-16 lg:py-24">
+    <div ref={sectionRef} className="relative py-12 lg:py-16">
       <div className={`flex flex-col ${reverse ? 'lg:flex-row-reverse' : 'lg:flex-row'} gap-8 lg:gap-16 items-center`}>
         {cardContent}
         {animationContent}
@@ -125,33 +132,33 @@ function StepSection({ number, actor, title, description, icon: Icon, animationC
 // Animation Components
 function AddClientsAnimation() {
   return (
-    <div className="relative bg-gradient-to-br from-blue-50 to-cyan-50 rounded-3xl p-12 shadow-xl min-h-[500px] flex items-center justify-center">
+    <div className="relative bg-gradient-to-br from-gray-50 to-green-50/30 rounded-2xl p-10 shadow-lg min-h-[400px] flex items-center justify-center border border-gray-100">
       <div className="w-full max-w-md">
         {/* CSV Upload Area */}
-        <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-dashed border-blue-300 hover:border-blue-500 transition-colors animate-[pulse_3s_ease-in-out_infinite]">
+        <div className="bg-white rounded-xl p-8 shadow-md border-2 border-dashed border-gray-300 hover:border-primary/40 transition-colors">
           <div className="text-center">
-            <Upload className="w-16 h-16 text-blue-500 mx-auto mb-4 animate-[bounce_2s_ease-in-out_infinite]" />
-            <div className="text-lg font-bold text-gray-800 mb-2">Upload Client List</div>
+            <Upload className="w-12 h-12 text-primary mx-auto mb-4" />
+            <div className="text-base font-semibold text-gray-800 mb-2">Upload Client List</div>
             <div className="text-sm text-gray-500">CSV or Excel file</div>
           </div>
         </div>
 
         {/* Sample Data Rows */}
-        <div className="mt-6 space-y-2">
+        <div className="mt-6 space-y-3">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="bg-white rounded-lg p-3 shadow-sm flex items-center gap-3 animate-[slideInRight_0.6s_ease-out]"
-              style={{ animationDelay: `${i * 0.3}s`, animationFillMode: 'both' }}
+              className="bg-white rounded-lg p-4 shadow-sm flex items-center gap-3 border border-gray-100 animate-[slideIn_0.6s_ease-out]"
+              style={{ animationDelay: `${i * 0.2}s`, animationFillMode: 'both' }}
             >
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                <UserPlus className="w-5 h-5 text-blue-500" />
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <UserPlus className="w-5 h-5 text-primary" />
               </div>
               <div className="flex-1">
-                <div className="h-3 bg-gray-200 rounded w-3/4 mb-1"></div>
+                <div className="h-3 bg-gray-200 rounded w-3/4 mb-2"></div>
                 <div className="h-2 bg-gray-100 rounded w-1/2"></div>
               </div>
-              <CheckCircle className="w-5 h-5 text-green-500" />
+              <CheckCircle className="w-5 h-5 text-primary" />
             </div>
           ))}
         </div>
@@ -162,27 +169,27 @@ function AddClientsAnimation() {
 
 function AmySendsAnimation() {
   return (
-    <div className="relative bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-12 shadow-xl min-h-[500px] flex items-center justify-center">
+    <div className="relative bg-gradient-to-br from-gray-50 to-green-50/30 rounded-2xl p-10 shadow-lg min-h-[400px] flex items-center justify-center border border-gray-100">
       <div className="grid grid-cols-2 gap-4">
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="bg-white rounded-2xl p-4 shadow-lg animate-[fadeInScale_0.6s_ease-out]"
-            style={{ animationDelay: `${i * 0.2}s`, animationFillMode: 'both' }}
+            className="bg-white rounded-xl p-4 shadow-md border border-gray-100 animate-[fadeInScale_0.6s_ease-out]"
+            style={{ animationDelay: `${i * 0.15}s`, animationFillMode: 'both' }}
           >
-            {/* Phone-like container */}
-            <div className="bg-[#25D366] rounded-t-xl px-3 py-2 flex items-center gap-2 mb-3">
+            {/* WhatsApp header */}
+            <div className="bg-primary rounded-lg px-3 py-2 flex items-center gap-2 mb-3">
               <MessageSquare className="w-4 h-4 text-white" />
               <span className="text-xs text-white font-semibold">Client {i}</span>
             </div>
-            <div className="bg-[#e5ddd5] rounded-b-xl p-3 min-h-[80px]">
-              <div className="bg-white rounded-lg rounded-bl-none p-2 shadow-sm">
+            <div className="bg-gray-50 rounded-lg p-3 min-h-[70px]">
+              <div className="bg-white rounded-md p-2 shadow-sm">
                 <div className="h-2 bg-gray-200 rounded w-full mb-1"></div>
                 <div className="h-2 bg-gray-200 rounded w-3/4"></div>
               </div>
             </div>
             <div className="mt-2 flex justify-end">
-              <CheckCircle className="w-4 h-4 text-blue-500 animate-[ping_1s_ease-in-out_infinite]" style={{ animationDelay: `${i * 0.3}s` }} />
+              <CheckCircle className="w-4 h-4 text-primary" />
             </div>
           </div>
         ))}
@@ -193,97 +200,67 @@ function AmySendsAnimation() {
 
 function ClientRespondsAnimation() {
   return (
-    <div className="relative bg-gradient-to-br from-orange-50 to-amber-50 rounded-3xl p-12 shadow-xl min-h-[500px] flex items-center justify-center">
-      {/* Phone mockup with better proportions */}
-      <div className="relative w-full max-w-md">
-        {/* Phone frame shadow */}
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-200 to-gray-300 rounded-[2.5rem] blur-xl opacity-40"></div>
-
+    <div className="relative bg-gradient-to-br from-gray-50 to-green-50/30 rounded-2xl p-10 shadow-lg min-h-[400px] flex items-center justify-center border border-gray-100">
+      <div className="relative w-full max-w-sm">
         {/* Phone container */}
-        <div className="relative bg-gradient-to-b from-gray-100 to-gray-50 rounded-[2.5rem] p-3 shadow-2xl">
+        <div className="relative bg-gray-900 rounded-[2.5rem] p-3 shadow-2xl">
           {/* Phone screen */}
-          <div className="bg-white rounded-[2rem] overflow-hidden shadow-inner">
+          <div className="bg-white rounded-[2rem] overflow-hidden">
             {/* WhatsApp header */}
-            <div className="bg-[#075E54] px-5 py-4 flex items-center gap-3">
-              <div className="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                <MessageSquare className="w-6 h-6 text-white" />
+            <div className="bg-[#075E54] px-4 py-3 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center">
+                <MessageSquare className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1">
-                <div className="font-semibold text-base text-white">John Smith</div>
-                <div className="text-xs text-white/90 flex items-center gap-1">
-                  <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+                <div className="font-semibold text-sm text-white">John Smith</div>
+                <div className="text-xs text-white/80 flex items-center gap-1">
+                  <div className="w-2 h-2 rounded-full bg-green-400"></div>
                   <span>online</span>
                 </div>
               </div>
             </div>
 
-            {/* Chat background */}
-            <div className="p-5 min-h-[320px] space-y-4 relative" style={{
-              backgroundImage: "url('/whatsapp background .png')",
-              backgroundSize: 'cover',
-              backgroundPosition: 'center'
-            }}>
-
-              {/* Messages container */}
-              <div className="relative space-y-3">
-                {/* Amy's message */}
-                <div className="flex gap-2 items-end animate-[fadeIn_0.6s_ease-out]">
-                  <div className="max-w-[80%]">
-                    <div className="bg-white rounded-lg rounded-bl-sm p-3 shadow-sm">
-                      <p className="text-sm text-gray-800 leading-relaxed">
-                        Hi John! Could you send over your January 2024 bank statement? 📄
-                      </p>
-                      <div className="flex items-center justify-end gap-1 mt-1">
-                        <span className="text-[10px] text-gray-500">10:30 AM</span>
-                      </div>
-                    </div>
+            {/* Chat area */}
+            <div className="p-4 min-h-[280px] bg-[#e5ddd5] space-y-3">
+              {/* Amy's message */}
+              <div className="flex gap-2 items-end">
+                <div className="max-w-[75%]">
+                  <div className="bg-white rounded-lg rounded-bl-sm p-3 shadow-sm">
+                    <p className="text-xs text-gray-800">
+                      Hi John! Could you send over your January 2024 bank statement?
+                    </p>
+                    <div className="text-[10px] text-gray-500 mt-1 text-right">10:30 AM</div>
                   </div>
                 </div>
+              </div>
 
-                {/* Client typing indicator */}
-                <div className="flex gap-2 items-end justify-end animate-[slideInRight_0.8s_ease-out_0.8s_both]">
-                  <div className="bg-[#DCF8C6] rounded-lg rounded-br-sm px-4 py-2 shadow-sm">
-                    <div className="flex gap-1">
-                      <div className="w-2 h-2 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                      <div className="w-2 h-2 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                      <div className="w-2 h-2 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: '300ms' }}></div>
+              {/* File upload message */}
+              <div className="flex gap-2 items-end justify-end animate-[slideIn_0.8s_ease-out_0.8s_both]">
+                <div className="max-w-[75%]">
+                  <div className="bg-[#dcf8c6] rounded-lg rounded-br-sm p-3 shadow-sm">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center shadow-sm">
+                        <FileText className="w-6 h-6 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs font-medium text-gray-800 truncate">bank_statement.pdf</div>
+                        <div className="text-[10px] text-gray-500">248 KB</div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-
-                {/* File upload message */}
-                <div className="flex gap-2 items-end justify-end animate-[slideInRight_0.8s_ease-out_1.6s_both]">
-                  <div className="max-w-[80%]">
-                    <div className="bg-[#DCF8C6] rounded-lg rounded-br-sm p-3 shadow-sm">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-sm">
-                          <FileText className="w-7 h-7 text-orange-500" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium text-gray-800 truncate">bank_statement_jan.pdf</div>
-                          <div className="text-xs text-gray-500">248 KB • PDF</div>
-                        </div>
-                      </div>
-                      {/* Progress bar */}
-                      <div className="w-full h-1 bg-white/50 rounded-full overflow-hidden">
-                        <div className="h-full bg-orange-500 animate-[progress_2s_ease-out]" style={{ width: '0%' }}></div>
-                      </div>
-                      <div className="flex items-center justify-end gap-1 mt-2">
-                        <span className="text-[10px] text-gray-600">10:32 AM</span>
-                        <CheckCircle className="w-3.5 h-3.5 text-blue-500" />
-                      </div>
+                    <div className="text-[10px] text-gray-600 flex items-center justify-end gap-1">
+                      <span>10:32 AM</span>
+                      <CheckCircle className="w-3 h-3 text-primary" />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Message input bar */}
-            <div className="bg-[#F0F0F0] px-4 py-3 flex items-center gap-3">
-              <div className="flex-1 bg-white rounded-full px-4 py-2 text-sm text-gray-400">
+            {/* Input bar */}
+            <div className="bg-[#f0f0f0] px-3 py-2 flex items-center gap-2">
+              <div className="flex-1 bg-white rounded-full px-3 py-1.5 text-xs text-gray-400">
                 Type a message
               </div>
-              <MessageSquare className="w-6 h-6 text-gray-400" />
             </div>
           </div>
         </div>
@@ -294,110 +271,86 @@ function ClientRespondsAnimation() {
 
 function AmySavesAnimation() {
   return (
-    <div className="relative bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-12 shadow-xl min-h-[500px] flex items-center justify-center overflow-hidden">
-      <div className="relative w-full max-w-2xl">
-        {/* Top section: Document transfer animation */}
-        <div className="relative mb-12 h-32">
-          {/* Source document */}
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
-            <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
-              <FileText className="w-16 h-16 text-orange-500" />
+    <div className="relative bg-gradient-to-br from-gray-50 to-green-50/30 rounded-2xl p-10 shadow-lg min-h-[400px] flex items-center justify-center border border-gray-100">
+      <div className="relative w-full max-w-lg">
+        {/* Transfer visualization */}
+        <div className="relative mb-8 h-24">
+          {/* Source */}
+          <div className="absolute left-0 top-1/2 -translate-y-1/2">
+            <div className="bg-white rounded-xl p-4 shadow-md border border-gray-100">
+              <FileText className="w-10 h-10 text-primary" />
             </div>
             <div className="text-center mt-2">
-              <span className="text-xs font-semibold text-gray-600 bg-white px-2 py-1 rounded-full shadow-sm">
-                PDF Received
+              <span className="text-xs font-semibold text-gray-600 bg-white px-2 py-1 rounded-full shadow-sm border border-gray-100">
+                Received
               </span>
             </div>
           </div>
 
-          {/* Destination - Google Drive */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
-            <div className="relative bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
-              <div className="relative">
-                <FolderOpen className="w-16 h-16 text-green-500" />
-                {/* Success ping */}
-                <div className="absolute -top-1 -right-1">
-                  <div className="relative">
-                    <div className="w-6 h-6 bg-green-500 rounded-full animate-ping absolute"></div>
-                    <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center relative">
-                      <CheckCircle className="w-4 h-4 text-white" />
-                    </div>
-                  </div>
-                </div>
+          {/* Destination */}
+          <div className="absolute right-0 top-1/2 -translate-y-1/2">
+            <div className="relative bg-white rounded-xl p-4 shadow-md border border-gray-100">
+              <FolderOpen className="w-10 h-10 text-primary" />
+              <div className="absolute -top-1 -right-1">
+                <CheckCircle className="w-5 h-5 text-primary bg-white rounded-full" />
               </div>
             </div>
             <div className="text-center mt-2">
-              <span className="text-xs font-semibold text-green-600 bg-green-100 px-2 py-1 rounded-full shadow-sm">
-                Saved to Drive
+              <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full shadow-sm border border-primary/20">
+                Saved
               </span>
             </div>
           </div>
 
-          {/* Connecting line with animated dot blob */}
-          <div className="absolute top-1/2 left-24 right-24 h-0.5 -translate-y-1/2 border-t-2 border-dashed border-green-300">
-            <div className="relative w-full h-full">
-              <div className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-green-500 rounded-full shadow-lg animate-[flyToRight_3s_ease-in-out_infinite]"
-                style={{ filter: 'blur(2px)', left: '0%' }}
-              ></div>
-            </div>
+          {/* Arrow */}
+          <div className="absolute top-1/2 left-20 right-20 h-0.5 -translate-y-1/2 bg-gray-300">
+            <div className="absolute top-1/2 -translate-y-1/2 right-0 w-2 h-2 bg-primary rounded-full animate-pulse"></div>
           </div>
         </div>
 
-        {/* Bottom section: Google Drive folder structure */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-          {/* Drive header */}
-          <div className="bg-gradient-to-r from-green-500 to-emerald-500 px-6 py-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-              <FolderOpen className="w-6 h-6 text-white" />
-            </div>
-            <div className="flex-1">
-              <div className="text-white font-semibold text-base">Google Drive</div>
+        {/* Google Drive folder */}
+        <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-primary to-emerald-600 px-5 py-3 flex items-center gap-3">
+            <FolderOpen className="w-5 h-5 text-white" />
+            <div>
+              <div className="text-white font-semibold text-sm">Google Drive</div>
               <div className="text-white/80 text-xs">DocChase / 2024 / January</div>
             </div>
           </div>
 
-          {/* File list */}
-          <div className="p-6 space-y-3">
+          {/* Files */}
+          <div className="p-4 space-y-2">
             {[
-              { name: 'john_smith_jan.pdf', time: '2 mins ago', status: 'complete' },
-              { name: 'sarah_jones_jan.pdf', time: '5 mins ago', status: 'complete' },
-              { name: 'mike_wilson_jan.pdf', time: '8 mins ago', status: 'complete' }
+              { name: 'john_smith_jan.pdf', time: '2 mins ago' },
+              { name: 'sarah_jones_jan.pdf', time: '5 mins ago' },
+              { name: 'mike_wilson_jan.pdf', time: '8 mins ago' }
             ].map((file, i) => (
               <div
                 key={i}
-                className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-50 transition-colors group animate-[slideInRight_0.6s_ease-out]"
-                style={{ animationDelay: `${i * 0.2}s`, animationFillMode: 'both' }}
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors animate-[slideIn_0.5s_ease-out]"
+                style={{ animationDelay: `${i * 0.15}s`, animationFillMode: 'both' }}
               >
-                {/* File icon */}
-                <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <FileText className="w-7 h-7 text-orange-500" />
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-primary" />
                 </div>
-
-                {/* File info */}
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-gray-800 truncate">{file.name}</div>
+                  <div className="text-xs font-semibold text-gray-800 truncate">{file.name}</div>
                   <div className="text-xs text-gray-500">{file.time}</div>
                 </div>
-
-                {/* Status badge */}
-                <div className="flex-shrink-0 flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
-                  <span className="text-xs font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full">
-                    Synced
-                  </span>
-                </div>
+                <CheckCircle className="w-4 h-4 text-primary" />
               </div>
             ))}
           </div>
 
-          {/* Footer summary */}
-          <div className="bg-gray-50 px-6 py-4 border-t flex items-center justify-between">
-            <div className="text-sm text-gray-600">
-              <span className="font-semibold text-gray-800">3 files</span> uploaded today
+          {/* Footer */}
+          <div className="bg-gray-50 px-4 py-3 border-t border-gray-100 flex items-center justify-between">
+            <div className="text-xs text-gray-600">
+              <span className="font-semibold">3 files</span> synced
             </div>
-            <div className="flex items-center gap-2 text-xs font-semibold text-green-600">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-              Auto-sync enabled
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-primary">
+              <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
+              Auto-sync on
             </div>
           </div>
         </div>
@@ -408,169 +361,90 @@ function AmySavesAnimation() {
 
 function AmyConvertsAnimation() {
   return (
-    <div className="relative bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-12 shadow-xl min-h-[500px] flex items-center justify-center overflow-hidden">
-      {/* Animated particles in background */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(6)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-2 h-2 bg-green-300 rounded-full opacity-40 animate-[float_4s_ease-in-out_infinite]"
-            style={{
-              left: `${20 + i * 15}%`,
-              top: `${10 + (i % 3) * 30}%`,
-              animationDelay: `${i * 0.7}s`
-            }}
-          ></div>
-        ))}
-      </div>
-
-      <div className="relative w-full max-w-3xl">
-        {/* Main conversion display */}
-        <div className="flex items-center justify-between gap-8 mb-12">
-          {/* Source PDF */}
-          <div className="flex-1 animate-[fadeIn_0.8s_ease-out]">
-            <div className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all">
-              <div className="flex flex-col items-center gap-4">
-                {/* PDF Document preview */}
-                <div className="relative w-32 h-40 bg-gradient-to-br from-red-50 to-orange-50 rounded-xl border-2 border-red-200 shadow-lg overflow-hidden">
-                  {/* Document lines */}
-                  <div className="absolute inset-0 p-4 space-y-2">
-                    <div className="h-2 bg-red-200 rounded w-3/4"></div>
-                    <div className="h-2 bg-red-200 rounded w-full"></div>
-                    <div className="h-2 bg-red-200 rounded w-5/6"></div>
-                    <div className="h-8 bg-red-300 rounded w-full mt-4"></div>
-                    <div className="h-2 bg-red-200 rounded w-2/3"></div>
-                    <div className="h-2 bg-red-200 rounded w-full"></div>
+    <div className="relative bg-gradient-to-br from-gray-50 to-green-50/30 rounded-2xl p-10 shadow-lg min-h-[400px] flex items-center justify-center border border-gray-100">
+      <div className="relative w-full max-w-2xl">
+        {/* Conversion display */}
+        <div className="flex items-center justify-between gap-8 mb-8">
+          {/* PDF */}
+          <div className="flex-1">
+            <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
+              <div className="flex flex-col items-center gap-3">
+                <div className="relative w-24 h-32 bg-gradient-to-br from-red-50 to-orange-50 rounded-lg border-2 border-red-200 overflow-hidden">
+                  <div className="absolute inset-0 p-3 space-y-1.5">
+                    <div className="h-1.5 bg-red-200 rounded w-3/4"></div>
+                    <div className="h-1.5 bg-red-200 rounded w-full"></div>
+                    <div className="h-1.5 bg-red-200 rounded w-5/6"></div>
+                    <div className="h-6 bg-red-300 rounded w-full mt-3"></div>
+                    <div className="h-1.5 bg-red-200 rounded w-2/3"></div>
                   </div>
-                  {/* PDF icon overlay */}
-                  <div className="absolute top-2 right-2 bg-red-500 rounded-lg p-1">
-                    <FileText className="w-4 h-4 text-white" />
+                  <div className="absolute top-1.5 right-1.5 bg-red-500 rounded p-1">
+                    <FileText className="w-3 h-3 text-white" />
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-sm font-bold text-gray-800">Bank Statement</div>
-                  <div className="text-xs text-gray-500">PDF Document</div>
+                  <div className="text-xs font-semibold text-gray-800">Bank Statement</div>
+                  <div className="text-xs text-gray-500">PDF</div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Transformation animation */}
-          <div className="flex flex-col items-center gap-3 animate-[fadeIn_0.8s_ease-out_0.4s_both]">
-            {/* Processing badge */}
+          {/* Arrow with processing */}
+          <div className="flex flex-col items-center gap-2">
             <div className="relative">
-              <div className="absolute inset-0 bg-green-400 rounded-full blur-xl opacity-50 animate-pulse"></div>
-              <div className="relative bg-gradient-to-r from-green-500 to-emerald-500 rounded-full p-4 shadow-xl">
-                <Repeat className="w-8 h-8 text-white animate-[spin_3s_linear_infinite]" />
+              <div className="bg-primary rounded-full p-3 shadow-md">
+                <Repeat className="w-6 h-6 text-white animate-[spin_3s_linear_infinite]" />
               </div>
             </div>
-
-            {/* Sparkle effects */}
-            <div className="flex gap-2">
-              {[0, 1, 2].map((i) => (
-                <Sparkles
-                  key={i}
-                  className="w-5 h-5 text-emerald-400 animate-[ping_1.5s_ease-in-out_infinite]"
-                  style={{ animationDelay: `${i * 0.3}s` }}
-                />
-              ))}
-            </div>
-
-            {/* API badge */}
-            <div className="bg-white rounded-full px-4 py-2 shadow-lg border-2 border-green-200">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                <span className="text-xs font-bold text-green-600">BankToFile API</span>
-              </div>
-            </div>
-
-            {/* Processing status */}
-            <div className="text-xs font-semibold text-green-600 bg-green-100 px-3 py-1 rounded-full animate-pulse">
-              Converting...
+            <div className="text-xs font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+              Converting
             </div>
           </div>
 
-          {/* Destination CSV */}
-          <div className="flex-1 animate-[fadeIn_0.8s_ease-out_0.8s_both]">
-            <div className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all">
-              <div className="flex flex-col items-center gap-4">
-                {/* CSV Spreadsheet preview */}
-                <div className="relative w-32 h-40 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border-2 border-green-200 shadow-lg overflow-hidden">
-                  {/* Spreadsheet grid */}
+          {/* CSV */}
+          <div className="flex-1">
+            <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
+              <div className="flex flex-col items-center gap-3">
+                <div className="relative w-24 h-32 bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg border-2 border-primary/30 overflow-hidden">
                   <div className="absolute inset-0">
-                    {/* Header row */}
-                    <div className="flex h-8 bg-green-500">
-                      <div className="flex-1 border-r border-green-600 flex items-center justify-center">
-                        <span className="text-[8px] font-bold text-white">Date</span>
-                      </div>
-                      <div className="flex-1 border-r border-green-600 flex items-center justify-center">
-                        <span className="text-[8px] font-bold text-white">Desc</span>
-                      </div>
-                      <div className="flex-1 flex items-center justify-center">
-                        <span className="text-[8px] font-bold text-white">£</span>
-                      </div>
+                    <div className="flex h-6 bg-primary">
+                      {['Date', 'Desc', '£'].map((h, i) => (
+                        <div key={i} className="flex-1 border-r border-primary/30 flex items-center justify-center">
+                          <span className="text-[7px] font-bold text-white">{h}</span>
+                        </div>
+                      ))}
                     </div>
-                    {/* Data rows */}
                     {[1, 2, 3, 4].map((row) => (
-                      <div key={row} className="flex h-6 border-b border-green-200 bg-white/80">
-                        <div className="flex-1 border-r border-green-200 px-1">
-                          <div className="h-2 bg-green-300 rounded mt-2 w-full"></div>
-                        </div>
-                        <div className="flex-1 border-r border-green-200 px-1">
-                          <div className="h-2 bg-green-300 rounded mt-2 w-3/4"></div>
-                        </div>
-                        <div className="flex-1 px-1">
-                          <div className="h-2 bg-green-300 rounded mt-2 w-2/3"></div>
-                        </div>
+                      <div key={row} className="flex h-5 border-b border-primary/10">
+                        {[1, 2, 3].map((col) => (
+                          <div key={col} className="flex-1 border-r border-primary/10 px-1 flex items-center">
+                            <div className="h-1.5 bg-primary/20 rounded w-full"></div>
+                          </div>
+                        ))}
                       </div>
                     ))}
                   </div>
-                  {/* CSV icon overlay */}
-                  <div className="absolute top-2 right-2 bg-green-500 rounded-lg p-1">
-                    <CheckCircle className="w-4 h-4 text-white" />
+                  <div className="absolute top-1.5 right-1.5 bg-primary rounded p-1">
+                    <CheckCircle className="w-3 h-3 text-white" />
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-sm font-bold text-gray-800">Transactions</div>
-                  <div className="text-xs text-gray-500">CSV Ready</div>
+                  <div className="text-xs font-semibold text-gray-800">Transactions</div>
+                  <div className="text-xs text-gray-500">CSV</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Progress indicator */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg animate-[slideInDown_0.8s_ease-out_1.2s_both]">
+        {/* Progress info */}
+        <div className="bg-white rounded-xl p-5 shadow-md border border-gray-100">
           <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-green-500" />
-              </div>
-              <div>
-                <div className="text-sm font-semibold text-gray-800">Processing bank statement...</div>
-                <div className="text-xs text-gray-500">Extracting transactions</div>
-              </div>
-            </div>
-            <div className="text-xs font-semibold text-green-600">2.4s</div>
+            <div className="text-sm font-semibold text-gray-800">48 transactions extracted</div>
+            <div className="text-xs font-semibold text-primary">Ready for import</div>
           </div>
-
-          {/* Progress bar */}
           <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full animate-[progress_3s_ease-out]" style={{ width: '0%' }}></div>
-          </div>
-
-          {/* Stats */}
-          <div className="flex items-center justify-between mt-4 text-xs">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1">
-                <CheckCircle className="w-3 h-3 text-green-500" />
-                <span className="text-gray-600">48 transactions found</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <CheckCircle className="w-3 h-3 text-green-500" />
-                <span className="text-gray-600">Ready for import</span>
-              </div>
-            </div>
+            <div className="h-full bg-gradient-to-r from-primary to-emerald-500 rounded-full animate-[progress_2s_ease-out]"></div>
           </div>
         </div>
       </div>
@@ -580,42 +454,41 @@ function AmyConvertsAnimation() {
 
 function YouNotifiedAnimation() {
   return (
-    <div className="relative bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-12 shadow-xl min-h-[500px] flex items-center justify-center">
-      {/* Dashboard mockup */}
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+    <div className="relative bg-gradient-to-br from-gray-50 to-green-50/30 rounded-2xl p-10 shadow-lg min-h-[400px] flex items-center justify-center border border-gray-100">
+      <div className="bg-white rounded-xl shadow-md w-full max-w-md overflow-hidden border border-gray-100">
         {/* Dashboard header */}
-        <div className="bg-gradient-to-r from-blue-600 to-cyan-600 p-4">
-          <div className="text-white font-bold text-lg">DocChase Dashboard</div>
+        <div className="bg-gradient-to-r from-primary to-emerald-600 p-4">
+          <div className="text-white font-semibold text-base">DocChase Dashboard</div>
         </div>
 
-        {/* Notification toast appearing */}
-        <div className="p-6">
-          <div className="bg-green-50 border-2 border-green-500 rounded-xl p-4 shadow-lg animate-[slideInDown_0.8s_ease-out]">
+        {/* Notification */}
+        <div className="p-5">
+          <div className="bg-primary/5 border-2 border-primary rounded-xl p-4 animate-[slideInDown_0.8s_ease-out]">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
-                <CheckCircle className="w-6 h-6 text-white" />
+              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                <Bell className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1">
-                <div className="font-bold text-gray-800 mb-1">Document Received! 🎉</div>
-                <div className="text-sm text-gray-600">John Smith's January statement is ready</div>
+                <div className="font-semibold text-gray-800 mb-1 text-sm">Document Received</div>
+                <div className="text-xs text-gray-600">John Smith's January statement is ready</div>
               </div>
             </div>
           </div>
 
-          {/* Recent activity list */}
-          <div className="mt-6 space-y-3">
+          {/* Activity list */}
+          <div className="mt-5 space-y-2">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors animate-[fadeIn_0.6s_ease-out]"
-                style={{ animationDelay: `${i * 0.3}s`, animationFillMode: 'both' }}
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors animate-[fadeIn_0.5s_ease-out]"
+                style={{ animationDelay: `${i * 0.2}s`, animationFillMode: 'both' }}
               >
-                <CheckCircle className="w-5 h-5 text-green-500" />
+                <CheckCircle className="w-4 h-4 text-primary" />
                 <div className="flex-1">
-                  <div className="text-sm font-medium text-gray-800">Client {i} responded</div>
-                  <div className="text-xs text-gray-500">{i * 2} hours ago</div>
+                  <div className="text-xs font-medium text-gray-800">Client {i} responded</div>
+                  <div className="text-xs text-gray-500">{i * 2}h ago</div>
                 </div>
-                <div className="text-xs font-semibold text-green-600 bg-green-100 px-2 py-1 rounded">Complete</div>
+                <div className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded">Done</div>
               </div>
             ))}
           </div>
@@ -691,10 +564,10 @@ export default function AnimatedStepFlow() {
 
       {/* Custom animations */}
       <style jsx>{`
-        @keyframes slideInRight {
+        @keyframes slideIn {
           from {
             opacity: 0;
-            transform: translateX(-30px);
+            transform: translateX(-20px);
           }
           to {
             opacity: 1;
@@ -705,32 +578,11 @@ export default function AnimatedStepFlow() {
         @keyframes fadeInScale {
           from {
             opacity: 0;
-            transform: scale(0.8);
+            transform: scale(0.9);
           }
           to {
             opacity: 1;
             transform: scale(1);
-          }
-        }
-
-        @keyframes flyToRight {
-          0%, 100% {
-            transform: translateX(-50px) translateY(-50%) rotate(0deg);
-            opacity: 0;
-          }
-          20% {
-            opacity: 1;
-          }
-          50% {
-            transform: translateX(50px) translateY(-70%) rotate(10deg);
-            opacity: 1;
-          }
-          80% {
-            opacity: 1;
-          }
-          100% {
-            transform: translateX(150px) translateY(-50%) rotate(0deg);
-            opacity: 0;
           }
         }
 
@@ -746,7 +598,7 @@ export default function AnimatedStepFlow() {
         @keyframes slideInDown {
           from {
             opacity: 0;
-            transform: translateY(-20px);
+            transform: translateY(-15px);
           }
           to {
             opacity: 1;
@@ -760,23 +612,6 @@ export default function AnimatedStepFlow() {
           }
           to {
             width: 100%;
-          }
-        }
-
-        @keyframes flowDown {
-          0% {
-            top: 0%;
-            opacity: 0;
-          }
-          20% {
-            opacity: 1;
-          }
-          80% {
-            opacity: 1;
-          }
-          100% {
-            top: 100%;
-            opacity: 0;
           }
         }
       `}</style>

@@ -25,18 +25,17 @@ import {
 } from "lucide-react";
 import { useEffect } from "react";
 import AnimatedStepFlow from './components/AnimatedStepFlow';
+import PhoneMockup from './components/PhoneMockup';
 
 const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400"] });
 
 export default function Home() {
   useEffect(() => {
-    let isMouseActive = false;
-    let lastMouseTime = Date.now();
     let animationFrame: number;
-    let currentX = 50;
-    let currentY = 50;
-    let targetX = 50;
-    let targetY = 50;
+    let currentX = 15;
+    let currentY = 75;
+    let targetX = 15;
+    let targetY = 75;
 
     const lerp = (start: number, end: number, factor: number): number => {
       return start + (end - start) * factor;
@@ -45,7 +44,6 @@ export default function Home() {
     const updateEffects = (x: number, y: number) => {
       const circles = document.querySelectorAll('.concentric-circle');
       const heroSection = document.querySelector('.hero-section');
-      const cursorText = document.querySelector('.cursor-reactive-text');
 
       if (!heroSection) return;
 
@@ -57,80 +55,36 @@ export default function Home() {
         // Larger, more diffuse glow for smoother look
         element.style.background = `radial-gradient(circle 800px at ${x}% ${y}%, rgba(21,163,73,${spotIntensity}) 0%, rgba(21,163,73,${intensity}) 20%, rgba(21,163,73,${intensity * 0.3}) 40%, transparent 70%)`;
       });
-
-      if (cursorText) {
-        const textElement = cursorText as HTMLElement;
-        // Larger spotlight with more gradual transition
-        textElement.style.backgroundImage = `
-          radial-gradient(circle 300px at ${x}% ${y}%,
-            rgba(255, 255, 255, 1) 0%,
-            rgba(255, 255, 255, 0.98) 20%,
-            rgba(255, 255, 255, 0.7) 35%,
-            rgba(21, 163, 73, 1) 55%,
-            rgba(21, 163, 73, 0.8) 100%
-          )
-        `;
-      }
     };
 
     const animate = () => {
       const now = Date.now();
+      const time = now * 0.0003; // Slower, more graceful animation
 
-      // If mouse hasn't moved for 1.5 seconds, start auto-animation
-      if (now - lastMouseTime > 1500 && !isMouseActive) {
-        const time = now * 0.0003; // Slower, more graceful animation
+      // Animation constrained to bottom-left 45-degree area
+      // X: 5-25% (left side), Y: 65-85% (bottom area)
+      const wave1 = Math.sin(time) * 8;
+      const wave2 = Math.cos(time * 1.3) * 8;
+      const wave3 = Math.sin(time * 0.7) * 4;
 
-        // More complex motion pattern using multiple wave functions
-        const wave1 = Math.sin(time) * 35;
-        const wave2 = Math.cos(time * 1.3) * 20;
-        const wave3 = Math.sin(time * 0.7) * 15;
+      targetX = 15 + wave1 + wave3; // Center at 15% from left
+      targetY = 75 + wave2; // Center at 75% from top (bottom area)
 
-        targetX = 50 + wave1 + wave3;
-        targetY = 50 + wave2 + Math.cos(time * 0.5) * 18;
+      // Smooth interpolation for fluid motion
+      const lerpFactor = 0.05; // Lower = smoother
+      currentX = lerp(currentX, targetX, lerpFactor);
+      currentY = lerp(currentY, targetY, lerpFactor);
 
-        // Smooth interpolation for fluid motion
-        const lerpFactor = 0.05; // Lower = smoother
-        currentX = lerp(currentX, targetX, lerpFactor);
-        currentY = lerp(currentY, targetY, lerpFactor);
-
-        updateEffects(currentX, currentY);
-      } else if (isMouseActive) {
-        // Smooth following when mouse is active
-        const lerpFactor = 0.15;
-        currentX = lerp(currentX, targetX, lerpFactor);
-        currentY = lerp(currentY, targetY, lerpFactor);
-        updateEffects(currentX, currentY);
-      }
+      updateEffects(currentX, currentY);
 
       animationFrame = requestAnimationFrame(animate);
-    };
-
-    const handleMouseMove = (e: MouseEvent) => {
-      isMouseActive = true;
-      lastMouseTime = Date.now();
-
-      const heroSection = document.querySelector('.hero-section');
-      if (!heroSection) return;
-
-      const rect = heroSection.getBoundingClientRect();
-      targetX = ((e.clientX - rect.left) / rect.width) * 100;
-      targetY = ((e.clientY - rect.top) / rect.height) * 100;
-
-      // Reset mouse active flag after a short delay
-      setTimeout(() => {
-        if (Date.now() - lastMouseTime >= 1400) {
-          isMouseActive = false;
-        }
-      }, 1500);
     };
 
     const heroSection = document.querySelector('.hero-section') as HTMLElement;
     if (heroSection) {
-      heroSection.addEventListener('mousemove', handleMouseMove as EventListener);
       animationFrame = requestAnimationFrame(animate);
 
       return () => {
-        heroSection.removeEventListener('mousemove', handleMouseMove as EventListener);
         cancelAnimationFrame(animationFrame);
       };
     }
@@ -161,7 +115,7 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="hero-section relative pt-40 pb-32 px-4 sm:px-6 lg:px-8 overflow-hidden bg-background">
+      <section className="hero-section relative pt-20 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden bg-background">
         {/* Background decorations */}
         <div className="absolute inset-0 z-0">
           {/* Concentric circles */}
@@ -202,7 +156,7 @@ export default function Home() {
             <h1 className={`text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8 leading-[1.1] ${playfair.className} bg-clip-text text-transparent bg-gradient-to-br from-foreground via-foreground to-foreground/70`}>
               Never Chase Clients
               <br />
-              <span className="cursor-reactive-text bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary to-primary/80 transition-colors duration-150">for Documents Again</span>
+              <span className="bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">for Documents Again</span>
             </h1>
 
             <p className="text-xl md:text-2xl text-foreground/70 mb-12 leading-relaxed max-w-3xl mx-auto font-medium">
@@ -210,84 +164,117 @@ export default function Home() {
               and organizes client documents while you focus on what matters.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Link href="/register">
-                <Button size="lg" className="w-full sm:w-auto h-12 px-8 text-base shadow-lg hover:shadow-xl hover:scale-105 transition-all">
-                  Start Free Trial
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
-              <Link href="/login">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto h-12 px-8 text-base hover:bg-primary/5 transition-colors">
-                  Sign In
-                </Button>
-              </Link>
-            </div>
+            {/* Phone with badges and buttons on the right */}
+            <div className="grid lg:grid-cols-[1fr,auto,1fr] items-start gap-8 lg:gap-12 max-w-6xl mx-auto">
+              {/* Left spacer - empty on mobile, balances layout on desktop */}
+              <div className="hidden lg:block"></div>
 
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              <Badge className="px-4 py-2.5" style={{ backgroundColor: '#15a349', color: 'white' }}>
-                <Zap className="w-3.5 h-3.5 mr-2" />
-                5 min setup
-              </Badge>
-              <Badge className="px-4 py-2.5" style={{ backgroundColor: '#15a349', color: 'white' }}>
-                <CreditCard className="w-3.5 h-3.5 mr-2" />
-                No credit card
-              </Badge>
-              <Badge className="px-4 py-2.5" style={{ backgroundColor: '#15a349', color: 'white' }}>
-                <Shield className="w-3.5 h-3.5 mr-2" />
-                Bank-level security
-              </Badge>
+              {/* Phone Mockup - Center */}
+              <div className="flex justify-center">
+                <PhoneMockup />
+              </div>
+
+              {/* Badges and Buttons - Right side */}
+              <div className="flex flex-col gap-8 justify-center lg:justify-start lg:pt-32">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Zap className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-foreground">5 minute setup</div>
+                      <div className="text-sm text-muted-foreground">Get started instantly</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <CreditCard className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-foreground">No credit card</div>
+                      <div className="text-sm text-muted-foreground">Free trial included</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Shield className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-foreground">Bank-level security</div>
+                      <div className="text-sm text-muted-foreground">Your data is safe</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-3">
+                  <Link href="/register" className="w-full">
+                    <Button size="lg" className="w-full h-12 px-8 text-base shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700">
+                      Start Free Trial
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
+                  </Link>
+                  <Link href="/login" className="w-full">
+                    <Button size="lg" variant="outline" className="w-full h-12 px-8 text-base hover:bg-primary/5 transition-colors border-2">
+                      Sign In
+                    </Button>
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Problem Section */}
-      <section className="relative py-24 overflow-hidden border-y" style={{ backgroundColor: '#d4fae2' }}>
+      <section className="relative py-32 overflow-hidden bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: '#212b38' }}>
-              Accountants waste <span className="text-primary">80+ hours monthly</span> chasing documents
+          <div className="text-center mb-20">
+            <h2 className={`text-5xl md:text-6xl font-bold mb-6 leading-tight ${playfair.className}`} style={{ color: '#212b38' }}>
+              You're Wasting <span style={{ color: '#15a349' }}>80+ Hours</span>
+              <br />
+              Every Single Month
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              The endless back-and-forth is killing your productivity
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              Chasing documents is the biggest drain on your firm's productivity
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="relative p-8 rounded-xl border-none shadow-xl hover:shadow-2xl transition-all overflow-hidden bg-gradient-to-br from-green-600 to-emerald-600">
-              <div className="mb-5">
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-white/20">
-                  <MessageSquare className="w-7 h-7 text-white" />
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="relative p-8 rounded-xl border-2 border-gray-200 hover:border-primary/30 hover:shadow-lg transition-all bg-white group">
+              <div className="mb-6">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-red-50 group-hover:bg-red-100 transition-all">
+                  <MessageSquare className="w-6 h-6 text-red-600" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold mb-3 text-white">Endless Follow-ups</h3>
-              <p className="text-base text-green-50 leading-relaxed">
-                Sending the same messages over and over to get basic documents
+              <h3 className="text-xl font-bold mb-3 text-foreground">Endless Follow-ups</h3>
+              <p className="text-base text-muted-foreground leading-relaxed">
+                The same WhatsApp messages. The same emails. Over and over just to get a single bank statement.
               </p>
             </div>
 
-            <div className="relative p-8 rounded-xl border-none shadow-xl hover:shadow-2xl transition-all overflow-hidden bg-gradient-to-br from-green-600 to-emerald-600">
-              <div className="mb-5">
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-white/20">
-                  <Clock className="w-7 h-7 text-white" />
+            <div className="relative p-8 rounded-xl border-2 border-gray-200 hover:border-primary/30 hover:shadow-lg transition-all bg-white group">
+              <div className="mb-6">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-orange-50 group-hover:bg-orange-100 transition-all">
+                  <Clock className="w-6 h-6 text-orange-600" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold mb-3 text-white">Missed Deadlines</h3>
-              <p className="text-base text-green-50 leading-relaxed">
-                VAT returns and tax filings delayed because clients forgot
+              <h3 className="text-xl font-bold mb-3 text-foreground">Missed Deadlines</h3>
+              <p className="text-base text-muted-foreground leading-relaxed">
+                VAT returns pushed back. Tax filing deadlines missed. All because a client "forgot" to respond.
               </p>
             </div>
 
-            <div className="relative p-8 rounded-xl border-none shadow-xl hover:shadow-2xl transition-all overflow-hidden bg-gradient-to-br from-green-600 to-emerald-600">
-              <div className="mb-5">
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-white/20">
-                  <Mail className="w-7 h-7 text-white" />
+            <div className="relative p-8 rounded-xl border-2 border-gray-200 hover:border-primary/30 hover:shadow-lg transition-all bg-white group">
+              <div className="mb-6">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-yellow-50 group-hover:bg-yellow-100 transition-all">
+                  <Mail className="w-6 h-6 text-yellow-700" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold mb-3 text-white">Lost in Email</h3>
-              <p className="text-base text-green-50 leading-relaxed">
-                Documents scattered everywhere making tracking impossible
+              <h3 className="text-xl font-bold mb-3 text-foreground">Lost in Email</h3>
+              <p className="text-base text-muted-foreground leading-relaxed">
+                Documents buried in inbox threads. Files scattered across WhatsApp, email, and shared drives.
               </p>
             </div>
           </div>
@@ -295,17 +282,13 @@ export default function Home() {
       </section>
 
       {/* How It Works - Animated Step Flow */}
-      <section className="relative py-24 overflow-hidden bg-white">
-        <div className="text-center mb-16">
-          <Badge className="mb-6 px-4 py-2.5 shadow-sm hover:shadow-md transition-shadow" style={{ backgroundColor: '#15a349', color: 'white' }}>
-            <Sparkles className="w-3.5 h-3.5 mr-2" />
-            How It Works
-          </Badge>
-          <h2 className="text-4xl md:text-5xl font-bold mb-6" style={{ color: '#212b38' }}>
-            See Amy in Action
+      <section className="relative py-32 overflow-hidden" style={{ backgroundColor: '#d4fae2' }}>
+        <div className="text-center mb-20">
+          <h2 className={`text-5xl md:text-6xl font-bold mb-6 ${playfair.className}`} style={{ color: '#212b38' }}>
+            How It Actually Works
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Watch how documents flow seamlessly from request to delivery
+          <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+            From client upload to organized Drive folders in six automated steps
           </p>
         </div>
 
@@ -313,119 +296,116 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="relative py-24 overflow-hidden" style={{ backgroundColor: '#d4fae2' }}>
+      <section className="relative py-32 overflow-hidden bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <Badge className="mb-6 px-4 py-2.5 shadow-sm hover:shadow-md transition-shadow" style={{ backgroundColor: '#15a349', color: 'white' }}>
-              Features
-            </Badge>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6" style={{ color: '#212b38' }}>
-              Everything You Need
+            <h2 className={`text-5xl md:text-6xl font-bold mb-6 ${playfair.className}`} style={{ color: '#212b38' }}>
+              Built for Modern Accountants
             </h2>
-            <p className="text-xl text-gray-600">
-              Automate document collection end-to-end
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Every feature designed to eliminate the grunt work and give you time back
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border-none shadow-xl group overflow-hidden bg-gradient-to-br from-green-600 to-emerald-600">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Card className="hover:shadow-xl hover:border-primary/20 transition-all duration-300 border-2 group overflow-hidden bg-white">
               <CardHeader className="pb-4">
-                <div className="w-14 h-14 rounded-xl bg-white/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-all">
-                  <Bot className="w-7 h-7 text-white" />
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-all">
+                  <Bot className="w-6 h-6 text-primary" />
                 </div>
-                <div className="flex items-center gap-2 mb-2">
-                  <CardTitle className="text-xl text-white">AI-Powered</CardTitle>
-                  <Badge className="text-xs bg-white/20 text-white border-none">Claude</Badge>
+                <div className="mb-3">
+                  <CardTitle className="text-lg font-bold text-foreground mb-1">Powered by Claude AI</CardTitle>
+                  <p className="text-sm text-muted-foreground">Natural conversations that actually work</p>
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-green-50 leading-relaxed">
-                  Claude AI understands context and keeps conversations natural
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Anthropic's Claude handles complex requests, understands context, and responds like a real assistant—not a bot.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border-none shadow-xl group overflow-hidden bg-gradient-to-br from-green-600 to-emerald-600">
+            <Card className="hover:shadow-xl hover:border-primary/20 transition-all duration-300 border-2 group overflow-hidden bg-white">
               <CardHeader className="pb-4">
-                <div className="w-14 h-14 rounded-xl bg-white/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-all">
-                  <Smartphone className="w-7 h-7 text-white" />
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-all">
+                  <Smartphone className="w-6 h-6 text-primary" />
                 </div>
-                <div className="flex items-center gap-2 mb-2">
-                  <CardTitle className="text-xl text-white">WhatsApp Native</CardTitle>
-                  <Badge className="text-xs bg-white/20 text-white border-none">Twilio</Badge>
+                <div className="mb-3">
+                  <CardTitle className="text-lg font-bold text-foreground mb-1">Native WhatsApp Integration</CardTitle>
+                  <p className="text-sm text-muted-foreground">No app downloads required</p>
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-green-50 leading-relaxed">
-                  Clients already use it. No new apps to download or learn
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Your clients already use WhatsApp daily. DocChase meets them where they are via Twilio's enterprise infrastructure.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border-none shadow-xl group overflow-hidden bg-gradient-to-br from-green-600 to-emerald-600">
+            <Card className="hover:shadow-xl hover:border-primary/20 transition-all duration-300 border-2 group overflow-hidden bg-white">
               <CardHeader className="pb-4">
-                <div className="w-14 h-14 rounded-xl bg-white/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-all">
-                  <Bell className="w-7 h-7 text-white" />
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-all">
+                  <Bell className="w-6 h-6 text-primary" />
                 </div>
-                <div className="flex items-center gap-2 mb-2">
-                  <CardTitle className="text-xl text-white">Smart Reminders</CardTitle>
-                  <Badge className="text-xs bg-white/20 text-white border-none">Auto</Badge>
+                <div className="mb-3">
+                  <CardTitle className="text-lg font-bold text-foreground mb-1">Intelligent Reminders</CardTitle>
+                  <p className="text-sm text-muted-foreground">Set it and forget it</p>
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-green-50 leading-relaxed">
-                  Configurable follow-ups with gentle, professional messaging
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Custom reminder schedules with escalation paths. Amy knows when to nudge gently and when to escalate to you.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border-none shadow-xl group overflow-hidden bg-gradient-to-br from-green-600 to-emerald-600">
+            <Card className="hover:shadow-xl hover:border-primary/20 transition-all duration-300 border-2 group overflow-hidden bg-white">
               <CardHeader className="pb-4">
-                <div className="w-14 h-14 rounded-xl bg-white/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-all">
-                  <Cloud className="w-7 h-7 text-white" />
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-all">
+                  <Cloud className="w-6 h-6 text-primary" />
                 </div>
-                <div className="flex items-center gap-2 mb-2">
-                  <CardTitle className="text-xl text-white">Google Drive Sync</CardTitle>
-                  <Badge className="text-xs bg-white/20 text-white border-none">Live</Badge>
+                <div className="mb-3">
+                  <CardTitle className="text-lg font-bold text-foreground mb-1">Automatic Cloud Sync</CardTitle>
+                  <p className="text-sm text-muted-foreground">Zero manual uploads</p>
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-green-50 leading-relaxed">
-                  Every document automatically uploaded and organized
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Every received document lands directly in your Google Drive, organized by client and date automatically.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border-none shadow-xl group overflow-hidden bg-gradient-to-br from-green-600 to-emerald-600">
+            <Card className="hover:shadow-xl hover:border-primary/20 transition-all duration-300 border-2 group overflow-hidden bg-white">
               <CardHeader className="pb-4">
-                <div className="w-14 h-14 rounded-xl bg-white/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-all">
-                  <FileSpreadsheet className="w-7 h-7 text-white" />
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-all">
+                  <FileSpreadsheet className="w-6 h-6 text-primary" />
                 </div>
-                <div className="flex items-center gap-2 mb-2">
-                  <CardTitle className="text-xl text-white">PDF to CSV</CardTitle>
-                  <Badge className="text-xs bg-white/20 text-white border-none">BankToFile</Badge>
+                <div className="mb-3">
+                  <CardTitle className="text-lg font-bold text-foreground mb-1">Smart Format Conversion</CardTitle>
+                  <p className="text-sm text-muted-foreground">Ready for your workflow</p>
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-green-50 leading-relaxed">
-                  Bank statements converted for easy accounting software import
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Bank statements automatically converted to CSV via BankToFile. Import straight into Xero, QuickBooks, or Sage.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border-none shadow-xl group overflow-hidden bg-gradient-to-br from-green-600 to-emerald-600">
+            <Card className="hover:shadow-xl hover:border-primary/20 transition-all duration-300 border-2 group overflow-hidden bg-white">
               <CardHeader className="pb-4">
-                <div className="w-14 h-14 rounded-xl bg-white/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-all">
-                  <BarChart3 className="w-7 h-7 text-white" />
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-all">
+                  <BarChart3 className="w-6 h-6 text-primary" />
                 </div>
-                <div className="flex items-center gap-2 mb-2">
-                  <CardTitle className="text-xl text-white">Live Dashboard</CardTitle>
-                  <Badge className="text-xs bg-white/20 text-white border-none">Real-time</Badge>
+                <div className="mb-3">
+                  <CardTitle className="text-lg font-bold text-foreground mb-1">Real-Time Dashboard</CardTitle>
+                  <p className="text-sm text-muted-foreground">Full visibility, always</p>
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-green-50 leading-relaxed">
-                  See exactly who responded and who needs attention
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Track every request, response, and reminder. Know exactly which clients need a nudge at a glance.
                 </p>
               </CardContent>
             </Card>
@@ -434,81 +414,86 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="relative py-32 overflow-hidden bg-white">
+      <section className="relative py-32 overflow-hidden" style={{ backgroundColor: '#d4fae2' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: '#212b38' }}>
-              Proven Results
+          <div className="text-center mb-20">
+            <h2 className={`text-5xl md:text-6xl font-bold mb-6 ${playfair.className}`} style={{ color: '#212b38' }}>
+              The Numbers Don't Lie
             </h2>
-            <p className="text-xl text-gray-600">Real impact for accounting firms</p>
+            <p className="text-xl text-gray-700 max-w-2xl mx-auto">
+              Real firms seeing measurable impact within the first month
+            </p>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <Card className="text-center border-none shadow-xl hover:shadow-2xl transition-all overflow-hidden">
-              <CardContent className="pt-8 pb-8">
-                <div className="text-5xl font-bold text-primary mb-2">90%</div>
-                <div className="text-sm font-medium text-muted-foreground">Less Time Chasing</div>
-              </CardContent>
-            </Card>
+            <div className="text-center">
+              <div className={`text-7xl font-bold mb-4 ${playfair.className}`} style={{ color: '#15a349' }}>90%</div>
+              <div className="text-lg font-semibold text-foreground mb-2">Less Time Chasing</div>
+              <div className="text-sm text-muted-foreground">Average 80+ hours saved monthly</div>
+            </div>
 
-            <Card className="text-center border-none shadow-xl hover:shadow-2xl transition-all overflow-hidden">
-              <CardContent className="pt-8 pb-8">
-                <div className="text-5xl font-bold text-primary mb-2">3x</div>
-                <div className="text-sm font-medium text-muted-foreground">Faster Collection</div>
-              </CardContent>
-            </Card>
+            <div className="text-center">
+              <div className={`text-7xl font-bold mb-4 ${playfair.className}`} style={{ color: '#15a349' }}>3×</div>
+              <div className="text-lg font-semibold text-foreground mb-2">Faster Collection</div>
+              <div className="text-sm text-muted-foreground">Documents arrive days, not weeks</div>
+            </div>
 
-            <Card className="text-center border-none shadow-xl hover:shadow-2xl transition-all overflow-hidden">
-              <CardContent className="pt-8 pb-8">
-                <div className="text-5xl font-bold text-primary mb-2">100%</div>
-                <div className="text-sm font-medium text-muted-foreground">Tracked & Organized</div>
-              </CardContent>
-            </Card>
+            <div className="text-center">
+              <div className={`text-7xl font-bold mb-4 ${playfair.className}`} style={{ color: '#15a349' }}>100%</div>
+              <div className="text-lg font-semibold text-foreground mb-2">Tracked & Organized</div>
+              <div className="text-sm text-muted-foreground">Never lose a document again</div>
+            </div>
 
-            <Card className="text-center border-none shadow-xl hover:shadow-2xl transition-all overflow-hidden">
-              <CardContent className="pt-8 pb-8">
-                <div className="text-5xl font-bold text-primary mb-2">24/7</div>
-                <div className="text-sm font-medium text-muted-foreground">Always Working</div>
-              </CardContent>
-            </Card>
+            <div className="text-center">
+              <div className={`text-7xl font-bold mb-4 ${playfair.className}`} style={{ color: '#15a349' }}>24/7</div>
+              <div className="text-lg font-semibold text-foreground mb-2">Always Working</div>
+              <div className="text-sm text-muted-foreground">Amy never sleeps or takes holidays</div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="relative py-32 overflow-hidden" style={{ backgroundColor: '#d4fae2' }}>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-xl bg-gradient-to-br from-green-600 to-emerald-600 border-none shadow-2xl overflow-hidden">
-            <div className="p-8 sm:p-12 text-center">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 sm:mb-6">
-                Ready to Reclaim Your Time?
-              </h2>
-              <p className="text-lg sm:text-xl text-green-50 mb-8 max-w-2xl mx-auto">
-                Join accountants who've automated their document collection
-              </p>
+      <section className="relative py-32 overflow-hidden bg-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className={`text-5xl sm:text-6xl md:text-7xl font-bold mb-6 ${playfair.className}`} style={{ color: '#212b38' }}>
+              Stop Chasing.
+              <br />
+              <span className="bg-gradient-to-r from-primary to-emerald-600 bg-clip-text text-transparent">
+                Start Collecting.
+              </span>
+            </h2>
+            <p className="text-xl sm:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
+              Join accounting firms already saving 80+ hours per month on document collection
+            </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
-                <Link href="/register">
-                  <Button size="lg" className="h-11 w-full max-w-md sm:w-auto bg-white hover:bg-gray-100 text-green-600 font-bold text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 shadow-xl rounded-xl">
-                    <ArrowRight className="w-5 h-5 mr-2" />
-                    Start Your Free Trial
-                  </Button>
-                </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+              <Link href="/register">
+                <Button size="lg" className="h-14 px-10 text-lg font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-2xl hover:shadow-3xl transition-all">
+                  Start Free Trial
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </Link>
+              <Link href="/login">
+                <Button size="lg" variant="outline" className="h-14 px-10 text-lg font-semibold border-2 hover:bg-gray-50">
+                  Sign In
+                </Button>
+              </Link>
+            </div>
+
+            <div className="flex flex-wrap justify-center items-center gap-6 text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-primary" />
+                <span className="text-base">5 minute setup</span>
               </div>
-
-              <div className="flex flex-wrap justify-center items-center gap-4 text-green-50">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span className="text-sm">5 min setup</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span className="text-sm">No credit card required</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span className="text-sm">Cancel anytime</span>
-                </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-primary" />
+                <span className="text-base">No credit card required</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-primary" />
+                <span className="text-base">Cancel anytime</span>
               </div>
             </div>
           </div>
