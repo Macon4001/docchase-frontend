@@ -179,7 +179,7 @@ export default function PricingPage() {
                 </div>
               </div>
               <div className="mt-4">
-                <span className="text-5xl font-bold bg-gradient-to-br from-primary via-primary to-primary/80 bg-clip-text text-transparent">£49</span>
+                <span className="text-5xl font-bold bg-gradient-to-br from-primary via-primary to-primary/80 bg-clip-text text-transparent">£29</span>
                 <span className="text-gray-600 text-lg">/month</span>
               </div>
               <p className="text-gray-600 mt-2">For growing practices</p>
@@ -254,7 +254,7 @@ export default function PricingPage() {
                 </div>
               </div>
               <div className="mt-4">
-                <span className="text-5xl font-bold text-white">£99</span>
+                <span className="text-5xl font-bold text-white">£59</span>
                 <span className="text-gray-300 text-lg">/month</span>
               </div>
               <p className="text-gray-300 mt-2">For established firms</p>
