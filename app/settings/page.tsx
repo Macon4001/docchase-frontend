@@ -4,6 +4,15 @@ import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthClient } from '@/lib/auth-client';
 
+// Helper to ensure URL has protocol
+const ensureAbsoluteUrl = (url: string | undefined): string => {
+  if (!url) return 'http://localhost:3001';
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  return `https://${url}`;
+};
+
+const API_URL = ensureAbsoluteUrl(process.env.NEXT_PUBLIC_API_URL);
+
 interface Settings {
   email: string;
   practiceName: string;
@@ -152,7 +161,7 @@ function SettingsContent() {
         return;
       }
 
-      const response = await fetch('http://localhost:3001/api/settings/google-auth', {
+      const response = await fetch(`${API_URL}/api/settings/google-auth`, {
         headers: {
           'Authorization': `Bearer ${session.token}`
         }
@@ -184,7 +193,7 @@ function SettingsContent() {
         return;
       }
 
-      const response = await fetch('http://localhost:3001/api/settings/google', {
+      const response = await fetch(`${API_URL}/api/settings/google`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${session.token}`

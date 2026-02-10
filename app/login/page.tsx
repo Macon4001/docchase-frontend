@@ -10,6 +10,15 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Radius, ArrowLeft, AlertCircle } from 'lucide-react';
 import { AuthClient } from '@/lib/auth-client';
 
+// Helper to ensure URL has protocol
+const ensureAbsoluteUrl = (url: string | undefined): string => {
+  if (!url) return 'http://localhost:3001';
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  return `https://${url}`;
+};
+
+const API_URL = ensureAbsoluteUrl(process.env.NEXT_PUBLIC_API_URL);
+
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -48,7 +57,7 @@ function LoginForm() {
 
   const handleGoogleSignIn = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/auth/google');
+      const response = await fetch(`${API_URL}/api/auth/google`);
       const data = await response.json();
 
       if (data.authUrl) {
