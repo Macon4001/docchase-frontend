@@ -185,6 +185,12 @@ export default function DashboardPage() {
                   <span className="hidden sm:inline">Campaigns</span>
                 </Button>
               </Link>
+              <Link href="/pricing">
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <TrendingUp className="w-4 h-4" />
+                  <span className="hidden sm:inline">Upgrade</span>
+                </Button>
+              </Link>
               <Link href="/settings">
                 <Button variant="ghost" size="sm">
                   <Settings className="w-4 h-4" />

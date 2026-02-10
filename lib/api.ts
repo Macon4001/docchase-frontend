@@ -50,6 +50,31 @@ class ApiClient {
     return response.json();
   }
 
+  // Generic methods for custom endpoints
+  async get(endpoint: string) {
+    return this.request(endpoint);
+  }
+
+  async post(endpoint: string, data?: any) {
+    return this.request(endpoint, {
+      method: 'POST',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  }
+
+  async put(endpoint: string, data?: any) {
+    return this.request(endpoint, {
+      method: 'PUT',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  }
+
+  async delete(endpoint: string) {
+    return this.request(endpoint, {
+      method: 'DELETE',
+    });
+  }
+
   // Dashboard
   async getDashboard() {
     return this.request('/api/dashboard');

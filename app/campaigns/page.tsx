@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Users, Folder, Settings, LogOut, Plus, Edit, Play } from 'lucide-react';
+import { FileText, Users, Folder, Settings, LogOut, Plus, Edit, Play, TrendingUp } from 'lucide-react';
 import { apiClient } from '@/lib/api';
 import { AuthClient } from '@/lib/auth-client';
 
@@ -118,6 +118,12 @@ export default function CampaignsPage() {
                 <Button variant="ghost" size="sm" className="gap-2">
                   <Folder className="w-4 h-4" />
                   <span className="hidden sm:inline">Campaigns</span>
+                </Button>
+              </Link>
+              <Link href="/pricing">
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <TrendingUp className="w-4 h-4" />
+                  <span className="hidden sm:inline">Upgrade</span>
                 </Button>
               </Link>
               <Link href="/settings">

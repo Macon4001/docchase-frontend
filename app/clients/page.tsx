@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { FileText, Users, Folder, Settings, LogOut, Plus } from 'lucide-react';
+import { FileText, Users, Folder, Settings, LogOut, Plus, TrendingUp } from 'lucide-react';
 import { apiClient } from '@/lib/api';
 import { AuthClient } from '@/lib/auth-client';
 
@@ -127,6 +127,12 @@ export default function ClientsPage() {
                 <Button variant="ghost" size="sm" className="gap-2">
                   <Folder className="w-4 h-4" />
                   <span className="hidden sm:inline">Campaigns</span>
+                </Button>
+              </Link>
+              <Link href="/pricing">
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <TrendingUp className="w-4 h-4" />
+                  <span className="hidden sm:inline">Upgrade</span>
                 </Button>
               </Link>
               <Link href="/settings">
