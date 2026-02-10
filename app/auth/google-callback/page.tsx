@@ -13,6 +13,7 @@ function GoogleCallbackContent() {
     const id = searchParams.get('id');
     const email = searchParams.get('email');
     const practice_name = searchParams.get('practice_name');
+    const redirect = searchParams.get('redirect');
 
     if (token && id && email && practice_name) {
       // Save session
@@ -25,8 +26,12 @@ function GoogleCallbackContent() {
         token
       );
 
-      // Redirect to dashboard
-      router.push('/dashboard');
+      // Redirect to specified page or dashboard
+      if (redirect) {
+        router.push(redirect);
+      } else {
+        router.push('/dashboard');
+      }
     } else {
       // Redirect to login with error
       router.push('/login?error=google_auth_failed');

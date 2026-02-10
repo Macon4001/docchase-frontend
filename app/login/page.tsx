@@ -67,7 +67,13 @@ function LoginForm() {
 
   const handleGoogleSignIn = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/auth/google`);
+      // Get redirect parameter to pass through OAuth flow
+      const redirect = searchParams.get('redirect');
+      const url = redirect
+        ? `${API_URL}/api/auth/google?redirect=${encodeURIComponent(redirect)}`
+        : `${API_URL}/api/auth/google`;
+
+      const response = await fetch(url);
       const data = await response.json();
 
       if (data.authUrl) {
