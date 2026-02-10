@@ -18,6 +18,7 @@ interface Settings {
   practiceName: string;
   amyName: string;
   amyTone: string;
+  contactDetails: string;
   googleDriveConnected: boolean;
   googleDriveConnectedAt: string | null;
   notificationEmail: boolean;
@@ -36,6 +37,7 @@ function SettingsContent() {
   const [practiceName, setPracticeName] = useState('');
   const [amyName, setAmyName] = useState('');
   const [amyTone, setAmyTone] = useState('friendly');
+  const [contactDetails, setContactDetails] = useState('');
   const [notificationEmail, setNotificationEmail] = useState(true);
   const [notificationStuck, setNotificationStuck] = useState(true);
 
@@ -99,6 +101,7 @@ function SettingsContent() {
       setPracticeName(data.settings.practiceName);
       setAmyName(data.settings.amyName);
       setAmyTone(data.settings.amyTone);
+      setContactDetails(data.settings.contactDetails || '');
       setNotificationEmail(data.settings.notificationEmail);
       setNotificationStuck(data.settings.notificationStuck);
     } catch (error) {
@@ -131,6 +134,7 @@ function SettingsContent() {
           practiceName,
           amyName,
           amyTone,
+          contactDetails,
           notificationEmail,
           notificationStuck
         })
@@ -300,6 +304,22 @@ function SettingsContent() {
                   <option value="professional">Professional</option>
                   <option value="casual">Casual</option>
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Contact Details
+                </label>
+                <textarea
+                  value={contactDetails}
+                  onChange={(e) => setContactDetails(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                  placeholder="e.g., Phone: 020 1234 5678 or Email: hello@yourpractice.com"
+                  rows={3}
+                />
+                <p className="mt-1 text-sm text-gray-500">
+                  Amy will use this when clients need to contact you directly
+                </p>
               </div>
             </div>
           </div>
