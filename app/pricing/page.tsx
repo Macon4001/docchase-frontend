@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,8 +13,9 @@ import { Playfair_Display } from 'next/font/google';
 
 const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400"] });
 
-export default function PricingPage() {
+function PricingContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -25,12 +26,20 @@ export default function PricingPage() {
     if (session) {
       setIsAuthenticated(true);
       apiClient.setToken(session.token);
+
+      // Check if there's a plan parameter to auto-trigger checkout
+      const plan = searchParams.get('plan');
+      if (plan && (plan === 'starter' || plan === 'pro')) {
+        // Auto-trigger checkout for the selected plan
+        handleSubscribe(plan);
+      }
     }
-  }, []);
+  }, [searchParams]);
 
   const handleSubscribe = async (plan: 'starter' | 'pro') => {
     if (!isAuthenticated) {
-      router.push('/login?redirect=/pricing');
+      // Redirect to login with plan in the URL
+      router.push(`/login?redirect=${encodeURIComponent(`/pricing?plan=${plan}`)}`);
       return;
     }
 
@@ -340,5 +349,20 @@ export default function PricingPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PricingPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading pricing...</p>
+        </div>
+      </div>
+    }>
+      <PricingContent />
+    </Suspense>
   );
 }
