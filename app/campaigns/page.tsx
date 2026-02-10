@@ -17,6 +17,10 @@ interface Campaign {
   period: string;
   status: string;
   created_at: string;
+  total_clients?: number;
+  pending?: number;
+  received?: number;
+  stuck?: number;
 }
 
 export default function CampaignsPage() {
@@ -173,6 +177,38 @@ export default function CampaignsPage() {
                       {new Date(campaign.created_at).toLocaleDateString()}
                     </span>
                   </div>
+
+                  {/* Campaign Statistics */}
+                  {campaign.status === 'active' && campaign.total_clients && campaign.total_clients > 0 ? (
+                    <div className="mb-4 pb-4 border-b">
+                      <div className="grid grid-cols-3 gap-2 text-center">
+                        <div className="bg-emerald-50 rounded-lg p-2">
+                          <div className="text-lg font-bold text-emerald-700">{campaign.received || 0}</div>
+                          <div className="text-xs text-emerald-600">Received</div>
+                        </div>
+                        <div className="bg-blue-50 rounded-lg p-2">
+                          <div className="text-lg font-bold text-blue-700">{campaign.pending || 0}</div>
+                          <div className="text-xs text-blue-600">Pending</div>
+                        </div>
+                        <div className="bg-orange-50 rounded-lg p-2">
+                          <div className="text-lg font-bold text-orange-700">{campaign.stuck || 0}</div>
+                          <div className="text-xs text-orange-600">Stuck</div>
+                        </div>
+                      </div>
+                      <div className="mt-2 text-xs text-center text-gray-600">
+                        {campaign.received}/{campaign.total_clients} completed ({Math.round(((campaign.received || 0) / (campaign.total_clients || 1)) * 100)}%)
+                      </div>
+                    </div>
+                  ) : campaign.status === 'draft' ? (
+                    <div className="mb-4 pb-4 border-b">
+                      <div className="text-center py-3 bg-gray-50 rounded-lg">
+                        <div className="text-sm text-gray-600">
+                          {campaign.total_clients || 0} client{(campaign.total_clients || 0) !== 1 ? 's' : ''} ready
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+
                   <div className="flex gap-2">
                     {campaign.status === 'draft' ? (
                       <>

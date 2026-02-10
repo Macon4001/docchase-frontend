@@ -223,9 +223,11 @@ export default function CampaignDetailPage() {
         )}
 
         {successMessage && (
-          <Alert className="mb-6 border-green-600 text-green-600">
-            <CheckCircle2 className="h-4 w-4" />
-            <AlertDescription>{successMessage}</AlertDescription>
+          <Alert className="mb-6 bg-emerald-50 border-emerald-200 border-2">
+            <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+            <AlertDescription className="text-emerald-900 font-medium">
+              {successMessage}
+            </AlertDescription>
           </Alert>
         )}
 
