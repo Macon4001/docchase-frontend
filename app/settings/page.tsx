@@ -73,7 +73,7 @@ function SettingsContent() {
         return;
       }
 
-      const response = await fetch('http://localhost:3001/api/settings', {
+      const response = await fetch(`${API_URL}/api/settings`, {
         headers: {
           'Authorization': `Bearer ${session.token}`
         }
@@ -121,7 +121,7 @@ function SettingsContent() {
         return;
       }
 
-      const response = await fetch('http://localhost:3001/api/settings', {
+      const response = await fetch(`${API_URL}/api/settings`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${session.token}`,
