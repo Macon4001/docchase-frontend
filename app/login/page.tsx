@@ -88,7 +88,7 @@ function LoginForm() {
             <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:bg-white/30 transition-colors">
               <Radius className="w-7 h-7" />
             </div>
-            <span className={`text-2xl font-bold ${playfair.className}`}>DocChase</span>
+            <span className={`text-2xl font-bold ${playfair.className}`}>Gettingdocs</span>
           </Link>
 
           <div className="space-y-6 max-w-lg">
@@ -101,7 +101,7 @@ function LoginForm() {
           </div>
 
           <div className="text-sm text-white/60">
-            © {new Date().getFullYear()} DocChase. All rights reserved.
+            © {new Date().getFullYear()} Gettingdocs. All rights reserved.
           </div>
         </div>
       </div>

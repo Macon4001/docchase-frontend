@@ -48,7 +48,7 @@ export default function RegisterPage() {
             <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
               <Radius className="w-6 h-6" />
             </div>
-            <span className="text-2xl font-semibold">DocChase</span>
+            <span className="text-2xl font-semibold">Gettingdocs</span>
           </Link>
 
           <div className="space-y-8">
@@ -72,7 +72,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="text-sm opacity-75">
-            © {new Date().getFullYear()} DocChase. All rights reserved.
+            © {new Date().getFullYear()} Gettingdocs. All rights reserved.
           </div>
         </div>
       </div>

@@ -139,7 +139,7 @@ export default function CampaignDetailPage() {
                 <FileText className="w-6 h-6 text-white" />
               </div>
               <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                DocChase
+                Gettingdocs
               </h1>
             </Link>
           </div>
@@ -171,7 +171,7 @@ export default function CampaignDetailPage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                  DocChase
+                  Gettingdocs
                 </h1>
                 <p className="text-xs text-gray-500">{session?.user.practice_name || 'Dashboard'}</p>
               </div>

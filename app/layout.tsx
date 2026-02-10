@@ -4,7 +4,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "DocChase - AI Document Collection Assistant",
+  title: "Gettingdocs - AI Document Collection Assistant",
   description: "Automated WhatsApp document collection for accountants",
 };
 

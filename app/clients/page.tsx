@@ -107,7 +107,7 @@ export default function ClientsPage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                  DocChase
+                  Gettingdocs
                 </h1>
                 <p className="text-xs text-gray-500">{session?.user.practice_name || 'Dashboard'}</p>
               </div>
@@ -156,7 +156,7 @@ export default function ClientsPage() {
               <DialogHeader>
                 <DialogTitle>Add New Client</DialogTitle>
                 <DialogDescription>
-                  Add a new client to your DocChase account
+                  Add a new client to your Gettingdocs account
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleAddClient} className="space-y-4">
@@ -235,7 +235,7 @@ export default function ClientsPage() {
                     <DialogHeader>
                       <DialogTitle>Add New Client</DialogTitle>
                       <DialogDescription>
-                        Add a new client to your DocChase account
+                        Add a new client to your Gettingdocs account
                       </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleAddClient} className="space-y-4">

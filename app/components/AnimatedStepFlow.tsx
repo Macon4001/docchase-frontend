@@ -315,7 +315,7 @@ function AmySavesAnimation() {
             <FolderOpen className="w-5 h-5 text-white" />
             <div>
               <div className="text-white font-semibold text-sm">Google Drive</div>
-              <div className="text-white/80 text-xs">DocChase / 2024 / January</div>
+              <div className="text-white/80 text-xs">Gettingdocs / 2024 / January</div>
             </div>
           </div>
 
@@ -458,7 +458,7 @@ function YouNotifiedAnimation() {
       <div className="bg-white rounded-xl shadow-md w-full max-w-md overflow-hidden border border-gray-100">
         {/* Dashboard header */}
         <div className="bg-gradient-to-r from-primary to-emerald-600 p-4">
-          <div className="text-white font-semibold text-base">DocChase Dashboard</div>
+          <div className="text-white font-semibold text-base">Gettingdocs Dashboard</div>
         </div>
 
         {/* Notification */}

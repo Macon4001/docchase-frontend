@@ -100,7 +100,7 @@ export default function Home() {
               <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
                 <Radius className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-semibold">DocChase</span>
+              <span className="text-xl font-semibold">Gettingdocs</span>
             </div>
             <div className="flex items-center gap-4">
               <Link href="/login">
@@ -337,7 +337,7 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Your clients already use WhatsApp daily. DocChase meets them where they are via Twilio's enterprise infrastructure.
+                  Your clients already use WhatsApp daily. Gettingdocs meets them where they are via Twilio's enterprise infrastructure.
                 </p>
               </CardContent>
             </Card>
@@ -505,7 +505,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-2">
             <p className="text-sm" style={{ color: '#4c5663' }}>
-              © {new Date().getFullYear()} DocChase. All rights reserved.
+              © {new Date().getFullYear()} Gettingdocs. All rights reserved.
             </p>
             <p className="text-sm" style={{ color: '#4c5663' }}>
               <span className={playfair.className}>Created by</span> Blue Haven Digital
