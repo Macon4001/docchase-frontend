@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthClient } from '@/lib/auth-client';
 
@@ -15,7 +15,7 @@ interface Settings {
   notificationStuck: boolean;
 }
 
-export default function SettingsPage() {
+function SettingsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [settings, setSettings] = useState<Settings | null>(null);
@@ -478,5 +478,17 @@ export default function SettingsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-600">Loading settings...</div>
+      </div>
+    }>
+      <SettingsContent />
+    </Suspense>
   );
 }
