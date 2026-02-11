@@ -25,10 +25,20 @@ function DriveIcon({ className }: { className?: string }) {
 
 export function NotificationBell() {
   const router = useRouter();
-  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+  const { notifications, unreadCount, markAsRead, markAllAsRead, onNewNotification } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [, forceUpdate] = useState({});
+
+  // Subscribe to notification updates to ensure bell icon updates
+  useEffect(() => {
+    const unsubscribe = onNewNotification(() => {
+      console.log('🔔 [NotificationBell] New notification received, forcing re-render');
+      forceUpdate({});
+    });
+    return unsubscribe;
+  }, [onNewNotification]);
 
   useEffect(() => {
     // Close dropdown when clicking outside

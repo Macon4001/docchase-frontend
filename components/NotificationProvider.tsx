@@ -20,22 +20,21 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [previousCount, setPreviousCount] = useState(-1);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Use useRef to keep callbacks without causing re-renders
+  // Use refs to keep values without causing re-renders or dependency issues
   const callbacksRef = React.useRef<Set<() => void>>(new Set());
+  const previousCountRef = React.useRef(-1);
 
   const fetchNotifications = useCallback(async () => {
     try {
       const response = await apiClient.get('/api/notifications');
       const data = response as NotificationResponse;
 
-      console.log(`📊 [Global] Notification poll - Previous: ${previousCount}, Current: ${data.unread_count}`);
+      console.log(`📊 [Global] Notification poll - Previous: ${previousCountRef.current}, Current: ${data.unread_count}`);
 
       // Check if there are new notifications (increased count, but skip initial load)
-      if (data.unread_count > previousCount && previousCount > -1) {
-        console.log(`🔔 [Global] NEW NOTIFICATIONS! Previous: ${previousCount}, Current: ${data.unread_count}`);
+      if (data.unread_count > previousCountRef.current && previousCountRef.current > -1) {
+        console.log(`🔔 [Global] NEW NOTIFICATIONS! Previous: ${previousCountRef.current}, Current: ${data.unread_count}`);
 
         // Show toast for newest unread notification
         const newest = data.notifications.find(n => !n.read);
@@ -62,19 +61,18 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         });
       }
 
-      setPreviousCount(data.unread_count);
+      previousCountRef.current = data.unread_count;
       setNotifications(data.notifications);
       setUnreadCount(data.unread_count);
     } catch (error) {
       console.error('❌ [Global] Failed to fetch notifications:', error);
     }
-  }, [previousCount]);
+  }, []);  // No dependencies needed - stable callback
 
   useEffect(() => {
     // Check if user is authenticated
     const session = AuthClient.getSession();
     if (session) {
-      setIsAuthenticated(true);
       apiClient.setToken(session.token);
       fetchNotifications();
 
