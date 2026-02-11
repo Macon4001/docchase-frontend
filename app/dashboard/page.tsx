@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -95,30 +95,7 @@ export default function DashboardPage() {
     chasesUsed: number;
   } | null>(null);
 
-  useEffect(() => {
-    const session = AuthClient.getSession();
-
-    if (!session) {
-      router.push('/login');
-      return;
-    }
-
-    apiClient.setToken(session.token);
-    loadDashboard();
-    loadBillingInfo();
-  }, [router]);
-
-  // Subscribe to notifications and auto-refresh dashboard
-  useEffect(() => {
-    const unsubscribe = onNewNotification(() => {
-      console.log('🔄 [Dashboard] Refreshing dashboard due to new notification');
-      loadDashboard(true); // Silent refresh
-    });
-
-    return unsubscribe;
-  }, [onNewNotification]);
-
-  const loadBillingInfo = async () => {
+  const loadBillingInfo = useCallback(async () => {
     try {
       const result = await apiClient.getBillingInfo();
       setBillingInfo({
@@ -129,9 +106,9 @@ export default function DashboardPage() {
     } catch (err) {
       console.error('Failed to load billing info:', err);
     }
-  };
+  }, []);
 
-  const loadDashboard = async (silent: boolean = false) => {
+  const loadDashboard = useCallback(async (silent: boolean = false) => {
     try {
       if (!silent) {
         setLoading(true);
@@ -149,7 +126,30 @@ export default function DashboardPage() {
         setRefreshing(false);
       }
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const session = AuthClient.getSession();
+
+    if (!session) {
+      router.push('/login');
+      return;
+    }
+
+    apiClient.setToken(session.token);
+    loadDashboard();
+    loadBillingInfo();
+  }, [router, loadDashboard, loadBillingInfo]);
+
+  // Subscribe to notifications and auto-refresh dashboard
+  useEffect(() => {
+    const unsubscribe = onNewNotification(() => {
+      console.log('🔄 [Dashboard] Refreshing dashboard due to new notification');
+      loadDashboard(true); // Silent refresh
+    });
+
+    return unsubscribe;
+  }, [onNewNotification, loadDashboard]);
 
   if (loading) {
     return (
@@ -210,45 +210,57 @@ export default function DashboardPage() {
 
         {/* Chase Limit Banner for Free Plan */}
         {billingInfo && billingInfo.plan === 'free' && (
-          <Card className={`border-2 ${
+          <Card className={`border-none shadow-lg overflow-hidden ${
             billingInfo.chasesUsed >= billingInfo.chaseLimit
-              ? 'bg-gradient-to-r from-red-50 to-orange-50 border-red-300'
-              : 'bg-gradient-to-r from-yellow-50 to-amber-50 border-yellow-300'
+              ? 'bg-gradient-to-br from-red-500 via-orange-500 to-red-600'
+              : 'bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600'
           }`}>
-            <CardContent className="p-4">
+            <CardContent className="p-6">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
+                <div className="flex items-center gap-4">
+                  <div className={`h-14 w-14 rounded-2xl flex items-center justify-center backdrop-blur-sm ${
                     billingInfo.chasesUsed >= billingInfo.chaseLimit
-                      ? 'bg-red-100 border-2 border-red-300'
-                      : 'bg-yellow-100 border-2 border-yellow-300'
+                      ? 'bg-white/20 border-2 border-white/40'
+                      : 'bg-white/20 border-2 border-white/40'
                   }`}>
                     {billingInfo.chasesUsed >= billingInfo.chaseLimit ? (
-                      <AlertCircle className="h-5 w-5 text-red-600" />
+                      <AlertCircle className="h-7 w-7 text-white" />
                     ) : (
-                      <Zap className="h-5 w-5 text-yellow-600" />
+                      <Zap className="h-7 w-7 text-white" />
                     )}
                   </div>
                   <div>
-                    <h3 className={`font-semibold ${
-                      billingInfo.chasesUsed >= billingInfo.chaseLimit ? 'text-red-900' : 'text-gray-900'
-                    }`}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="text-xl font-bold text-white">
+                        {billingInfo.chasesUsed >= billingInfo.chaseLimit
+                          ? 'Chase Limit Reached!'
+                          : 'Free Plan'}
+                      </h3>
+                      <Badge className="bg-white/20 text-white border-white/40 font-semibold">
+                        {billingInfo.chasesUsed} / {billingInfo.chaseLimit}
+                      </Badge>
+                    </div>
+                    <p className="text-white/90 text-sm font-medium">
                       {billingInfo.chasesUsed >= billingInfo.chaseLimit
-                        ? 'Chase Limit Reached'
-                        : 'Free Plan'}
-                    </h3>
-                    <p className="text-sm text-gray-700">
-                      {billingInfo.chasesUsed} / {billingInfo.chaseLimit} chases used
-                      {billingInfo.chasesUsed >= billingInfo.chaseLimit && ' - Upgrade to continue'}
+                        ? 'Upgrade now to continue sending campaigns and chasing documents'
+                        : `${billingInfo.chaseLimit - billingInfo.chasesUsed} chase${billingInfo.chaseLimit - billingInfo.chasesUsed !== 1 ? 's' : ''} remaining • Upgrade for unlimited chases`}
                     </p>
                   </div>
                 </div>
                 <Link href="/pricing">
-                  <Button className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600">
-                    <Zap className="w-4 h-4 mr-2" />
-                    Upgrade Now
+                  <Button className="bg-white text-emerald-700 hover:bg-gray-100 shadow-xl font-semibold px-6">
+                    <TrendingUp className="w-4 h-4 mr-2" />
+                    Upgrade Plan
                   </Button>
                 </Link>
+              </div>
+
+              {/* Progress bar */}
+              <div className="mt-4 bg-white/20 rounded-full h-2 overflow-hidden">
+                <div
+                  className="h-full bg-white rounded-full transition-all duration-500"
+                  style={{ width: `${(billingInfo.chasesUsed / billingInfo.chaseLimit) * 100}%` }}
+                ></div>
               </div>
             </CardContent>
           </Card>

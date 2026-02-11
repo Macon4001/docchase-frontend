@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -38,6 +38,29 @@ export default function CampaignsPage() {
     chasesUsed: number;
   } | null>(null);
 
+  const loadBillingInfo = useCallback(async () => {
+    try {
+      const data = await apiClient.getBillingInfo();
+      setBillingInfo({
+        chaseLimit: data.billing.chaseLimit,
+        chasesUsed: data.billing.chasesUsed,
+      });
+    } catch (err) {
+      console.error('Failed to load billing info:', err);
+    }
+  }, []);
+
+  const loadCampaigns = useCallback(async () => {
+    try {
+      const data = await apiClient.getCampaigns();
+      setCampaigns(data.campaigns || []);
+    } catch (err) {
+      console.error('Failed to load campaigns:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     const userSession = AuthClient.getSession();
 
@@ -49,7 +72,7 @@ export default function CampaignsPage() {
     apiClient.setToken(userSession.token);
     loadCampaigns();
     loadBillingInfo();
-  }, [router]);
+  }, [router, loadCampaigns, loadBillingInfo]);
 
   // Subscribe to notifications and auto-refresh campaigns
   useEffect(() => {
@@ -59,30 +82,7 @@ export default function CampaignsPage() {
     });
 
     return unsubscribe;
-  }, [onNewNotification]);
-
-  const loadBillingInfo = async () => {
-    try {
-      const data = await apiClient.getBillingInfo();
-      setBillingInfo({
-        chaseLimit: data.billing.chaseLimit,
-        chasesUsed: data.billing.chasesUsed,
-      });
-    } catch (err) {
-      console.error('Failed to load billing info:', err);
-    }
-  };
-
-  const loadCampaigns = async () => {
-    try {
-      const data = await apiClient.getCampaigns();
-      setCampaigns(data.campaigns || []);
-    } catch (err) {
-      console.error('Failed to load campaigns:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [onNewNotification, loadCampaigns]);
 
   const handleStartCampaign = async (campaignId: string, e: React.MouseEvent) => {
     e.preventDefault();
