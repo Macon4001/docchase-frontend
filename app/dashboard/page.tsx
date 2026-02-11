@@ -155,7 +155,7 @@ export default function DashboardPage() {
               <p className="font-semibold">Error Loading Dashboard</p>
             </div>
             <p className="text-gray-600 mb-4">{error}</p>
-            <Button onClick={loadDashboard} className="w-full bg-emerald-600 hover:bg-emerald-700">
+            <Button onClick={() => loadDashboard()} className="w-full bg-emerald-600 hover:bg-emerald-700">
               Try Again
             </Button>
           </CardContent>
