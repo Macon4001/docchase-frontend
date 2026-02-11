@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { Bell, Check, FileText, Upload, Play, CheckCircle2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Bell, Check, FileText, Play, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { apiClient } from '@/lib/api';
@@ -9,7 +10,22 @@ import { Notification, NotificationResponse } from '@/lib/notifications';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 
+// Google Drive icon as SVG component
+function DriveIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 87.3 78" className={className}>
+      <path fill="#0066da" d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z"/>
+      <path fill="#00ac47" d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0-1.2 4.5h27.5z"/>
+      <path fill="#ea4335" d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z"/>
+      <path fill="#00832d" d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z"/>
+      <path fill="#2684fc" d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z"/>
+      <path fill="#ffba00" d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z"/>
+    </svg>
+  );
+}
+
 export function NotificationBell() {
+  const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -102,7 +118,7 @@ export function NotificationBell() {
       case 'client_response':
         return <FileText className="w-4 h-4 text-blue-600" />;
       case 'document_uploaded':
-        return <Upload className="w-4 h-4 text-green-600" />;
+        return <DriveIcon className="w-4 h-4" />;
       case 'campaign_started':
         return <Play className="w-4 h-4 text-purple-600" />;
       case 'campaign_completed':
@@ -198,7 +214,13 @@ export function NotificationBell() {
           {/* Footer */}
           {notifications.length > 0 && (
             <div className="px-4 py-2 border-t border-gray-200 text-center">
-              <button className="text-sm text-primary hover:underline">
+              <button
+                className="text-sm text-primary hover:underline"
+                onClick={() => {
+                  setIsOpen(false);
+                  router.push('/notifications');
+                }}
+              >
                 View all notifications
               </button>
             </div>
