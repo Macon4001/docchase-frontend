@@ -29,7 +29,7 @@ export default function RootLayout({
         <Providers>
           <NotificationProvider>
             {children}
-            <Toaster position="top-right" richColors expand={true} />
+            <Toaster position="bottom-right" richColors expand={true} />
           </NotificationProvider>
         </Providers>
       </body>
