@@ -34,7 +34,7 @@ export function NotificationBell({ onNewNotification }: NotificationBellProps = 
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [previousCount, setPreviousCount] = useState(0);
+  const [previousCount, setPreviousCount] = useState(-1); // Start at -1 to indicate initial load
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -65,11 +65,14 @@ export function NotificationBell({ onNewNotification }: NotificationBellProps = 
       const response = await apiClient.get('/api/notifications');
       const data = response as NotificationResponse;
 
-      // Check if there are new notifications
-      if (data.unread_count > previousCount && previousCount > 0) {
-        // Show toast for newest notification
+      // Check if there are new notifications (increased count, but skip initial load)
+      if (data.unread_count > previousCount && previousCount > -1) {
+        console.log(`🔔 New notifications detected! Previous: ${previousCount}, Current: ${data.unread_count}`);
+
+        // Show toast for newest unread notification
         const newest = data.notifications.find(n => !n.read);
         if (newest) {
+          console.log(`📢 Showing toast for: ${newest.title}`);
           if (newest.type === 'client_response') {
             toast.success(newest.title, {
               description: newest.message,
@@ -80,11 +83,17 @@ export function NotificationBell({ onNewNotification }: NotificationBellProps = 
               description: newest.message,
               duration: 5000,
             });
+          } else {
+            toast(newest.title, {
+              description: newest.message,
+              duration: 5000,
+            });
           }
         }
 
         // Call the callback to refresh parent component
         if (onNewNotification) {
+          console.log(`🔄 Triggering parent refresh callback`);
           onNewNotification();
         }
       }
