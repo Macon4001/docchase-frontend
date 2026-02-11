@@ -210,13 +210,13 @@ export default function DashboardPage() {
 
         {/* Chase Limit Banner for Free Plan */}
         {billingInfo && billingInfo.plan === 'free' && (
-          <Card className={`border-none shadow-lg overflow-hidden ${
+          <Card className={`mb-6 border-none shadow-lg overflow-hidden ${
             billingInfo.chasesUsed >= billingInfo.chaseLimit
               ? 'bg-gradient-to-br from-red-500 via-orange-500 to-red-600'
               : 'bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600'
           }`}>
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <div className={`h-14 w-14 rounded-2xl flex items-center justify-center backdrop-blur-sm ${
                     billingInfo.chasesUsed >= billingInfo.chaseLimit
@@ -248,7 +248,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <Link href="/pricing">
-                  <Button className="bg-white text-emerald-700 hover:bg-gray-100 shadow-xl font-semibold px-6">
+                  <Button className="bg-white text-emerald-700 hover:bg-gray-100 shadow-xl font-semibold px-6 whitespace-nowrap">
                     <TrendingUp className="w-4 h-4 mr-2" />
                     Upgrade Plan
                   </Button>
