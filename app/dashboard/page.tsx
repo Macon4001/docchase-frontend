@@ -10,6 +10,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { AuthClient } from '@/lib/auth-client';
 import { apiClient } from '@/lib/api';
 import { DashboardLayout } from '@/components/DashboardLayout';
+import { useNotifications } from '@/components/NotificationProvider';
 import {
   Users,
   Clock,
@@ -83,6 +84,7 @@ function StatusBadge({ status }: { status: string }) {
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { onNewNotification } = useNotifications();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -105,6 +107,16 @@ export default function DashboardPage() {
     loadDashboard();
     loadBillingInfo();
   }, [router]);
+
+  // Subscribe to notifications and auto-refresh dashboard
+  useEffect(() => {
+    const unsubscribe = onNewNotification(() => {
+      console.log('🔄 [Dashboard] Refreshing dashboard due to new notification');
+      loadDashboard(true); // Silent refresh
+    });
+
+    return unsubscribe;
+  }, [onNewNotification]);
 
   const loadBillingInfo = async () => {
     try {

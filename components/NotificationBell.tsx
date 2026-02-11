@@ -2,13 +2,12 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bell, Check, FileText, Play, CheckCircle2 } from 'lucide-react';
+import { Bell, FileText, Play, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { apiClient } from '@/lib/api';
-import { Notification, NotificationResponse } from '@/lib/notifications';
+import { Notification } from '@/lib/notifications';
 import { formatDistanceToNow } from 'date-fns';
-import { toast } from 'sonner';
+import { useNotifications } from './NotificationProvider';
 
 // Google Drive icon as SVG component
 function DriveIcon({ className }: { className?: string }) {
@@ -30,21 +29,10 @@ interface NotificationBellProps {
 
 export function NotificationBell({ onNewNotification }: NotificationBellProps = {}) {
   const router = useRouter();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [previousCount, setPreviousCount] = useState(-1); // Start at -1 to indicate initial load
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    fetchNotifications();
-
-    // Poll for new notifications every 5 seconds for more responsiveness
-    const interval = setInterval(fetchNotifications, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     // Close dropdown when clicking outside
@@ -60,75 +48,14 @@ export function NotificationBell({ onNewNotification }: NotificationBellProps = 
     }
   }, [isOpen]);
 
-  const fetchNotifications = async () => {
-    try {
-      const response = await apiClient.get('/api/notifications');
-      const data = response as NotificationResponse;
-
-      console.log(`📊 Notification poll - Previous: ${previousCount}, Current: ${data.unread_count}, Total notifications:`, data.notifications.length);
-
-      // Check if there are new notifications (increased count, but skip initial load)
-      if (data.unread_count > previousCount && previousCount > -1) {
-        console.log(`🔔 NEW NOTIFICATIONS DETECTED! Previous: ${previousCount}, Current: ${data.unread_count}`);
-
-        // Show toast for newest unread notification
-        const newest = data.notifications.find(n => !n.read);
-        console.log(`🔍 Looking for newest unread notification:`, newest);
-
-        if (newest) {
-          console.log(`📢 ATTEMPTING TO SHOW TOAST for: "${newest.title}" - Type: ${newest.type}`);
-
-          // Always use success toast to ensure it shows
-          toast.success(newest.title, {
-            description: newest.message,
-            duration: 5000,
-          });
-
-          console.log(`✅ Toast function called`);
-        } else {
-          console.log(`⚠️ No unread notification found to display`);
-        }
-
-        // Call the callback to refresh parent component
-        if (onNewNotification) {
-          console.log(`🔄 Triggering parent refresh callback`);
-          onNewNotification();
-        }
-      } else {
-        console.log(`ℹ️ No new notifications to show (previousCount: ${previousCount}, current: ${data.unread_count})`);
-      }
-
-      setPreviousCount(data.unread_count);
-      setNotifications(data.notifications);
-      setUnreadCount(data.unread_count);
-    } catch (error) {
-      console.error('❌ Failed to fetch notifications:', error);
-    }
+  const handleMarkAsRead = async (notificationId: string) => {
+    await markAsRead(notificationId);
   };
 
-  const markAsRead = async (notificationId: string) => {
-    try {
-      await apiClient.post(`/api/notifications/${notificationId}/read`);
-      setNotifications(prev =>
-        prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
-      );
-      setUnreadCount(prev => Math.max(0, prev - 1));
-    } catch (error) {
-      console.error('Failed to mark notification as read:', error);
-    }
-  };
-
-  const markAllAsRead = async () => {
-    try {
-      setLoading(true);
-      await apiClient.post('/api/notifications/read-all');
-      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-      setUnreadCount(0);
-    } catch (error) {
-      console.error('Failed to mark all as read:', error);
-    } finally {
-      setLoading(false);
-    }
+  const handleMarkAllAsRead = async () => {
+    setLoading(true);
+    await markAllAsRead();
+    setLoading(false);
   };
 
   const getNotificationIcon = (type: Notification['type']) => {
@@ -171,7 +98,7 @@ export function NotificationBell({ onNewNotification }: NotificationBellProps = 
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={markAllAsRead}
+                onClick={handleMarkAllAsRead}
                 disabled={loading}
                 className="text-xs h-7"
               >
@@ -195,7 +122,7 @@ export function NotificationBell({ onNewNotification }: NotificationBellProps = 
                     className={`px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors ${
                       !notification.read ? 'bg-blue-50' : ''
                     }`}
-                    onClick={() => !notification.read && markAsRead(notification.id)}
+                    onClick={() => !notification.read && handleMarkAsRead(notification.id)}
                   >
                     <div className="flex items-start gap-3">
                       <div className="mt-1 flex-shrink-0">

@@ -11,6 +11,7 @@ import { apiClient } from '@/lib/api';
 import { AuthClient } from '@/lib/auth-client';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { UpgradeModal } from '@/components/UpgradeModal';
+import { useNotifications } from '@/components/NotificationProvider';
 
 interface Campaign {
   id: string;
@@ -27,6 +28,7 @@ interface Campaign {
 
 export default function CampaignsPage() {
   const router = useRouter();
+  const { onNewNotification } = useNotifications();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [startingCampaignId, setStartingCampaignId] = useState<string | null>(null);
@@ -48,6 +50,16 @@ export default function CampaignsPage() {
     loadCampaigns();
     loadBillingInfo();
   }, [router]);
+
+  // Subscribe to notifications and auto-refresh campaigns
+  useEffect(() => {
+    const unsubscribe = onNewNotification(() => {
+      console.log('🔄 [Campaigns] Refreshing campaigns due to new notification');
+      loadCampaigns();
+    });
+
+    return unsubscribe;
+  }, [onNewNotification]);
 
   const loadBillingInfo = async () => {
     try {

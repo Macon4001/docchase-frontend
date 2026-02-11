@@ -3,6 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Toaster } from "sonner";
+import { NotificationProvider } from "@/components/NotificationProvider";
 
 export const metadata: Metadata = {
   title: "Gettingdocs - AI Document Collection Assistant",
@@ -26,8 +27,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={GeistSans.className}>
         <Providers>
-          {children}
-          <Toaster position="top-right" richColors />
+          <NotificationProvider>
+            {children}
+            <Toaster position="top-right" richColors expand={true} />
+          </NotificationProvider>
         </Providers>
       </body>
     </html>
