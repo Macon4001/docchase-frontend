@@ -24,7 +24,11 @@ function DriveIcon({ className }: { className?: string }) {
   );
 }
 
-export function NotificationBell() {
+interface NotificationBellProps {
+  onNewNotification?: () => void;
+}
+
+export function NotificationBell({ onNewNotification }: NotificationBellProps = {}) {
   const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -36,8 +40,8 @@ export function NotificationBell() {
   useEffect(() => {
     fetchNotifications();
 
-    // Poll for new notifications every 30 seconds
-    const interval = setInterval(fetchNotifications, 30000);
+    // Poll for new notifications every 5 seconds for more responsiveness
+    const interval = setInterval(fetchNotifications, 5000);
 
     return () => clearInterval(interval);
   }, []);
@@ -77,6 +81,11 @@ export function NotificationBell() {
               duration: 5000,
             });
           }
+        }
+
+        // Call the callback to refresh parent component
+        if (onNewNotification) {
+          onNewNotification();
         }
       }
 

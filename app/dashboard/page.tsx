@@ -87,6 +87,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -101,16 +102,30 @@ export default function DashboardPage() {
     loadDashboard();
   }, [router]);
 
-  const loadDashboard = async () => {
+  const loadDashboard = async (silent: boolean = false) => {
     try {
-      setLoading(true);
+      if (!silent) {
+        setLoading(true);
+      } else {
+        setRefreshing(true);
+      }
       const result = await apiClient.getDashboard();
       setData(result);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load dashboard');
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      } else {
+        setRefreshing(false);
+      }
     }
+  };
+
+  const handleNewNotification = () => {
+    // Refresh dashboard silently when new notification arrives
+    console.log('🔔 New notification detected, refreshing dashboard...');
+    loadDashboard(true);
   };
 
   const handleLogout = () => {
@@ -190,7 +205,7 @@ export default function DashboardPage() {
                   <span className="hidden sm:inline">Upgrade</span>
                 </Button>
               </Link>
-              <NotificationBell />
+              <NotificationBell onNewNotification={handleNewNotification} />
               <Link href="/settings">
                 <Button variant="ghost" size="sm">
                   <Settings className="w-4 h-4" />
@@ -209,7 +224,15 @@ export default function DashboardPage() {
         {/* Page Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900">Overview</h2>
+            <div className="flex items-center gap-3">
+              <h2 className="text-3xl font-bold text-gray-900">Overview</h2>
+              {refreshing && (
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                  <span>Updating...</span>
+                </div>
+              )}
+            </div>
             <p className="text-gray-600 mt-1">Track your document collection campaigns</p>
           </div>
           <Link href="/campaigns/new">
