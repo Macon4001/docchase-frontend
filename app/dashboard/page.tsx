@@ -17,7 +17,8 @@ import {
   CheckCircle2,
   TrendingUp,
   Plus,
-  Folder
+  Folder,
+  Zap
 } from 'lucide-react';
 
 interface Campaign {
@@ -86,6 +87,11 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
+  const [billingInfo, setBillingInfo] = useState<{
+    plan: string;
+    chaseLimit: number;
+    chasesUsed: number;
+  } | null>(null);
 
   useEffect(() => {
     const session = AuthClient.getSession();
@@ -97,7 +103,21 @@ export default function DashboardPage() {
 
     apiClient.setToken(session.token);
     loadDashboard();
+    loadBillingInfo();
   }, [router]);
+
+  const loadBillingInfo = async () => {
+    try {
+      const result = await apiClient.getBillingInfo();
+      setBillingInfo({
+        plan: result.billing.plan,
+        chaseLimit: result.billing.chaseLimit,
+        chasesUsed: result.billing.chasesUsed,
+      });
+    } catch (err) {
+      console.error('Failed to load billing info:', err);
+    }
+  };
 
   const loadDashboard = async (silent: boolean = false) => {
     try {
@@ -181,6 +201,52 @@ export default function DashboardPage() {
             </Button>
           </Link>
         </div>
+
+        {/* Chase Limit Banner for Free Plan */}
+        {billingInfo && billingInfo.plan === 'free' && (
+          <Card className={`border-2 ${
+            billingInfo.chasesUsed >= billingInfo.chaseLimit
+              ? 'bg-gradient-to-r from-red-50 to-orange-50 border-red-300'
+              : 'bg-gradient-to-r from-yellow-50 to-amber-50 border-yellow-300'
+          }`}>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
+                    billingInfo.chasesUsed >= billingInfo.chaseLimit
+                      ? 'bg-red-100 border-2 border-red-300'
+                      : 'bg-yellow-100 border-2 border-yellow-300'
+                  }`}>
+                    {billingInfo.chasesUsed >= billingInfo.chaseLimit ? (
+                      <AlertCircle className="h-5 w-5 text-red-600" />
+                    ) : (
+                      <Zap className="h-5 w-5 text-yellow-600" />
+                    )}
+                  </div>
+                  <div>
+                    <h3 className={`font-semibold ${
+                      billingInfo.chasesUsed >= billingInfo.chaseLimit ? 'text-red-900' : 'text-gray-900'
+                    }`}>
+                      {billingInfo.chasesUsed >= billingInfo.chaseLimit
+                        ? 'Chase Limit Reached'
+                        : 'Free Plan'}
+                    </h3>
+                    <p className="text-sm text-gray-700">
+                      {billingInfo.chasesUsed} / {billingInfo.chaseLimit} chases used
+                      {billingInfo.chasesUsed >= billingInfo.chaseLimit && ' - Upgrade to continue'}
+                    </p>
+                  </div>
+                </div>
+                <Link href="/pricing">
+                  <Button className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600">
+                    <Zap className="w-4 h-4 mr-2" />
+                    Upgrade Now
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {data?.campaign && data?.stats ? (
           <div className="space-y-6">

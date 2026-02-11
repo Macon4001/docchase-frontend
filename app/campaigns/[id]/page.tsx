@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { apiClient } from '@/lib/api';
 import { AuthClient } from '@/lib/auth-client';
 import { DashboardLayout } from '@/components/DashboardLayout';
+import { UpgradeModal } from '@/components/UpgradeModal';
 import { FileText, Play, ArrowLeft, CheckCircle2, Clock, Edit } from 'lucide-react';
 
 interface Campaign {
@@ -55,6 +56,11 @@ export default function CampaignDetailPage() {
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [billingInfo, setBillingInfo] = useState<{
+    chaseLimit: number;
+    chasesUsed: number;
+  } | null>(null);
 
   useEffect(() => {
     const userSession = AuthClient.getSession();
@@ -66,7 +72,20 @@ export default function CampaignDetailPage() {
 
     apiClient.setToken(userSession.token);
     loadCampaignDetails();
+    loadBillingInfo();
   }, [router, campaignId]);
+
+  const loadBillingInfo = async () => {
+    try {
+      const data = await apiClient.getBillingInfo();
+      setBillingInfo({
+        chaseLimit: data.billing.chaseLimit,
+        chasesUsed: data.billing.chasesUsed,
+      });
+    } catch (err) {
+      console.error('Failed to load billing info:', err);
+    }
+  };
 
   const loadCampaignDetails = async () => {
     try {
@@ -89,6 +108,12 @@ export default function CampaignDetailPage() {
   const handleStartCampaign = async () => {
     if (!campaign) return;
 
+    // Check chase limit before starting
+    if (billingInfo && billingInfo.chasesUsed >= billingInfo.chaseLimit) {
+      setShowUpgradeModal(true);
+      return;
+    }
+
     setStarting(true);
     setError(null);
     setSuccessMessage(null);
@@ -102,12 +127,20 @@ export default function CampaignDetailPage() {
           (result.results.failed > 0 ? ` ${result.results.failed} failed.` : '')
         );
 
-        // Reload campaign to get updated status
+        // Reload campaign and billing info to get updated status
         await loadCampaignDetails();
+        await loadBillingInfo();
       }
     } catch (err) {
       console.error('Failed to start campaign:', err);
-      setError(err instanceof Error ? err.message : 'Failed to start campaign');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to start campaign';
+
+      // Check if error is about chase limit
+      if (errorMessage.includes('Chase limit reached') || errorMessage.includes('chase limit')) {
+        setShowUpgradeModal(true);
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setStarting(false);
     }
@@ -413,6 +446,14 @@ export default function CampaignDetailPage() {
             </Card>
           </div>
         </div>
+
+        <UpgradeModal
+          isOpen={showUpgradeModal}
+          onClose={() => setShowUpgradeModal(false)}
+          reason="chase_limit"
+          currentCount={billingInfo?.chasesUsed}
+          limit={billingInfo?.chaseLimit}
+        />
     </DashboardLayout>
   );
 }

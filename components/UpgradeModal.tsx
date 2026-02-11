@@ -33,10 +33,12 @@ export function UpgradeModal({
     client_limit: {
       title: 'Client Limit Reached',
       description: `You've reached your limit of ${limit} client${limit !== 1 ? 's' : ''}. Upgrade to add more clients and automate your document chasing.`,
+      action: 'add more clients',
     },
     chase_limit: {
       title: 'Chase Limit Reached',
-      description: `You've used all ${limit} of your free chases. Upgrade to get unlimited chases and manage more clients.`,
+      description: `You've used all ${currentCount || limit} of your free chases. To start new campaigns and continue chasing documents, please upgrade to a paid plan.`,
+      action: 'start campaigns and send chases',
     },
   };
 
@@ -51,37 +53,69 @@ export function UpgradeModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <div className="flex items-center gap-2 mb-2">
-            <div className="h-10 w-10 rounded-full bg-yellow-100 flex items-center justify-center">
-              <Zap className="h-5 w-5 text-yellow-600" />
+          <div className="flex items-center gap-3 mb-2">
+            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-yellow-100 to-orange-100 flex items-center justify-center border-2 border-yellow-300">
+              <AlertCircle className="h-6 w-6 text-yellow-600" />
             </div>
-            <DialogTitle className="text-xl">{message.title}</DialogTitle>
+            <div>
+              <DialogTitle className="text-xl font-bold">{message.title}</DialogTitle>
+              {currentCount !== undefined && limit !== undefined && (
+                <p className="text-sm text-gray-500 mt-0.5">
+                  {currentCount} / {limit} used
+                </p>
+              )}
+            </div>
           </div>
-          <DialogDescription className="text-base pt-2">
+          <DialogDescription className="text-base pt-3 text-gray-700">
             {message.description}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4">
-          <h4 className="font-semibold text-blue-900 mb-2">Upgrade Benefits:</h4>
-          <ul className="space-y-1 text-sm text-blue-800">
-            <li>✓ Up to 50 clients</li>
-            <li>✓ Unlimited chases</li>
-            <li>✓ Auto-reminders</li>
-            <li>✓ Google Drive integration</li>
-            <li>✓ Bank statement conversion</li>
+        <div className="border-t border-b border-gray-200 py-4 my-4">
+          <p className="text-sm text-gray-600 mb-3">
+            <strong className="text-gray-900">Why upgrade?</strong> To {message.action}, you need a paid plan.
+          </p>
+        </div>
+
+        <div className="bg-gradient-to-br from-emerald-50 to-blue-50 border border-emerald-200 rounded-lg p-4 mb-4">
+          <h4 className="font-bold text-emerald-900 mb-3 flex items-center gap-2">
+            <Zap className="h-4 w-4 text-emerald-600" />
+            Unlock with Upgrade:
+          </h4>
+          <ul className="space-y-2 text-sm text-gray-800">
+            <li className="flex items-start gap-2">
+              <span className="text-emerald-600 font-bold mt-0.5">✓</span>
+              <span><strong>Up to 50 clients</strong> - Scale your practice</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-emerald-600 font-bold mt-0.5">✓</span>
+              <span><strong>Unlimited chases</strong> - No restrictions</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-emerald-600 font-bold mt-0.5">✓</span>
+              <span><strong>Automated reminders</strong> - Save time</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-emerald-600 font-bold mt-0.5">✓</span>
+              <span><strong>Google Drive integration</strong> - Seamless storage</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-emerald-600 font-bold mt-0.5">✓</span>
+              <span><strong>Bank statement conversion</strong> - PDF to Excel</span>
+            </li>
           </ul>
         </div>
 
         <DialogFooter className="flex-col sm:flex-row gap-2">
-          <Button variant="outline" onClick={onClose} className="w-full sm:w-auto">
+          <Button variant="outline" onClick={onClose} className="w-full sm:w-auto order-2 sm:order-1">
             Maybe Later
           </Button>
           <Button
             onClick={handleUpgrade}
-            className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600"
+            className="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 order-1 sm:order-2 shadow-lg"
           >
-            View Plans
+            <Zap className="h-4 w-4 mr-2" />
+            View Plans & Upgrade
           </Button>
         </DialogFooter>
       </DialogContent>

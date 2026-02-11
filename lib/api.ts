@@ -161,6 +161,11 @@ class ApiClient {
       body: JSON.stringify(data),
     });
   }
+
+  // Billing
+  async getBillingInfo() {
+    return this.request('/api/billing');
+  }
 }
 
 export const apiClient = new ApiClient(API_URL);
