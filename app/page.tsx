@@ -20,11 +20,11 @@ import {
   Zap,
   Shield,
   CreditCard,
-  Sparkles,
-  Radius
+  Sparkles
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AuthClient } from "@/lib/auth-client";
+import { Logo } from "@/components/Logo";
 import AnimatedStepFlow from './components/AnimatedStepFlow';
 import PhoneMockup from './components/PhoneMockup';
 
@@ -105,9 +105,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                <Radius className="w-5 h-5 text-primary-foreground" />
-              </div>
+              <Logo size={32} />
               <span className="text-xl font-semibold">Gettingdocs</span>
             </div>
             <div className="flex items-center gap-4">

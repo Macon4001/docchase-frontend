@@ -9,8 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
 import { AuthClient } from '@/lib/auth-client';
 import { apiClient } from '@/lib/api';
+import { Logo } from '@/components/Logo';
 import {
-  FileText,
   Users,
   Clock,
   AlertCircle,
@@ -158,9 +158,7 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/30 group-hover:shadow-emerald-500/50 transition-shadow">
-                <FileText className="w-6 h-6 text-white" />
-              </div>
+              <Logo size={40} className="transition-transform group-hover:scale-105" />
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
                   Gettingdocs

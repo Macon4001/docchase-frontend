@@ -6,6 +6,14 @@ import { Providers } from "./providers";
 export const metadata: Metadata = {
   title: "Gettingdocs - AI Document Collection Assistant",
   description: "Automated WhatsApp document collection for accountants",
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: '32x32' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
