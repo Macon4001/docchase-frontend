@@ -10,6 +10,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { AuthClient } from '@/lib/auth-client';
 import { apiClient } from '@/lib/api';
 import { Logo } from '@/components/Logo';
+import { NotificationBell } from '@/components/NotificationBell';
 import {
   Users,
   Clock,
@@ -189,6 +190,7 @@ export default function DashboardPage() {
                   <span className="hidden sm:inline">Upgrade</span>
                 </Button>
               </Link>
+              <NotificationBell />
               <Link href="/settings">
                 <Button variant="ghost" size="sm">
                   <Settings className="w-4 h-4" />
