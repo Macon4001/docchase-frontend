@@ -65,30 +65,28 @@ export function NotificationBell({ onNewNotification }: NotificationBellProps = 
       const response = await apiClient.get('/api/notifications');
       const data = response as NotificationResponse;
 
+      console.log(`📊 Notification poll - Previous: ${previousCount}, Current: ${data.unread_count}, Total notifications:`, data.notifications.length);
+
       // Check if there are new notifications (increased count, but skip initial load)
       if (data.unread_count > previousCount && previousCount > -1) {
-        console.log(`🔔 New notifications detected! Previous: ${previousCount}, Current: ${data.unread_count}`);
+        console.log(`🔔 NEW NOTIFICATIONS DETECTED! Previous: ${previousCount}, Current: ${data.unread_count}`);
 
         // Show toast for newest unread notification
         const newest = data.notifications.find(n => !n.read);
+        console.log(`🔍 Looking for newest unread notification:`, newest);
+
         if (newest) {
-          console.log(`📢 Showing toast for: ${newest.title}`);
-          if (newest.type === 'client_response') {
-            toast.success(newest.title, {
-              description: newest.message,
-              duration: 5000,
-            });
-          } else if (newest.type === 'document_uploaded') {
-            toast.info(newest.title, {
-              description: newest.message,
-              duration: 5000,
-            });
-          } else {
-            toast(newest.title, {
-              description: newest.message,
-              duration: 5000,
-            });
-          }
+          console.log(`📢 ATTEMPTING TO SHOW TOAST for: "${newest.title}" - Type: ${newest.type}`);
+
+          // Always use success toast to ensure it shows
+          toast.success(newest.title, {
+            description: newest.message,
+            duration: 5000,
+          });
+
+          console.log(`✅ Toast function called`);
+        } else {
+          console.log(`⚠️ No unread notification found to display`);
         }
 
         // Call the callback to refresh parent component
@@ -96,13 +94,15 @@ export function NotificationBell({ onNewNotification }: NotificationBellProps = 
           console.log(`🔄 Triggering parent refresh callback`);
           onNewNotification();
         }
+      } else {
+        console.log(`ℹ️ No new notifications to show (previousCount: ${previousCount}, current: ${data.unread_count})`);
       }
 
       setPreviousCount(data.unread_count);
       setNotifications(data.notifications);
       setUnreadCount(data.unread_count);
     } catch (error) {
-      console.error('Failed to fetch notifications:', error);
+      console.error('❌ Failed to fetch notifications:', error);
     }
   };
 
