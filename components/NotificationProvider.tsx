@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import { apiClient } from '@/lib/api';
 import { Notification, NotificationResponse } from '@/lib/notifications';
 import { toast } from 'sonner';
@@ -22,24 +22,11 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [previousCount, setPreviousCount] = useState(-1);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [callbacks, setCallbacks] = useState<Set<() => void>>(new Set());
 
-  useEffect(() => {
-    // Check if user is authenticated
-    const session = AuthClient.getSession();
-    if (session) {
-      setIsAuthenticated(true);
-      apiClient.setToken(session.token);
-      fetchNotifications();
+  // Use useRef to keep callbacks without causing re-renders
+  const callbacksRef = React.useRef<Set<() => void>>(new Set());
 
-      // Poll for new notifications every 5 seconds
-      const interval = setInterval(fetchNotifications, 5000);
-
-      return () => clearInterval(interval);
-    }
-  }, []);
-
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
       const response = await apiClient.get('/api/notifications');
       const data = response as NotificationResponse;
@@ -64,9 +51,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         }
 
         // Call all registered callbacks
-        console.log(`🔄 [Global] Triggering ${callbacks.size} registered callbacks`);
-        callbacks.forEach(callback => {
+        console.log(`🔄 [Global] Triggering ${callbacksRef.current.size} registered callbacks`);
+        callbacksRef.current.forEach(callback => {
           try {
+            console.log(`🎯 [Global] Executing callback`);
             callback();
           } catch (err) {
             console.error('Error in notification callback:', err);
@@ -80,7 +68,22 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('❌ [Global] Failed to fetch notifications:', error);
     }
-  };
+  }, [previousCount]);
+
+  useEffect(() => {
+    // Check if user is authenticated
+    const session = AuthClient.getSession();
+    if (session) {
+      setIsAuthenticated(true);
+      apiClient.setToken(session.token);
+      fetchNotifications();
+
+      // Poll for new notifications every 5 seconds
+      const interval = setInterval(fetchNotifications, 5000);
+
+      return () => clearInterval(interval);
+    }
+  }, [fetchNotifications]);
 
   const markAsRead = async (notificationId: string) => {
     try {
@@ -105,17 +108,15 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   };
 
   const onNewNotification = useCallback((callback: () => void) => {
-    console.log(`📝 [Global] Registering new notification callback`);
-    setCallbacks(prev => new Set(prev).add(callback));
+    console.log(`📝 [Global] Registering new notification callback. Current callbacks: ${callbacksRef.current.size}`);
+    callbacksRef.current.add(callback);
+    console.log(`📝 [Global] After registration: ${callbacksRef.current.size} callbacks`);
 
     // Return cleanup function
     return () => {
-      console.log(`🗑️ [Global] Removing notification callback`);
-      setCallbacks(prev => {
-        const next = new Set(prev);
-        next.delete(callback);
-        return next;
-      });
+      console.log(`🗑️ [Global] Removing notification callback. Current callbacks: ${callbacksRef.current.size}`);
+      callbacksRef.current.delete(callback);
+      console.log(`🗑️ [Global] After removal: ${callbacksRef.current.size} callbacks`);
     };
   }, []); // Empty deps - function never changes
 
