@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import { apiClient } from '@/lib/api';
 import { Notification, NotificationResponse } from '@/lib/notifications';
 import { toast } from 'sonner';
@@ -104,7 +104,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const onNewNotification = (callback: () => void) => {
+  const onNewNotification = useCallback((callback: () => void) => {
     console.log(`📝 [Global] Registering new notification callback`);
     setCallbacks(prev => new Set(prev).add(callback));
 
@@ -117,7 +117,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         return next;
       });
     };
-  };
+  }, []); // Empty deps - function never changes
 
   return (
     <NotificationContext.Provider
