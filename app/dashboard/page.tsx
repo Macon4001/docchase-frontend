@@ -151,12 +151,6 @@ export default function DashboardPage() {
     }
   };
 
-  const handleNewNotification = () => {
-    // Refresh dashboard silently when new notification arrives
-    console.log('🔔 New notification detected, refreshing dashboard...');
-    loadDashboard(true);
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
@@ -191,7 +185,7 @@ export default function DashboardPage() {
     (data.stats.total > 0 ? Math.round((data.stats.received / data.stats.total) * 100) : 0) : 0;
 
   return (
-    <DashboardLayout onNewNotification={handleNewNotification}>
+    <DashboardLayout>
       {/* Page Header */}
       <div className="flex items-center justify-between mb-8">
           <div>

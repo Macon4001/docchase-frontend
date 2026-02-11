@@ -17,10 +17,9 @@ import {
 
 interface DashboardLayoutProps {
   children: ReactNode;
-  onNewNotification?: () => void;
 }
 
-export function DashboardLayout({ children, onNewNotification }: DashboardLayoutProps) {
+export function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter();
 
   useEffect(() => {
@@ -76,7 +75,7 @@ export function DashboardLayout({ children, onNewNotification }: DashboardLayout
                   <span className="hidden sm:inline">Upgrade</span>
                 </Button>
               </Link>
-              <NotificationBell onNewNotification={onNewNotification} />
+              <NotificationBell />
               <Link href="/settings">
                 <Button variant="ghost" size="sm">
                   <Settings className="w-4 h-4" />

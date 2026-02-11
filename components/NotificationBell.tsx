@@ -23,11 +23,7 @@ function DriveIcon({ className }: { className?: string }) {
   );
 }
 
-interface NotificationBellProps {
-  onNewNotification?: () => void;
-}
-
-export function NotificationBell({ onNewNotification }: NotificationBellProps = {}) {
+export function NotificationBell() {
   const router = useRouter();
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);
