@@ -4,7 +4,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthClient } from '@/lib/auth-client';
 import { DashboardLayout } from '@/components/DashboardLayout';
-import { Mail, FileText, FolderOpen, Rocket, AlertTriangle } from 'lucide-react';
+import { Mail, FileText, FolderOpen, Rocket, AlertTriangle, User, Bot, Bell, AlertOctagon } from 'lucide-react';
 
 // Helper to ensure URL has protocol
 const ensureAbsoluteUrl = (url: string | undefined): string => {
@@ -367,9 +367,19 @@ function SettingsContent() {
 
         <div className="space-y-6">
           {/* Account Information */}
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">Account Information</h2>
-            <div className="space-y-4">
+          <div className="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden">
+            <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                  <User className="w-5 h-5 text-emerald-600" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">Account Information</h2>
+                  <p className="text-sm text-gray-600">Your email and practice details</p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Email
@@ -378,7 +388,7 @@ function SettingsContent() {
                   type="email"
                   value={settings?.email || ''}
                   disabled
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
                 />
                 <p className="mt-1 text-sm text-gray-500">Email cannot be changed</p>
               </div>
@@ -391,16 +401,26 @@ function SettingsContent() {
                   type="text"
                   value={practiceName}
                   onChange={(e) => setPracticeName(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                 />
               </div>
             </div>
           </div>
 
           {/* Amy Configuration */}
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">Amy AI Assistant</h2>
-            <div className="space-y-4">
+          <div className="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden">
+            <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <Bot className="w-5 h-5 text-purple-600" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">Amy AI Assistant</h2>
+                  <p className="text-sm text-gray-600">Configure your AI assistant</p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Assistant Name
@@ -409,7 +429,7 @@ function SettingsContent() {
                   type="text"
                   value={amyName}
                   onChange={(e) => setAmyName(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   placeholder="Amy"
                 />
               </div>
@@ -421,7 +441,7 @@ function SettingsContent() {
                 <select
                   value={amyTone}
                   onChange={(e) => setAmyTone(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                 >
                   <option value="friendly">Friendly</option>
                   <option value="professional">Professional</option>
@@ -436,7 +456,7 @@ function SettingsContent() {
                 <textarea
                   value={contactDetails}
                   onChange={(e) => setContactDetails(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
                   placeholder="e.g., Phone: 020 1234 5678 or Email: hello@yourpractice.com"
                   rows={3}
                 />
@@ -448,10 +468,10 @@ function SettingsContent() {
           </div>
 
           {/* Google Drive Integration */}
-          <div className="bg-white shadow-sm border border-gray-200 rounded-xl overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
+          <div className="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden">
+            <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-white rounded-lg shadow-sm flex items-center justify-center">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                   <svg className="w-6 h-6" viewBox="0 0 87.3 78">
                     <path fill="#0066da" d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z"/>
                     <path fill="#00ac47" d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z"/>
@@ -580,21 +600,31 @@ function SettingsContent() {
           </div>
 
           {/* Notifications */}
-          <div className="bg-white shadow rounded-lg p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">Email Notifications</h2>
-              <button
-                onClick={handleSendTestEmail}
-                disabled={sendingTestEmail || !notificationEmail}
-                className="px-3 py-1.5 text-sm font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                title={!notificationEmail ? "Enable email notifications first" : "Send a test email"}
-              >
-                <Mail className="w-4 h-4" />
-                {sendingTestEmail ? 'Sending...' : 'Send Test Email'}
-              </button>
+          <div className="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden">
+            <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <Bell className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-900">Email Notifications</h2>
+                    <p className="text-sm text-gray-600">Control your email preferences</p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleSendTestEmail}
+                  disabled={sendingTestEmail || !notificationEmail}
+                  className="px-3 py-2 text-sm font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  title={!notificationEmail ? "Enable email notifications first" : "Send a test email"}
+                >
+                  <Mail className="w-4 h-4" />
+                  {sendingTestEmail ? 'Sending...' : 'Send Test Email'}
+                </button>
+              </div>
             </div>
-
-            <div className="space-y-4">
+            <div className="p-6">
+              <div className="space-y-4">
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"
@@ -665,20 +695,24 @@ function SettingsContent() {
                   </p>
                 </div>
               )}
+              </div>
             </div>
           </div>
 
           {/* Danger Zone */}
-          <div className="bg-white shadow rounded-lg border-2 border-red-200 p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-              <h2 className="text-xl font-semibold text-red-900">Danger Zone</h2>
+          <div className="bg-white shadow-sm border-2 border-red-300 rounded-lg overflow-hidden">
+            <div className="border-b border-red-300 bg-red-50 px-6 py-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                  <AlertOctagon className="w-5 h-5 text-red-600" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-red-900">Danger Zone</h2>
+                  <p className="text-sm text-red-700">Permanent actions that cannot be undone</p>
+                </div>
+              </div>
             </div>
-            <p className="text-sm text-gray-600 mb-4">
-              These actions are permanent and cannot be undone. Please be certain before proceeding.
-            </p>
+            <div className="p-6">
 
             <div className="space-y-3">
               {/* Delete All Documents */}
@@ -722,6 +756,7 @@ function SettingsContent() {
                   Delete Account
                 </button>
               </div>
+            </div>
             </div>
           </div>
 
