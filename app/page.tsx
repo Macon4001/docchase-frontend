@@ -542,13 +542,38 @@ export default function Home() {
       {/* Footer */}
       <footer className="py-12 border-t" style={{ backgroundColor: '#f0fcf4' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-2">
-            <p className="text-sm" style={{ color: '#4c5663' }}>
-              © {new Date().getFullYear()} Gettingdocs. All rights reserved.
-            </p>
-            <p className="text-sm" style={{ color: '#4c5663' }}>
-              <span className={playfair.className}>Created by</span> Blue Haven Digital
-            </p>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="flex flex-col gap-2">
+              <p className="text-sm" style={{ color: '#4c5663' }}>
+                © {new Date().getFullYear()} Gettingdocs. All rights reserved.
+              </p>
+              <p className="text-sm" style={{ color: '#4c5663' }}>
+                <span className={playfair.className}>Created by</span> Blue Haven Digital
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-6">
+              <a
+                href="/privacy"
+                className="text-sm hover:underline transition-colors"
+                style={{ color: '#4c5663' }}
+              >
+                Privacy Policy
+              </a>
+              <a
+                href="/terms"
+                className="text-sm hover:underline transition-colors"
+                style={{ color: '#4c5663' }}
+              >
+                Terms & Conditions
+              </a>
+              <a
+                href="/contact"
+                className="text-sm hover:underline transition-colors"
+                style={{ color: '#4c5663' }}
+              >
+                Contact Us
+              </a>
+            </div>
           </div>
         </div>
       </footer>
