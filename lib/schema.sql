@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS accountants (
   twilio_phone_number VARCHAR(20),
   amy_name VARCHAR(50) DEFAULT 'Amy',
   amy_tone VARCHAR(20) DEFAULT 'friendly',
+  contact_details TEXT, -- e.g., "Phone: 07378827892" - Amy uses this when redirecting clients
   notification_email BOOLEAN DEFAULT true,
   notification_stuck BOOLEAN DEFAULT true,
   created_at TIMESTAMP DEFAULT NOW(),
@@ -89,6 +90,7 @@ CREATE TABLE IF NOT EXISTS documents (
   original_url VARCHAR(500),
   drive_file_id VARCHAR(255),
   drive_file_url VARCHAR(500),
+  drive_folder_id VARCHAR(255),
   csv_drive_file_id VARCHAR(255),
   csv_drive_file_url VARCHAR(500),
   conversion_status VARCHAR(20) DEFAULT 'pending',

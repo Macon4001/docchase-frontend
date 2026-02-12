@@ -42,6 +42,15 @@ function SettingsContent() {
   const [notificationEmail, setNotificationEmail] = useState(true);
   const [notificationStuck, setNotificationStuck] = useState(true);
 
+  // Danger zone state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteType, setDeleteType] = useState<'documents' | 'clients' | 'account' | null>(null);
+  const [deleteConfirmation, setDeleteConfirmation] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Test email state
+  const [sendingTestEmail, setSendingTestEmail] = useState(false);
+
   useEffect(() => {
     // Check for OAuth callback success/error
     const googleStatus = searchParams.get('google');
@@ -214,6 +223,118 @@ function SettingsContent() {
     } catch (error) {
       console.error('Error disconnecting Google Drive:', error);
       setMessage({ type: 'error', text: 'Failed to disconnect Google Drive' });
+    }
+  };
+
+  const openDeleteModal = (type: 'documents' | 'clients' | 'account') => {
+    setDeleteType(type);
+    setDeleteConfirmation('');
+    setShowDeleteModal(true);
+  };
+
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false);
+    setDeleteType(null);
+    setDeleteConfirmation('');
+  };
+
+  const handleDeleteData = async () => {
+    if (!deleteType) return;
+
+    setIsDeleting(true);
+    setMessage(null);
+
+    try {
+      const session = AuthClient.getSession();
+      if (!session) {
+        router.push('/login');
+        return;
+      }
+
+      if (deleteType === 'account') {
+        // Account deletion
+        const response = await fetch(`${API_URL}/api/settings/account`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${session.token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ confirmation: deleteConfirmation })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to delete account');
+        }
+
+        // Account deleted successfully - logout and redirect
+        AuthClient.logout();
+        return;
+      } else {
+        // Data deletion (documents or clients)
+        const response = await fetch(`${API_URL}/api/settings/data?type=${deleteType}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${session.token}`
+          }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to delete data');
+        }
+
+        setMessage({
+          type: 'success',
+          text: `Successfully deleted ${data.deletedCount} ${deleteType}${data.googleDrive?.deleted ? ` and ${data.googleDrive.deleted} files from Google Drive` : ''}`
+        });
+        closeDeleteModal();
+      }
+    } catch (error: any) {
+      console.error('Error deleting data:', error);
+      setMessage({ type: 'error', text: error.message || 'Failed to delete data' });
+      setIsDeleting(false);
+    }
+  };
+
+  const handleSendTestEmail = async () => {
+    setSendingTestEmail(true);
+    setMessage(null);
+
+    try {
+      const session = AuthClient.getSession();
+      if (!session) {
+        router.push('/login');
+        return;
+      }
+
+      const response = await fetch(`${API_URL}/api/notifications/test-email`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.token}`
+        }
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send test email');
+      }
+
+      setMessage({
+        type: 'success',
+        text: `Test email sent to ${settings?.email}! Check your inbox.`
+      });
+    } catch (error: any) {
+      console.error('Error sending test email:', error);
+      setMessage({
+        type: 'error',
+        text: error.message || 'Failed to send test email. Check your SMTP configuration.'
+      });
+    } finally {
+      setSendingTestEmail(false);
     }
   };
 
@@ -459,33 +580,129 @@ function SettingsContent() {
 
           {/* Notifications */}
           <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">Notifications</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold">Email Notifications</h2>
+              <button
+                onClick={handleSendTestEmail}
+                disabled={sendingTestEmail || !notificationEmail}
+                className="px-3 py-1.5 text-sm font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title={!notificationEmail ? "Enable email notifications first" : "Send a test email"}
+              >
+                {sendingTestEmail ? 'Sending...' : '📧 Send Test Email'}
+              </button>
+            </div>
+
             <div className="space-y-4">
-              <label className="flex items-center gap-3 cursor-pointer">
+              <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={notificationEmail}
                   onChange={(e) => setNotificationEmail(e.target.checked)}
-                  className="w-4 h-4 text-emerald-600 rounded focus:ring-2 focus:ring-emerald-500"
+                  className="w-4 h-4 mt-0.5 text-emerald-600 rounded focus:ring-2 focus:ring-emerald-500"
                 />
                 <div>
                   <p className="font-medium text-gray-900">Email notifications</p>
-                  <p className="text-sm text-gray-600">Receive email updates about campaigns</p>
+                  <p className="text-sm text-gray-600">
+                    Receive email alerts for document uploads, campaign updates, and important events
+                  </p>
                 </div>
               </label>
 
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={notificationStuck}
-                  onChange={(e) => setNotificationStuck(e.target.checked)}
-                  className="w-4 h-4 text-emerald-600 rounded focus:ring-2 focus:ring-emerald-500"
-                />
-                <div>
-                  <p className="font-medium text-gray-900">Stuck client alerts</p>
-                  <p className="text-sm text-gray-600">Get notified when clients haven't responded</p>
+              {notificationEmail && (
+                <div className="ml-7 space-y-3 pl-4 border-l-2 border-emerald-200">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={notificationStuck}
+                      onChange={(e) => setNotificationStuck(e.target.checked)}
+                      className="w-4 h-4 mt-0.5 text-emerald-600 rounded focus:ring-2 focus:ring-emerald-500"
+                    />
+                    <div>
+                      <p className="font-medium text-gray-900">Stuck client alerts</p>
+                      <p className="text-sm text-gray-600">
+                        Get notified when clients haven't responded after 9 days
+                      </p>
+                    </div>
+                  </label>
+
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <p className="text-sm text-blue-800">
+                      <strong>📬 You'll receive emails for:</strong>
+                    </p>
+                    <ul className="mt-2 space-y-1 text-sm text-blue-700">
+                      <li>• 📄 Document uploads from clients</li>
+                      <li>• 📁 Files saved to Google Drive</li>
+                      <li>• 🚀 Campaign starts and completions</li>
+                      {notificationStuck && <li>• ⚠️ Clients who need follow-up</li>}
+                    </ul>
+                  </div>
                 </div>
-              </label>
+              )}
+
+              {!notificationEmail && (
+                <div className="ml-7 bg-gray-50 border border-gray-200 rounded-lg p-3">
+                  <p className="text-sm text-gray-600">
+                    Enable email notifications to receive updates about your campaigns directly in your inbox.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Danger Zone */}
+          <div className="bg-white shadow rounded-lg border-2 border-red-200 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <h2 className="text-xl font-semibold text-red-900">Danger Zone</h2>
+            </div>
+            <p className="text-sm text-gray-600 mb-4">
+              These actions are permanent and cannot be undone. Please be certain before proceeding.
+            </p>
+
+            <div className="space-y-3">
+              {/* Delete All Documents */}
+              <div className="flex items-center justify-between p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div>
+                  <h3 className="font-medium text-gray-900">Delete All Documents</h3>
+                  <p className="text-sm text-gray-600">Remove all uploaded documents and Google Drive files</p>
+                </div>
+                <button
+                  onClick={() => openDeleteModal('documents')}
+                  className="px-4 py-2 text-sm font-medium text-red-600 bg-white hover:bg-red-100 border border-red-300 rounded-lg transition-colors"
+                >
+                  Delete Documents
+                </button>
+              </div>
+
+              {/* Delete All Clients */}
+              <div className="flex items-center justify-between p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div>
+                  <h3 className="font-medium text-gray-900">Delete All Clients</h3>
+                  <p className="text-sm text-gray-600">Remove all clients, messages, and associated data</p>
+                </div>
+                <button
+                  onClick={() => openDeleteModal('clients')}
+                  className="px-4 py-2 text-sm font-medium text-red-600 bg-white hover:bg-red-100 border border-red-300 rounded-lg transition-colors"
+                >
+                  Delete Clients
+                </button>
+              </div>
+
+              {/* Delete Account */}
+              <div className="flex items-center justify-between p-4 bg-red-100 border-2 border-red-400 rounded-lg">
+                <div>
+                  <h3 className="font-medium text-red-900">Delete Account</h3>
+                  <p className="text-sm text-red-700">Permanently delete your account and all associated data</p>
+                </div>
+                <button
+                  onClick={() => openDeleteModal('account')}
+                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 border border-red-700 rounded-lg transition-colors"
+                >
+                  Delete Account
+                </button>
+              </div>
             </div>
           </div>
 
@@ -506,6 +723,107 @@ function SettingsContent() {
             </button>
           </div>
         </div>
+
+        {/* Deletion Confirmation Modal */}
+        {showDeleteModal && deleteType && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {deleteType === 'account' ? 'Delete Account' : deleteType === 'documents' ? 'Delete All Documents' : 'Delete All Clients'}
+                  </h3>
+                  <p className="text-sm text-gray-600">This action cannot be undone</p>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                {deleteType === 'account' && (
+                  <>
+                    <p className="text-sm text-gray-700 mb-4">
+                      This will permanently delete your account and <strong>all associated data</strong>, including:
+                    </p>
+                    <ul className="list-disc list-inside text-sm text-gray-700 mb-4 space-y-1">
+                      <li>All clients and their information</li>
+                      <li>All campaigns and messages</li>
+                      <li>All documents (database and Google Drive)</li>
+                      <li>Your account settings and preferences</li>
+                    </ul>
+                    <p className="text-sm font-medium text-red-700 mb-4">
+                      To confirm, please type your email address: <span className="font-mono">{settings?.email}</span>
+                    </p>
+                  </>
+                )}
+                {deleteType === 'documents' && (
+                  <>
+                    <p className="text-sm text-gray-700 mb-4">
+                      This will permanently delete <strong>all documents</strong> from:
+                    </p>
+                    <ul className="list-disc list-inside text-sm text-gray-700 mb-4 space-y-1">
+                      <li>Your database records</li>
+                      <li>Google Drive (if connected)</li>
+                    </ul>
+                    <p className="text-sm font-medium text-red-700 mb-4">
+                      Type <span className="font-mono">DELETE</span> to confirm:
+                    </p>
+                  </>
+                )}
+                {deleteType === 'clients' && (
+                  <>
+                    <p className="text-sm text-gray-700 mb-4">
+                      This will permanently delete <strong>all clients</strong> and their:
+                    </p>
+                    <ul className="list-disc list-inside text-sm text-gray-700 mb-4 space-y-1">
+                      <li>Client information and contact details</li>
+                      <li>All messages and conversation history</li>
+                      <li>All documents (database and Google Drive)</li>
+                      <li>Campaign associations</li>
+                    </ul>
+                    <p className="text-sm font-medium text-red-700 mb-4">
+                      Type <span className="font-mono">DELETE</span> to confirm:
+                    </p>
+                  </>
+                )}
+
+                <input
+                  type="text"
+                  value={deleteConfirmation}
+                  onChange={(e) => setDeleteConfirmation(e.target.value)}
+                  placeholder={deleteType === 'account' ? settings?.email : 'DELETE'}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  autoFocus
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={closeDeleteModal}
+                  disabled={isDeleting}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteData}
+                  disabled={
+                    isDeleting ||
+                    (deleteType === 'account'
+                      ? deleteConfirmation !== settings?.email
+                      : deleteConfirmation !== 'DELETE')
+                  }
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:bg-red-300 disabled:cursor-not-allowed"
+                >
+                  {isDeleting ? 'Deleting...' : 'Delete Permanently'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );
