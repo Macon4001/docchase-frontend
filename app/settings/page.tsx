@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthClient } from '@/lib/auth-client';
 import { DashboardLayout } from '@/components/DashboardLayout';
+import { Mail, FileText, FolderOpen, Rocket, AlertTriangle } from 'lucide-react';
 
 // Helper to ensure URL has protocol
 const ensureAbsoluteUrl = (url: string | undefined): string => {
@@ -585,10 +586,11 @@ function SettingsContent() {
               <button
                 onClick={handleSendTestEmail}
                 disabled={sendingTestEmail || !notificationEmail}
-                className="px-3 py-1.5 text-sm font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-1.5 text-sm font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 title={!notificationEmail ? "Enable email notifications first" : "Send a test email"}
               >
-                {sendingTestEmail ? 'Sending...' : '📧 Send Test Email'}
+                <Mail className="w-4 h-4" />
+                {sendingTestEmail ? 'Sending...' : 'Send Test Email'}
               </button>
             </div>
 
@@ -626,14 +628,31 @@ function SettingsContent() {
                   </label>
 
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                    <p className="text-sm text-blue-800">
-                      <strong>📬 You'll receive emails for:</strong>
-                    </p>
-                    <ul className="mt-2 space-y-1 text-sm text-blue-700">
-                      <li>• 📄 Document uploads from clients</li>
-                      <li>• 📁 Files saved to Google Drive</li>
-                      <li>• 🚀 Campaign starts and completions</li>
-                      {notificationStuck && <li>• ⚠️ Clients who need follow-up</li>}
+                    <div className="flex items-center gap-2 mb-2">
+                      <Mail className="w-4 h-4 text-blue-800" />
+                      <p className="text-sm text-blue-800 font-semibold">
+                        You'll receive emails for:
+                      </p>
+                    </div>
+                    <ul className="mt-2 space-y-2 text-sm text-blue-700">
+                      <li className="flex items-center gap-2">
+                        <FileText className="w-4 h-4 flex-shrink-0" />
+                        Document uploads from clients
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <FolderOpen className="w-4 h-4 flex-shrink-0" />
+                        Files saved to Google Drive
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Rocket className="w-4 h-4 flex-shrink-0" />
+                        Campaign starts and completions
+                      </li>
+                      {notificationStuck && (
+                        <li className="flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                          Clients who need follow-up
+                        </li>
+                      )}
                     </ul>
                   </div>
                 </div>
