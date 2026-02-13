@@ -22,7 +22,8 @@ import {
   X,
   Sparkles,
   Copy,
-  CheckCircle
+  CheckCircle,
+  Calendar
 } from 'lucide-react';
 
 const ADMIN_EMAIL = 'macon4001@gmail.com';
@@ -34,6 +35,7 @@ interface BlogPost {
   content: string;
   excerpt: string | null;
   published: boolean;
+  scheduled_publish_at: string | null;
   created_at: string;
   updated_at: string;
   author_name: string;
@@ -96,6 +98,7 @@ export default function BlogAdminPage() {
     content: '',
     excerpt: '',
     published: false,
+    scheduled_publish_at: '',
   });
 
   useEffect(() => {
@@ -149,6 +152,7 @@ export default function BlogAdminPage() {
       content: '',
       excerpt: '',
       published: false,
+      scheduled_publish_at: '',
     });
   };
 
@@ -161,6 +165,7 @@ export default function BlogAdminPage() {
       content: post.content,
       excerpt: post.excerpt || '',
       published: post.published,
+      scheduled_publish_at: post.scheduled_publish_at ? new Date(post.scheduled_publish_at).toISOString().slice(0, 16) : '',
     });
   };
 
@@ -173,6 +178,7 @@ export default function BlogAdminPage() {
       content: '',
       excerpt: '',
       published: false,
+      scheduled_publish_at: '',
     });
   };
 
@@ -183,10 +189,15 @@ export default function BlogAdminPage() {
         return;
       }
 
+      const dataToSave = {
+        ...formData,
+        scheduled_publish_at: formData.scheduled_publish_at || null,
+      };
+
       if (editingPost) {
-        await apiClient.updateBlogPost(editingPost.id, formData);
+        await apiClient.updateBlogPost(editingPost.id, dataToSave);
       } else {
-        await apiClient.createBlogPost(formData);
+        await apiClient.createBlogPost(dataToSave);
       }
 
       await loadPosts();
@@ -375,19 +386,48 @@ export default function BlogAdminPage() {
                   />
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="published"
-                    checked={formData.published}
-                    onChange={(e) =>
-                      setFormData({ ...formData, published: e.target.checked })
-                    }
-                    className="w-4 h-4 text-emerald-600 rounded"
-                  />
-                  <label htmlFor="published" className="text-sm font-medium text-gray-700">
-                    Publish immediately
-                  </label>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="published"
+                      checked={formData.published}
+                      onChange={(e) => {
+                        setFormData({ ...formData, published: e.target.checked });
+                        // Clear schedule when publishing immediately
+                        if (e.target.checked) {
+                          setFormData({ ...formData, published: true, scheduled_publish_at: '' });
+                        }
+                      }}
+                      className="w-4 h-4 text-emerald-600 rounded"
+                    />
+                    <label htmlFor="published" className="text-sm font-medium text-gray-700">
+                      Publish immediately
+                    </label>
+                  </div>
+
+                  {!formData.published && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <Calendar className="w-4 h-4 inline mr-2" />
+                        Schedule for later (optional)
+                      </label>
+                      <Input
+                        type="datetime-local"
+                        value={formData.scheduled_publish_at}
+                        onChange={(e) =>
+                          setFormData({ ...formData, scheduled_publish_at: e.target.value })
+                        }
+                        className="w-full"
+                        min={new Date().toISOString().slice(0, 16)}
+                      />
+                      {formData.scheduled_publish_at && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          Will publish on {new Date(formData.scheduled_publish_at).toLocaleString()}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex gap-3 pt-4">
@@ -449,10 +489,16 @@ export default function BlogAdminPage() {
                             className={
                               post.published
                                 ? 'bg-green-50 text-green-700 border-green-200'
+                                : post.scheduled_publish_at
+                                ? 'bg-blue-50 text-blue-700 border-blue-200'
                                 : 'bg-gray-50 text-gray-700 border-gray-200'
                             }
                           >
-                            {post.published ? 'Published' : 'Draft'}
+                            {post.published
+                              ? 'Published'
+                              : post.scheduled_publish_at
+                              ? `Scheduled ${formatDistanceToNow(new Date(post.scheduled_publish_at), { addSuffix: true })}`
+                              : 'Draft'}
                           </Badge>
                         </div>
                         <p className="text-sm text-gray-600 mb-2">

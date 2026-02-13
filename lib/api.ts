@@ -187,6 +187,7 @@ class ApiClient {
     content: string;
     excerpt?: string;
     published: boolean;
+    scheduled_publish_at?: string | null;
   }) {
     return this.request('/api/blog', {
       method: 'POST',
@@ -200,6 +201,7 @@ class ApiClient {
     content: string;
     excerpt?: string;
     published: boolean;
+    scheduled_publish_at?: string | null;
   }) {
     return this.request(`/api/blog/${id}`, {
       method: 'PUT',
