@@ -166,6 +166,52 @@ class ApiClient {
   async getBillingInfo() {
     return this.request('/api/billing');
   }
+
+  // Blog (public)
+  async getBlogPosts() {
+    return this.request('/api/blog');
+  }
+
+  async getBlogPost(slug: string) {
+    return this.request(`/api/blog/${slug}`);
+  }
+
+  // Blog Admin (admin only)
+  async getAdminBlogPosts() {
+    return this.request('/api/blog/admin');
+  }
+
+  async createBlogPost(data: {
+    title: string;
+    slug: string;
+    content: string;
+    excerpt?: string;
+    published: boolean;
+  }) {
+    return this.request('/api/blog', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateBlogPost(id: string, data: {
+    title: string;
+    slug: string;
+    content: string;
+    excerpt?: string;
+    published: boolean;
+  }) {
+    return this.request(`/api/blog/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteBlogPost(id: string) {
+    return this.request(`/api/blog/${id}`, {
+      method: 'DELETE',
+    });
+  }
 }
 
 export const apiClient = new ApiClient(API_URL);

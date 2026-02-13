@@ -12,7 +12,8 @@ import {
   TrendingUp,
   Settings,
   LogOut,
-  Folder
+  Folder,
+  FileText
 } from 'lucide-react';
 
 interface DashboardLayoutProps {
@@ -36,6 +37,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   const session = AuthClient.getSession();
+  const isAdmin = session?.user.email === 'macon4001@gmail.com';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
@@ -69,6 +71,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   <span className="hidden sm:inline">Campaigns</span>
                 </Button>
               </Link>
+              {isAdmin && (
+                <Link href="/dashboard/blog">
+                  <Button variant="ghost" size="sm" className="gap-2">
+                    <FileText className="w-4 h-4" />
+                    <span className="hidden sm:inline">Blog</span>
+                  </Button>
+                </Link>
+              )}
               <Link href="/pricing">
                 <Button variant="ghost" size="sm" className="gap-2">
                   <TrendingUp className="w-4 h-4" />

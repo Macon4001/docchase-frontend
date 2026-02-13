@@ -110,6 +110,9 @@ export default function Home() {
               <span className="text-xl font-semibold">Gettingdocs</span>
             </div>
             <div className="flex items-center gap-4">
+              <Link href="/blog">
+                <Button variant="ghost">Blog</Button>
+              </Link>
               <Link href="/pricing">
                 <Button variant="ghost">Pricing</Button>
               </Link>
