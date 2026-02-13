@@ -147,7 +147,8 @@ export default function CampaignsPage() {
         </div>
 
         {/* Sidebar + Main Content Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">{/* Sidebar - Hidden on mobile, shown on large screens */}
+        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
+          {/* Sidebar - Hidden on mobile, shown on large screens */}
           <aside className="hidden lg:block">
             <CampaignsSidebar
               campaigns={campaigns}

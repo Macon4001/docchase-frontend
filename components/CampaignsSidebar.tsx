@@ -51,7 +51,7 @@ export function CampaignsSidebar({ campaigns, selectedFilter, onFilterChange }: 
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 sticky top-20">
       {/* Overall Statistics */}
       <Card>
         <CardHeader>
@@ -67,28 +67,28 @@ export function CampaignsSidebar({ campaigns, selectedFilter, onFilterChange }: 
                 <CheckCircle className="w-4 h-4 text-emerald-600" />
                 <span className="text-xs text-emerald-600 font-medium">Received</span>
               </div>
-              <div className="text-2xl font-bold text-emerald-700">{totalReceived}</div>
+              <div className="text-2xl font-bold text-emerald-700">{String(totalReceived)}</div>
             </div>
             <div className="bg-blue-50 rounded-lg p-3">
               <div className="flex items-center gap-2 mb-1">
                 <Clock className="w-4 h-4 text-blue-600" />
                 <span className="text-xs text-blue-600 font-medium">Pending</span>
               </div>
-              <div className="text-2xl font-bold text-blue-700">{totalPending}</div>
+              <div className="text-2xl font-bold text-blue-700">{String(totalPending)}</div>
             </div>
             <div className="bg-orange-50 rounded-lg p-3">
               <div className="flex items-center gap-2 mb-1">
                 <AlertCircle className="w-4 h-4 text-orange-600" />
                 <span className="text-xs text-orange-600 font-medium">Stuck</span>
               </div>
-              <div className="text-2xl font-bold text-orange-700">{totalStuck}</div>
+              <div className="text-2xl font-bold text-orange-700">{String(totalStuck)}</div>
             </div>
             <div className="bg-gray-50 rounded-lg p-3">
               <div className="flex items-center gap-2 mb-1">
                 <FileText className="w-4 h-4 text-gray-600" />
                 <span className="text-xs text-gray-600 font-medium">Total</span>
               </div>
-              <div className="text-2xl font-bold text-gray-700">{totalClients}</div>
+              <div className="text-2xl font-bold text-gray-700">{String(totalClients)}</div>
             </div>
           </div>
 
