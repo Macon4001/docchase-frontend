@@ -23,7 +23,9 @@ import {
   Sparkles,
   Copy,
   CheckCircle,
-  Calendar
+  Calendar,
+  Upload,
+  Image as ImageIcon
 } from 'lucide-react';
 
 const ADMIN_EMAIL = 'macon4001@gmail.com';
@@ -34,6 +36,7 @@ interface BlogPost {
   slug: string;
   content: string;
   excerpt: string | null;
+  image_url: string | null;
   published: boolean;
   scheduled_publish_at: string | null;
   created_at: string;
@@ -97,6 +100,7 @@ export default function BlogAdminPage() {
     slug: '',
     content: '',
     excerpt: '',
+    image_url: '',
     published: false,
     scheduled_publish_at: '',
   });
@@ -151,6 +155,7 @@ export default function BlogAdminPage() {
       slug: '',
       content: '',
       excerpt: '',
+      image_url: '',
       published: false,
       scheduled_publish_at: '',
     });
@@ -164,6 +169,7 @@ export default function BlogAdminPage() {
       slug: post.slug,
       content: post.content,
       excerpt: post.excerpt || '',
+      image_url: post.image_url || '',
       published: post.published,
       scheduled_publish_at: post.scheduled_publish_at ? new Date(post.scheduled_publish_at).toISOString().slice(0, 16) : '',
     });
@@ -177,6 +183,7 @@ export default function BlogAdminPage() {
       slug: '',
       content: '',
       excerpt: '',
+      image_url: '',
       published: false,
       scheduled_publish_at: '',
     });
@@ -223,6 +230,73 @@ export default function BlogAdminPage() {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '');
+  };
+
+  const parseMarkdownFrontmatter = (markdown: string) => {
+    // Check if the markdown has frontmatter (starts with ---)
+    const frontmatterRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
+    const match = markdown.match(frontmatterRegex);
+
+    if (match) {
+      const frontmatterText = match[1];
+      const content = match[2].trim();
+
+      // Parse frontmatter
+      const frontmatter: Record<string, string> = {};
+      frontmatterText.split('\n').forEach(line => {
+        const colonIndex = line.indexOf(':');
+        if (colonIndex > -1) {
+          const key = line.substring(0, colonIndex).trim();
+          const value = line.substring(colonIndex + 1).trim().replace(/^["']|["']$/g, '');
+          frontmatter[key] = value;
+        }
+      });
+
+      return {
+        title: frontmatter.title || '',
+        slug: frontmatter.slug || '',
+        excerpt: frontmatter.excerpt || '',
+        image_url: frontmatter.image_url || frontmatter.image || '',
+        content
+      };
+    }
+
+    // If no frontmatter, try to extract title from first heading
+    const firstHeading = markdown.match(/^#\s+(.+)$/m);
+    const title = firstHeading ? firstHeading[1] : '';
+    const contentWithoutTitle = firstHeading
+      ? markdown.replace(/^#\s+.+$/m, '').trim()
+      : markdown;
+
+    return {
+      title,
+      slug: title ? generateSlug(title) : '',
+      excerpt: '',
+      image_url: '',
+      content: contentWithoutTitle
+    };
+  };
+
+  const handleMarkdownImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const parsed = parseMarkdownFrontmatter(text);
+
+      setFormData({
+        ...formData,
+        title: parsed.title || formData.title,
+        slug: parsed.slug || (parsed.title ? generateSlug(parsed.title) : formData.slug),
+        content: parsed.content,
+        excerpt: parsed.excerpt || formData.excerpt,
+        image_url: parsed.image_url || formData.image_url,
+      });
+    } catch (err) {
+      setError('Failed to import markdown file');
+      console.error('Markdown import error:', err);
+    }
   };
 
   if (loading) {
@@ -313,9 +387,33 @@ export default function BlogAdminPage() {
         {(isCreating || editingPost) && (
           <Card className="mb-8 border-emerald-200 shadow-lg">
             <CardContent className="p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">
-                {editingPost ? 'Edit Post' : 'Create New Post'}
-              </h3>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-gray-900">
+                  {editingPost ? 'Edit Post' : 'Create New Post'}
+                </h3>
+                {!editingPost && (
+                  <div>
+                    <input
+                      type="file"
+                      accept=".md,.markdown"
+                      onChange={handleMarkdownImport}
+                      className="hidden"
+                      id="markdown-upload"
+                    />
+                    <label htmlFor="markdown-upload">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="gap-2 cursor-pointer"
+                        onClick={() => document.getElementById('markdown-upload')?.click()}
+                      >
+                        <Upload className="w-4 h-4" />
+                        Import Markdown
+                      </Button>
+                    </label>
+                  </div>
+                )}
+              </div>
 
               <div className="space-y-4">
                 <div>
@@ -369,6 +467,24 @@ export default function BlogAdminPage() {
                     className="w-full"
                     rows={2}
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <ImageIcon className="w-4 h-4 inline mr-2" />
+                    Image URL (Optional)
+                  </label>
+                  <Input
+                    value={formData.image_url}
+                    onChange={(e) =>
+                      setFormData({ ...formData, image_url: e.target.value })
+                    }
+                    placeholder="https://example.com/image.jpg"
+                    className="w-full"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Featured image for the blog post
+                  </p>
                 </div>
 
                 <div>
