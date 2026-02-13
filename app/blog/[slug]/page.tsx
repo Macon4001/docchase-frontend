@@ -287,19 +287,38 @@ export default function BlogPostPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white/80 backdrop-blur-sm border-t border-gray-200 mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center text-gray-600 text-sm">
-            <p className="font-medium">© 2025 GettingDocs. All rights reserved.</p>
-            <div className="flex justify-center gap-6 mt-4">
-              <Link href="/privacy" className="hover:text-emerald-600 transition-colors">
+      <footer className="py-12 border-t mt-20" style={{ backgroundColor: '#f0fcf4' }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="flex flex-col gap-2">
+              <p className="text-sm" style={{ color: '#4c5663' }}>
+                © {new Date().getFullYear()} Gettingdocs. All rights reserved.
+              </p>
+              <p className="text-sm" style={{ color: '#4c5663' }}>
+                Created by Blue Haven Digital
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-6">
+              <Link
+                href="/privacy"
+                className="text-sm hover:underline transition-colors"
+                style={{ color: '#4c5663' }}
+              >
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="hover:text-emerald-600 transition-colors">
-                Terms of Service
+              <Link
+                href="/terms"
+                className="text-sm hover:underline transition-colors"
+                style={{ color: '#4c5663' }}
+              >
+                Terms & Conditions
               </Link>
-              <Link href="/contact" className="hover:text-emerald-600 transition-colors">
-                Contact
+              <Link
+                href="/contact"
+                className="text-sm hover:underline transition-colors"
+                style={{ color: '#4c5663' }}
+              >
+                Contact Us
               </Link>
             </div>
           </div>
