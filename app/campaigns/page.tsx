@@ -12,6 +12,7 @@ import { AuthClient } from '@/lib/auth-client';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import { useNotifications } from '@/components/NotificationProvider';
+import { CampaignsSidebar } from '@/components/CampaignsSidebar';
 
 interface Campaign {
   id: string;
@@ -37,6 +38,7 @@ export default function CampaignsPage() {
     chaseLimit: number;
     chasesUsed: number;
   } | null>(null);
+  const [selectedFilter, setSelectedFilter] = useState('all');
 
   const loadBillingInfo = useCallback(async () => {
     try {
@@ -115,6 +117,12 @@ export default function CampaignsPage() {
     }
   };
 
+  // Filter campaigns based on selected filter
+  const filteredCampaigns = campaigns.filter(campaign => {
+    if (selectedFilter === 'all') return true;
+    return campaign.status === selectedFilter;
+  });
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center">
@@ -138,21 +146,38 @@ export default function CampaignsPage() {
           </Link>
         </div>
 
-        {campaigns.length === 0 ? (
+        {/* Sidebar + Main Content Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">{/* Sidebar - Hidden on mobile, shown on large screens */}
+          <aside className="hidden lg:block">
+            <CampaignsSidebar
+              campaigns={campaigns}
+              selectedFilter={selectedFilter}
+              onFilterChange={setSelectedFilter}
+            />
+          </aside>
+
+          {/* Main Content */}
+          <div>
+
+        {filteredCampaigns.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-16">
-              <p className="text-gray-600 mb-4">No campaigns yet</p>
-              <Link href="/campaigns/new">
-                <Button className="bg-emerald-600 hover:bg-emerald-700">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Your First Campaign
-                </Button>
-              </Link>
+              <p className="text-gray-600 mb-4">
+                {campaigns.length === 0 ? 'No campaigns yet' : 'No campaigns match this filter'}
+              </p>
+              {campaigns.length === 0 && (
+                <Link href="/campaigns/new">
+                  <Button className="bg-emerald-600 hover:bg-emerald-700">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create Your First Campaign
+                  </Button>
+                </Link>
+              )}
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {campaigns.map((campaign) => (
+          <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2">
+            {filteredCampaigns.map((campaign) => (
               <Card key={campaign.id} className="hover:shadow-lg transition-shadow h-full">
                 <Link href={`/campaigns/${campaign.id}`}>
                   <CardHeader className="cursor-pointer">
@@ -252,6 +277,8 @@ export default function CampaignsPage() {
             ))}
           </div>
         )}
+          </div>
+        </div>
 
         <UpgradeModal
           isOpen={showUpgradeModal}

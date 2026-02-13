@@ -180,40 +180,10 @@ export default function Home() {
               <span className="bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">for Documents Again</span>
             </h1>
 
-            <p className="text-xl md:text-2xl text-foreground/70 mb-6 leading-relaxed max-w-3xl mx-auto font-medium">
+            <p className="text-xl md:text-2xl text-foreground/70 mb-12 leading-relaxed max-w-3xl mx-auto font-medium">
               AI-powered WhatsApp assistant that automatically chases, collects,
               and organizes client documents while you focus on what matters.
             </p>
-
-            {/* Statistics Callout */}
-            <div className="mb-12 max-w-2xl mx-auto">
-              <div className="relative p-6 rounded-2xl bg-gradient-to-br from-emerald-50 to-green-50 border-2 border-emerald-200 shadow-lg">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center flex-shrink-0 shadow-md">
-                    <Clock className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-lg font-bold text-gray-900 mb-1">
-                      Accountants spend up to 3 hours daily chasing documents
-                    </p>
-                    <p className="text-base text-gray-700">
-                      Learn how to cut that time in half with smarter collection strategies
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <Badge variant="secondary" className="bg-white/80 text-emerald-700 hover:bg-white">
-                    Document Automation
-                  </Badge>
-                  <Badge variant="secondary" className="bg-white/80 text-emerald-700 hover:bg-white">
-                    Time Savings
-                  </Badge>
-                  <Badge variant="secondary" className="bg-white/80 text-emerald-700 hover:bg-white">
-                    Workflow Efficiency
-                  </Badge>
-                </div>
-              </div>
-            </div>
 
             {/* Phone with badges and buttons on the right */}
             <div className="grid lg:grid-cols-[1fr,auto,1fr] items-start gap-8 lg:gap-12 max-w-6xl mx-auto">
