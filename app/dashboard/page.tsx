@@ -131,40 +131,30 @@ export default function DashboardPage() {
       const campaignsResult = await apiClient.getCampaigns();
       const campaigns = campaignsResult.campaigns || [];
 
-      console.log('📊 All campaigns:', campaigns.map((c: Campaign) => ({
-        name: c.name,
-        status: c.status,
-        total_clients: c.total_clients
-      })));
-
-      // Find active campaign with most clients
+      // Filter to active campaigns
       const activeCampaigns = campaigns.filter((c: Campaign) => c.status === 'active');
 
-      console.log('✅ Active campaigns:', activeCampaigns.map((c: Campaign) => ({
-        name: c.name,
-        total_clients: c.total_clients
-      })));
+      if (activeCampaigns.length > 0) {
+        // Aggregate stats across ALL active campaigns
+        const aggregatedStats = activeCampaigns.reduce((acc, c) => ({
+          total_clients: acc.total_clients + (c.total_clients || 0),
+          received: acc.received + (c.received || 0),
+          pending: acc.pending + (c.pending || 0),
+          failed: acc.failed + (c.failed || 0),
+        }), { total_clients: 0, received: 0, pending: 0, failed: 0 });
 
-      const selectedCampaignFromList = activeCampaigns.sort((a: Campaign, b: Campaign) =>
-        (b.total_clients || 0) - (a.total_clients || 0)
-      )[0] || null;
-
-      console.log('🎯 Selected campaign:', selectedCampaignFromList?.name, 'with', selectedCampaignFromList?.total_clients, 'clients');
-
-      // If we have a campaign, fetch its full details (like campaign detail page does)
-      if (selectedCampaignFromList) {
-        const campaignDetails = await apiClient.getCampaign(selectedCampaignFromList.id);
-
-        // Merge the campaign data with stats
-        const fullCampaign: Campaign = {
-          ...campaignDetails.campaign,
-          total_clients: campaignDetails.stats?.total_clients,
-          received: campaignDetails.stats?.received,
-          pending: campaignDetails.stats?.pending,
-          failed: campaignDetails.stats?.failed,
+        // Create a virtual "All Campaigns" campaign with aggregated stats
+        const aggregatedCampaign: Campaign = {
+          id: 'all',
+          name: 'All Active Campaigns',
+          period: '',
+          document_type: '',
+          status: 'active',
+          created_at: new Date().toISOString(),
+          ...aggregatedStats
         };
 
-        setCampaign(fullCampaign);
+        setCampaign(aggregatedCampaign);
 
         // Load activity data
         const activityResult = await apiClient.getDashboardActivity();
@@ -393,43 +383,37 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Campaign Quick Actions */}
+        {/* Quick Actions */}
         {campaign && (
           <Card className="border-border">
             <CardHeader className="border-b border-border">
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-base font-semibold">Campaign Details</CardTitle>
+                  <CardTitle className="text-base font-semibold">Quick Actions</CardTitle>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {campaign.period} • {campaign.document_type.replace('_', ' ')}
+                    Manage your campaigns and clients
                   </p>
                 </div>
-                <Link href={`/campaigns/${campaign.id}`}>
-                  <Button variant="ghost" size="sm" className="gap-1">
-                    View full details
-                    <ArrowUpRight className="w-4 h-4" />
-                  </Button>
-                </Link>
               </div>
             </CardHeader>
             <CardContent className="p-6">
               <div className="grid grid-cols-3 gap-4">
-                <Link href={`/campaigns/${campaign.id}`} className="block">
+                <Link href="/clients" className="block">
                   <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
                     <Users className="w-5 h-5" />
-                    <span className="text-sm">View Clients</span>
-                  </Button>
-                </Link>
-                <Link href={`/campaigns/${campaign.id}/edit`} className="block">
-                  <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
-                    <FileText className="w-5 h-5" />
-                    <span className="text-sm">Edit Campaign</span>
+                    <span className="text-sm">All Clients</span>
                   </Button>
                 </Link>
                 <Link href="/campaigns" className="block">
                   <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
-                    <Plus className="w-5 h-5" />
+                    <FileText className="w-5 h-5" />
                     <span className="text-sm">All Campaigns</span>
+                  </Button>
+                </Link>
+                <Link href="/campaigns/new" className="block">
+                  <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
+                    <Plus className="w-5 h-5" />
+                    <span className="text-sm">New Campaign</span>
                   </Button>
                 </Link>
               </div>
