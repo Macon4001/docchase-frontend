@@ -144,7 +144,7 @@ export default function BlogPage() {
             <Button
               type="submit"
               disabled={subscribeLoading}
-              className="h-12 px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-medium"
+              className="h-12 px-8 bg-primary hover:bg-primary/90 text-white rounded-lg font-medium"
             >
               {subscribeLoading ? 'Subscribing...' : 'Subscribe'}
             </Button>
