@@ -45,44 +45,65 @@ interface BlogPost {
   author_email: string;
 }
 
-const AI_PROMPT_TEMPLATE = `Write a blog post about document collection and accounting best practices with the following structure:
+const AI_PROMPT_TEMPLATE = `You are an expert content writer specializing in accounting automation and document management. Write a comprehensive, professional blog post for Gettingdocs - an AI-powered WhatsApp assistant that helps accountants automate client document collection.
 
-# Structure Requirements:
-- **Title**: Create an engaging, SEO-friendly title (60-70 characters)
-- **Slug**: Generate a URL-friendly slug (lowercase, hyphens, no special chars)
-- **Excerpt**: Write a compelling 2-3 sentence summary (150-160 characters)
-- **Content**: Use proper markdown formatting with:
-  - H2 (##) for main sections
-  - H3 (###) for subsections
-  - Bullet points and numbered lists where appropriate
-  - Bold and italic for emphasis
-  - Code blocks if discussing technical topics
+# REQUIRED OUTPUT FORMAT:
+Return your response as a JSON object with these exact fields:
+{
+  "title": "Your SEO-optimized title (60-70 characters)",
+  "slug": "url-friendly-slug-here",
+  "excerpt": "Compelling 2-3 sentence summary (150-160 characters)",
+  "content": "Full article in markdown format"
+}
 
-# Content Structure:
-1. **Introduction** (2-3 paragraphs)
-   - Hook the reader
-   - State the problem or topic
-   - Preview what the article covers
+# CONTENT GUIDELINES:
 
-2. **Main Sections** (3-5 sections with H2 headings)
-   - Each section should be 2-4 paragraphs
-   - Use examples and practical tips
-   - Include actionable advice
+## Target Audience:
+- Accountants, bookkeepers, and finance professionals
+- Small to medium accounting firms
+- Practice managers looking to improve efficiency
 
-3. **Conclusion** (1-2 paragraphs)
-   - Summarize key takeaways
-   - Call to action
+## Writing Style:
+- Professional yet conversational tone
+- Clear, actionable advice
+- Data-driven insights when possible
+- Focus on practical solutions, not fluff
+- Address pain points accountants face daily
 
-# Topic Ideas:
-- Document collection best practices
-- How to chase documents efficiently
-- Client communication tips
-- Automation in accounting workflows
-- Time-saving tips for accountants
-- WhatsApp for business communication
-- GDPR compliance for document handling
+## Structure (use in the "content" field):
 
-Please write about: [YOUR TOPIC HERE]`;
+### 1. Introduction (2-3 paragraphs)
+- Start with a relatable scenario or pain point
+- Establish why this topic matters NOW
+- Preview the key takeaways
+
+### 2. Main Body (3-5 sections with ## headings)
+- Each section: 2-4 well-developed paragraphs
+- Include specific examples and use cases
+- Provide step-by-step guidance where relevant
+- Use subheadings (###) to break up longer sections
+- Add bullet points for lists and key points
+- Bold important terms and concepts
+
+### 3. Conclusion (1-2 paragraphs)
+- Recap 3-5 key takeaways
+- End with clear next steps or call to action
+- Tie back to how automation/Gettingdocs can help
+
+## Suggested Topics:
+- Automating repetitive document chasing tasks
+- Best practices for client communication via WhatsApp
+- How to reduce time spent on document collection by 80%
+- Managing document deadlines during tax season
+- GDPR-compliant document handling for accountants
+- Improving client response rates
+- Building scalable processes for growing practices
+- AI in accounting: practical applications today
+
+# YOUR TASK:
+Write a blog post about: [YOUR TOPIC HERE]
+
+Remember: Focus on solving real problems accountants face. Be specific, actionable, and authentic.`;
 
 export default function BlogAdminPage() {
   const router = useRouter();
