@@ -303,7 +303,7 @@ export default function BlogAdminPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600 font-medium">Loading...</p>
         </div>
       </div>
@@ -322,7 +322,7 @@ export default function BlogAdminPage() {
                 You don't have permission to access the blog admin area.
               </p>
               <Link href="/dashboard">
-                <Button className="bg-emerald-600 hover:bg-emerald-700">
+                <Button className="bg-primary hover:bg-primary/90">
                   Back to Dashboard
                 </Button>
               </Link>
@@ -363,7 +363,7 @@ export default function BlogAdminPage() {
             {!isCreating && !editingPost && (
               <Button
                 onClick={handleCreateNew}
-                className="gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600"
+                className="gap-2 bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90"
               >
                 <Plus className="w-4 h-4" />
                 New Post
@@ -385,7 +385,7 @@ export default function BlogAdminPage() {
 
         {/* Editor */}
         {(isCreating || editingPost) && (
-          <Card className="mb-8 border-emerald-200 shadow-lg">
+          <Card className="mb-8 border-primary/20 shadow-lg">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold text-gray-900">
@@ -515,7 +515,7 @@ export default function BlogAdminPage() {
                           setFormData({ ...formData, published: true, scheduled_publish_at: '' });
                         }
                       }}
-                      className="w-4 h-4 text-emerald-600 rounded"
+                      className="w-4 h-4 text-primary rounded"
                     />
                     <label htmlFor="published" className="text-sm font-medium text-gray-700">
                       Publish immediately
@@ -549,7 +549,7 @@ export default function BlogAdminPage() {
                 <div className="flex gap-3 pt-4">
                   <Button
                     onClick={handleSave}
-                    className="gap-2 bg-emerald-600 hover:bg-emerald-700"
+                    className="gap-2 bg-primary hover:bg-primary/90"
                   >
                     <Save className="w-4 h-4" />
                     Save Post
@@ -583,7 +583,7 @@ export default function BlogAdminPage() {
                   </p>
                   <Button
                     onClick={handleCreateNew}
-                    className="gap-2 bg-emerald-600 hover:bg-emerald-700"
+                    className="gap-2 bg-primary hover:bg-primary/90"
                   >
                     <Plus className="w-4 h-4" />
                     Create First Post

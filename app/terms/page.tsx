@@ -240,8 +240,8 @@ export default function TermsPage() {
                 For questions about these Terms, please contact us:
               </p>
               <ul className="list-none mb-4 text-gray-700">
-                <li><strong>Email:</strong> <a href="mailto:michael@gettingdocs.com" className="text-emerald-600 hover:text-emerald-700">michael@gettingdocs.com</a></li>
-                <li><strong>Support:</strong> <a href="/contact" className="text-emerald-600 hover:text-emerald-700">Contact Form</a></li>
+                <li><strong>Email:</strong> <a href="mailto:michael@gettingdocs.com" className="text-primary hover:text-primary">michael@gettingdocs.com</a></li>
+                <li><strong>Support:</strong> <a href="/contact" className="text-primary hover:text-primary">Contact Form</a></li>
               </ul>
               <p className="text-gray-700 font-semibold">
                 By using DocChase, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions.

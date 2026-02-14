@@ -127,7 +127,7 @@ export default function CampaignsPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600 font-medium">Loading campaigns...</p>
         </div>
       </div>
@@ -139,7 +139,7 @@ export default function CampaignsPage() {
       <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">Campaigns</h2>
           <Link href="/campaigns/new">
-            <Button className="gap-2 bg-emerald-600 hover:bg-emerald-700">
+            <Button className="gap-2 bg-primary hover:bg-primary/90">
               <Plus className="w-4 h-4" />
               New Campaign
             </Button>
@@ -168,7 +168,7 @@ export default function CampaignsPage() {
               </p>
               {campaigns.length === 0 && (
                 <Link href="/campaigns/new">
-                  <Button className="bg-emerald-600 hover:bg-emerald-700">
+                  <Button className="bg-primary hover:bg-primary/90">
                     <Plus className="mr-2 h-4 w-4" />
                     Create Your First Campaign
                   </Button>
@@ -202,9 +202,9 @@ export default function CampaignsPage() {
                   {campaign.status === 'active' && campaign.total_clients && campaign.total_clients > 0 ? (
                     <div className="mb-4 pb-4 border-b">
                       <div className="grid grid-cols-3 gap-2 text-center">
-                        <div className="bg-emerald-50 rounded-lg p-2">
-                          <div className="text-lg font-bold text-emerald-700">{campaign.received || 0}</div>
-                          <div className="text-xs text-emerald-600">Received</div>
+                        <div className="bg-primary/5 rounded-lg p-2">
+                          <div className="text-lg font-bold text-primary">{campaign.received || 0}</div>
+                          <div className="text-xs text-primary">Received</div>
                         </div>
                         <div className="bg-blue-50 rounded-lg p-2">
                           <div className="text-lg font-bold text-blue-700">{campaign.pending || 0}</div>
@@ -236,7 +236,7 @@ export default function CampaignsPage() {
                           onClick={(e) => handleStartCampaign(campaign.id, e)}
                           disabled={startingCampaignId === campaign.id}
                           size="sm"
-                          className="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400"
+                          className="flex-1 bg-primary hover:bg-primary/90 disabled:bg-primary/60"
                         >
                           {startingCampaignId === campaign.id ? (
                             <>

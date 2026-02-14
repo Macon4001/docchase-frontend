@@ -115,7 +115,7 @@ export default function NewCampaignPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600 font-medium">Loading clients...</p>
         </div>
       </div>
@@ -127,7 +127,7 @@ export default function NewCampaignPage() {
       <div className="max-w-3xl mx-auto">
         <Link
           href="/campaigns"
-          className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-emerald-600 mb-6 transition-colors"
+          className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-primary mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to campaigns
@@ -188,9 +188,9 @@ export default function NewCampaignPage() {
               </div>
 
               {/* Reminder Schedule Configuration */}
-              <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-lg space-y-4">
+              <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg space-y-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                     <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -266,7 +266,7 @@ export default function NewCampaignPage() {
                   </div>
                 </div>
 
-                <div className="space-y-2 pt-2 border-t border-emerald-200">
+                <div className="space-y-2 pt-2 border-t border-primary/20">
                   <Label htmlFor="reminderSendTime" className="text-sm font-medium text-gray-700">
                     Send Time
                   </Label>
@@ -325,13 +325,13 @@ export default function NewCampaignPage() {
                     {clients.map((client) => (
                       <div
                         key={client.id}
-                        className="flex items-center space-x-3 p-3 hover:bg-emerald-50 transition-colors"
+                        className="flex items-center space-x-3 p-3 hover:bg-primary/5 transition-colors"
                       >
                         <Checkbox
                           id={client.id}
                           checked={selectedClientIds.includes(client.id)}
                           onCheckedChange={() => toggleClient(client.id)}
-                          className="data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600"
+                          className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                         />
                         <label
                           htmlFor={client.id}
@@ -356,7 +356,7 @@ export default function NewCampaignPage() {
                 <Button
                   type="submit"
                   disabled={loading || clients.length === 0}
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400"
+                  className="flex-1 bg-primary hover:bg-primary/90 disabled:bg-primary/60"
                 >
                   {loading ? 'Creating...' : 'Create Campaign'}
                 </Button>

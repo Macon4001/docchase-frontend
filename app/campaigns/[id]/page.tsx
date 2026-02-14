@@ -150,7 +150,7 @@ export default function CampaignDetailPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600 font-medium">Loading campaign...</p>
         </div>
       </div>
@@ -191,9 +191,9 @@ export default function CampaignDetailPage() {
         )}
 
         {successMessage && (
-          <Alert className="mb-6 bg-emerald-50 border-emerald-200 border-2">
-            <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-            <AlertDescription className="text-emerald-900 font-medium">
+          <Alert className="mb-6 bg-primary/5 border-primary/20 border-2">
+            <CheckCircle2 className="h-5 w-5 text-primary" />
+            <AlertDescription className="text-primary font-medium">
               {successMessage}
             </AlertDescription>
           </Alert>
@@ -233,7 +233,7 @@ export default function CampaignDetailPage() {
                         onClick={handleStartCampaign}
                         disabled={starting}
                         size="lg"
-                        className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400"
+                        className="bg-primary hover:bg-primary/90 disabled:bg-primary/60"
                       >
                         {starting ? (
                           <>
@@ -288,7 +288,7 @@ export default function CampaignDetailPage() {
                     </p>
                     <div className="flex flex-wrap gap-1">
                       {campaign.reminder_day_3 && (
-                        <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 text-xs">
+                        <Badge className="bg-primary/10 text-primary hover:bg-primary/20 text-xs">
                           Day {campaign.reminder_1_days || 3}
                         </Badge>
                       )}
@@ -361,9 +361,9 @@ export default function CampaignDetailPage() {
                         <p className="text-2xl font-bold text-blue-700">{stats.pending}</p>
                         <p className="text-sm text-blue-600 mt-1">Pending</p>
                       </div>
-                      <div className="bg-emerald-50 rounded-lg p-4 text-center">
-                        <p className="text-2xl font-bold text-emerald-700">{stats.received}</p>
-                        <p className="text-sm text-emerald-600 mt-1">Received</p>
+                      <div className="bg-primary/5 rounded-lg p-4 text-center">
+                        <p className="text-2xl font-bold text-primary">{stats.received}</p>
+                        <p className="text-sm text-primary mt-1">Received</p>
                       </div>
                       <div className="bg-red-50 rounded-lg p-4 text-center">
                         <p className="text-2xl font-bold text-red-700">{stats.failed}</p>
@@ -381,7 +381,7 @@ export default function CampaignDetailPage() {
                         <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                           <div className="flex h-full">
                             <div
-                              className="bg-emerald-500 transition-all duration-500"
+                              className="bg-primary/50 transition-all duration-500"
                               style={{ width: `${(stats.received / stats.total_clients) * 100}%` }}
                             />
                             <div
@@ -392,7 +392,7 @@ export default function CampaignDetailPage() {
                         </div>
                         <div className="flex gap-4 text-xs text-gray-600">
                           <div className="flex items-center gap-1">
-                            <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+                            <div className="w-3 h-3 rounded-full bg-primary/50"></div>
                             <span>Received ({stats.received})</span>
                           </div>
                           <div className="flex items-center gap-1">
@@ -409,11 +409,11 @@ export default function CampaignDetailPage() {
 
                     {/* Status Messages */}
                     {stats.received === stats.total_clients ? (
-                      <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 flex items-start gap-3">
-                        <CheckCircle2 className="h-5 w-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                      <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 flex items-start gap-3">
+                        <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="text-sm font-medium text-emerald-900">All Documents Received!</p>
-                          <p className="text-xs text-emerald-700 mt-1">
+                          <p className="text-sm font-medium text-primary">All Documents Received!</p>
+                          <p className="text-xs text-primary mt-1">
                             All clients have submitted their documents.
                           </p>
                         </div>

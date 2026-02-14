@@ -70,11 +70,11 @@ export default function ContactPage() {
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Mail className="w-6 h-6 text-emerald-600" />
+                      <Mail className="w-6 h-6 text-primary" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
-                      <a href="mailto:michael@gettingdocs.com" className="text-emerald-600 hover:text-emerald-700">
+                      <a href="mailto:michael@gettingdocs.com" className="text-primary hover:text-primary">
                         michael@gettingdocs.com
                       </a>
                     </div>
@@ -82,7 +82,7 @@ export default function ContactPage() {
 
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Clock className="w-6 h-6 text-emerald-600" />
+                      <Clock className="w-6 h-6 text-primary" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-900 mb-1">Response Time</h3>
@@ -92,7 +92,7 @@ export default function ContactPage() {
 
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <HelpCircle className="w-6 h-6 text-emerald-600" />
+                      <HelpCircle className="w-6 h-6 text-primary" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-900 mb-1">Support</h3>
@@ -159,7 +159,7 @@ export default function ContactPage() {
                       required
                       value={formData.name}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                       placeholder="Your name"
                     />
                   </div>
@@ -175,7 +175,7 @@ export default function ContactPage() {
                       required
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                       placeholder="your@email.com"
                     />
                   </div>
@@ -191,7 +191,7 @@ export default function ContactPage() {
                       required
                       value={formData.subject}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                       placeholder="How can we help?"
                     />
                   </div>
@@ -207,7 +207,7 @@ export default function ContactPage() {
                       value={formData.message}
                       onChange={handleChange}
                       rows={6}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
                       placeholder="Tell us more about your question or issue..."
                     />
                   </div>
@@ -215,7 +215,7 @@ export default function ContactPage() {
                   <button
                     type="submit"
                     disabled={status === 'sending'}
-                    className="w-full px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors disabled:bg-emerald-400 disabled:cursor-not-allowed font-medium"
+                    className="w-full px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:bg-primary/60 disabled:cursor-not-allowed font-medium"
                   >
                     {status === 'sending' ? 'Sending...' : 'Send Message'}
                   </button>

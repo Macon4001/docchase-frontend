@@ -112,7 +112,7 @@ export function UpgradeModal({
           </Button>
           <Button
             onClick={handleUpgrade}
-            className="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 order-1 sm:order-2 shadow-lg"
+            className="w-full sm:w-auto bg-gradient-to-r from-primary to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 order-1 sm:order-2 shadow-lg"
           >
             <Zap className="h-4 w-4 mr-2" />
             View Plans & Upgrade

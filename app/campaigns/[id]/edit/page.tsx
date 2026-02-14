@@ -123,7 +123,7 @@ export default function EditCampaignPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600 font-medium">Loading campaign...</p>
         </div>
       </div>
@@ -151,7 +151,7 @@ export default function EditCampaignPage() {
       <div className="max-w-3xl mx-auto">
         <Link
           href={`/campaigns/${campaignId}`}
-          className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-emerald-600 mb-6 transition-colors"
+          className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-primary mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to campaign
@@ -219,9 +219,9 @@ export default function EditCampaignPage() {
               </div>
 
               {/* Reminder Schedule Configuration */}
-              <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-lg space-y-4">
+              <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg space-y-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                     <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -297,7 +297,7 @@ export default function EditCampaignPage() {
                   </div>
                 </div>
 
-                <div className="space-y-2 pt-2 border-t border-emerald-200">
+                <div className="space-y-2 pt-2 border-t border-primary/20">
                   <Label htmlFor="reminderSendTime" className="text-sm font-medium text-gray-700">
                     Send Time
                   </Label>
@@ -323,7 +323,7 @@ export default function EditCampaignPage() {
                 <Button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400"
+                  className="flex-1 bg-primary hover:bg-primary/90 disabled:bg-primary/60"
                 >
                   {saving ? 'Saving...' : 'Save Changes'}
                 </Button>

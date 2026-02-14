@@ -66,7 +66,7 @@ export default function BlogPostPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600 font-medium">Loading post...</p>
         </div>
       </div>
@@ -91,7 +91,7 @@ export default function BlogPostPage() {
                 </Button>
               </Link>
               <Link href="/">
-                <Button className="gap-2 bg-emerald-600 hover:bg-emerald-700">
+                <Button className="gap-2 bg-primary hover:bg-primary/90">
                   <Home className="w-4 h-4" />
                   Home
                 </Button>
@@ -110,7 +110,7 @@ export default function BlogPostPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Link
             href="/blog"
-            className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 transition-colors"
+            className="inline-flex items-center gap-2 text-primary hover:text-primary transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm font-medium">Back to Blog</span>
@@ -144,7 +144,7 @@ export default function BlogPostPage() {
           {/* Post Header */}
           <header className="mb-8">
             {!post.image_url && (
-              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-800 bg-clip-text text-transparent mb-6">
+              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-emerald-800 bg-clip-text text-transparent mb-6">
                 {post.title}
               </h1>
             )}
@@ -181,7 +181,7 @@ export default function BlogPostPage() {
             </div>
 
             {post.excerpt && (
-              <p className="text-xl text-gray-600 leading-relaxed mt-6 p-6 bg-gradient-to-r from-emerald-50 to-blue-50 rounded-xl border-l-4 border-emerald-500">
+              <p className="text-xl text-gray-600 leading-relaxed mt-6 p-6 bg-gradient-to-r from-emerald-50 to-blue-50 rounded-xl border-l-4 border-primary">
                 {post.excerpt}
               </p>
             )}
@@ -217,18 +217,18 @@ export default function BlogPostPage() {
                       <li className="text-gray-700 text-lg leading-relaxed" {...props} />
                     ),
                     a: ({ node, ...props }) => (
-                      <a className="text-emerald-600 hover:text-emerald-700 underline font-medium transition-colors" {...props} />
+                      <a className="text-primary hover:text-primary underline font-medium transition-colors" {...props} />
                     ),
                     blockquote: ({ node, ...props }) => (
                       <blockquote
-                        className="border-l-4 border-emerald-500 pl-6 pr-4 py-2 italic text-gray-700 my-6 bg-emerald-50/50 rounded-r-lg"
+                        className="border-l-4 border-primary pl-6 pr-4 py-2 italic text-gray-700 my-6 bg-primary/5/50 rounded-r-lg"
                         {...props}
                       />
                     ),
                     code: ({ node, inline, ...props }: any) =>
                       inline ? (
                         <code
-                          className="bg-emerald-50 text-emerald-800 px-2 py-1 rounded font-mono text-sm border border-emerald-200"
+                          className="bg-primary/5 text-emerald-800 px-2 py-1 rounded font-mono text-sm border border-primary/20"
                           {...props}
                         />
                       ) : (
@@ -275,7 +275,7 @@ export default function BlogPostPage() {
                   </Button>
                 </Link>
                 <Link href="/">
-                  <Button className="gap-2 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 shadow-lg">
+                  <Button className="gap-2 bg-gradient-to-r from-primary to-primary/90 hover:from-emerald-700 hover:to-emerald-800 shadow-lg">
                     <Home className="w-4 h-4" />
                     Go Home
                   </Button>

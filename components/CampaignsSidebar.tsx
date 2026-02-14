@@ -79,7 +79,7 @@ export function CampaignsSidebar({ campaigns, selectedFilter, onFilterChange }: 
               Statistics
             </h3>
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-emerald-50 rounded-lg p-3 border border-emerald-100">
+              <div className="bg-primary/5 rounded-lg p-3 border border-emerald-100">
                 <div className="flex items-center gap-2 mb-1">
                   <CheckCircle className="w-4 h-4 text-emerald-600" />
                   <span className="text-xs text-emerald-600 font-medium">Received</span>

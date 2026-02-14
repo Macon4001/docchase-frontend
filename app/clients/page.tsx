@@ -82,7 +82,7 @@ export default function ClientsPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600 font-medium">Loading clients...</p>
         </div>
       </div>
@@ -95,7 +95,7 @@ export default function ClientsPage() {
           <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">Clients</h2>
           <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
             <DialogTrigger asChild>
-              <Button className="bg-emerald-600 hover:bg-emerald-700">
+              <Button className="bg-primary hover:bg-primary/90">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Client
               </Button>
@@ -139,7 +139,7 @@ export default function ClientsPage() {
                   />
                 </div>
                 <div className="flex gap-3 pt-4">
-                  <Button type="submit" disabled={saving} className="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400">
+                  <Button type="submit" disabled={saving} className="flex-1 bg-primary hover:bg-primary/90 disabled:bg-primary/60">
                     {saving ? 'Adding...' : 'Add Client'}
                   </Button>
                   <Button
@@ -174,7 +174,7 @@ export default function ClientsPage() {
                 <p className="text-gray-600 mb-4">No clients yet</p>
                 <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
                   <DialogTrigger asChild>
-                    <Button className="bg-emerald-600 hover:bg-emerald-700">
+                    <Button className="bg-primary hover:bg-primary/90">
                       <Plus className="mr-2 h-4 w-4" />
                       Add Your First Client
                     </Button>
@@ -218,7 +218,7 @@ export default function ClientsPage() {
                         />
                       </div>
                       <div className="flex gap-3 pt-4">
-                        <Button type="submit" disabled={saving} className="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400">
+                        <Button type="submit" disabled={saving} className="flex-1 bg-primary hover:bg-primary/90 disabled:bg-primary/60">
                           {saving ? 'Adding...' : 'Add Client'}
                         </Button>
                         <Button

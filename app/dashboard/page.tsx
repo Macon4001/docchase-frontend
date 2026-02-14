@@ -40,7 +40,7 @@ interface Campaign {
 
 const COLORS = {
   primary: '#16a152',
-  success: '#10b981',
+  success: '#16a152',
   warning: '#f59e0b',
   danger: '#ef4444',
   blue: '#3b82f6',
@@ -70,7 +70,7 @@ function StatCard({
 }) {
   const colorClasses = {
     blue: 'text-blue-600 bg-blue-50',
-    green: 'text-emerald-600 bg-emerald-50',
+    green: 'text-primary bg-primary/5',
     orange: 'text-orange-600 bg-orange-50',
     red: 'text-red-600 bg-red-50',
     purple: 'text-purple-600 bg-purple-50',
@@ -85,7 +85,7 @@ function StatCard({
             <div className="flex items-baseline gap-2">
               <h3 className="text-3xl font-bold text-foreground">{value}</h3>
               {change && (
-                <Badge variant="outline" className={`gap-1 border-0 ${trend === 'up' ? 'text-emerald-700 bg-emerald-50' : 'text-red-700 bg-red-50'}`}>
+                <Badge variant="outline" className={`gap-1 border-0 ${trend === 'up' ? 'text-primary bg-primary/5' : 'text-red-700 bg-red-50'}`}>
                   {trend === 'up' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                   {change}
                 </Badge>
@@ -337,7 +337,7 @@ export default function DashboardPage() {
                 <CardTitle className="text-base font-semibold">Document Collection Activity</CardTitle>
                 <div className="flex items-center gap-4 text-sm">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-primary/50"></div>
                     <span className="text-muted-foreground">Received</span>
                   </div>
                   <div className="flex items-center gap-2">

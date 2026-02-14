@@ -204,8 +204,8 @@ export default function PrivacyPolicyPage() {
                 If you have questions about this Privacy Policy or wish to exercise your data rights, please contact us:
               </p>
               <ul className="list-none mb-4 text-gray-700">
-                <li><strong>Email:</strong> <a href="mailto:michael@gettingdocs.com" className="text-emerald-600 hover:text-emerald-700">michael@gettingdocs.com</a></li>
-                <li><strong>Support:</strong> <a href="/contact" className="text-emerald-600 hover:text-emerald-700">Contact Form</a></li>
+                <li><strong>Email:</strong> <a href="mailto:michael@gettingdocs.com" className="text-primary hover:text-primary">michael@gettingdocs.com</a></li>
+                <li><strong>Support:</strong> <a href="/contact" className="text-primary hover:text-primary">Contact Form</a></li>
               </ul>
               <p className="text-gray-700 font-semibold">
                 DocChase - Committed to protecting your privacy

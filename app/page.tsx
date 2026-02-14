@@ -261,7 +261,7 @@ export default function Home() {
                 <div className="flex flex-col gap-3">
                   {isAuthenticated ? (
                     <Link href="/dashboard" className="w-full">
-                      <Button size="lg" className="w-full h-12 px-8 text-base shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700">
+                      <Button size="lg" className="w-full h-12 px-8 text-base shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-primary/90">
                         Go to Dashboard
                         <ArrowRight className="ml-2 w-5 h-5" />
                       </Button>
@@ -269,7 +269,7 @@ export default function Home() {
                   ) : (
                     <>
                       <Link href="/register" className="w-full">
-                        <Button size="lg" className="w-full h-12 px-8 text-base shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700">
+                        <Button size="lg" className="w-full h-12 px-8 text-base shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-primary/90">
                           Start Free Trial
                           <ArrowRight className="ml-2 w-5 h-5" />
                         </Button>
@@ -532,7 +532,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
               {isAuthenticated ? (
                 <Link href="/dashboard">
-                  <Button size="lg" className="h-14 px-10 text-lg font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-2xl hover:shadow-3xl transition-all">
+                  <Button size="lg" className="h-14 px-10 text-lg font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-primary/90 shadow-2xl hover:shadow-3xl transition-all">
                     Go to Dashboard
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
@@ -540,7 +540,7 @@ export default function Home() {
               ) : (
                 <>
                   <Link href="/register">
-                    <Button size="lg" className="h-14 px-10 text-lg font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-2xl hover:shadow-3xl transition-all">
+                    <Button size="lg" className="h-14 px-10 text-lg font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-primary/90 shadow-2xl hover:shadow-3xl transition-all">
                       Start Free Trial
                       <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>

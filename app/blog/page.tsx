@@ -57,7 +57,7 @@ export default function BlogPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600 font-medium">Loading blog posts...</p>
         </div>
       </div>
@@ -71,7 +71,7 @@ export default function BlogPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <Link href="/" className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 mb-3 transition-colors">
+              <Link href="/" className="inline-flex items-center gap-2 text-primary hover:text-primary mb-3 transition-colors">
                 <Home className="w-4 h-4" />
                 <span className="text-sm font-medium">Back to Home</span>
               </Link>
@@ -80,7 +80,7 @@ export default function BlogPage() {
                   <BookOpen className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-800 bg-clip-text text-transparent">
+                  <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-emerald-800 bg-clip-text text-transparent">
                     Blog
                   </h1>
                   <p className="text-gray-600 text-sm mt-1">
@@ -110,7 +110,7 @@ export default function BlogPage() {
           <Card className="bg-white/80 backdrop-blur-sm border-none shadow-xl">
             <CardContent className="p-12 text-center">
               <div className="w-20 h-20 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                <FileText className="w-10 h-10 text-emerald-600" />
+                <FileText className="w-10 h-10 text-primary" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">
                 No blog posts yet
@@ -119,7 +119,7 @@ export default function BlogPage() {
                 Check back soon for articles and insights about document management and accounting best practices
               </p>
               <Link href="/">
-                <Button className="gap-2 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 shadow-lg">
+                <Button className="gap-2 bg-gradient-to-r from-primary to-primary/90 hover:from-emerald-700 hover:to-emerald-800 shadow-lg">
                   <Home className="w-4 h-4" />
                   Back to Home
                 </Button>
@@ -167,7 +167,7 @@ export default function BlogPage() {
                     </div>
 
                     {/* Title */}
-                    <h2 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-emerald-600 transition-colors">
+                    <h2 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-primary transition-colors">
                       {post.title}
                     </h2>
 
@@ -179,7 +179,7 @@ export default function BlogPage() {
                     )}
 
                     {/* Read More */}
-                    <div className="flex items-center gap-2 text-emerald-600 font-medium text-sm mt-auto">
+                    <div className="flex items-center gap-2 text-primary font-medium text-sm mt-auto">
                       <span>Read article</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
                     </div>
