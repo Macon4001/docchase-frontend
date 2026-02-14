@@ -163,14 +163,15 @@ export default function DashboardPage() {
 
         // Generate activity data from campaign creation dates and stats
         // Group campaigns by date and aggregate their stats
-        const activityMap = new Map<string, { received: number; pending: number }>();
+        const activityMap = new Map<string, { received: number; pending: number; failed: number }>();
 
         activeCampaigns.forEach((c: Campaign) => {
           const date = c.created_at.split('T')[0]; // Get YYYY-MM-DD
-          const existing = activityMap.get(date) || { received: 0, pending: 0 };
+          const existing = activityMap.get(date) || { received: 0, pending: 0, failed: 0 };
           activityMap.set(date, {
             received: existing.received + Number(c.received || 0),
             pending: existing.pending + Number(c.pending || 0),
+            failed: existing.failed + Number(c.failed || 0),
           });
         });
 
@@ -259,7 +260,8 @@ export default function DashboardPage() {
         date: format(new Date(item.date), 'MMM dd'),
         received: item.received,
         pending: item.pending,
-        total: item.received + item.pending
+        failed: item.failed || 0,
+        total: item.received + item.pending + (item.failed || 0)
       }))
     : Array.from({ length: 7 }, (_, i) => {
         const date = subDays(new Date(), 6 - i);
@@ -267,6 +269,7 @@ export default function DashboardPage() {
           date: format(date, 'MMM dd'),
           received: 0,
           pending: 0,
+          failed: 0,
           total: 0
         };
       });
@@ -337,12 +340,16 @@ export default function DashboardPage() {
                 <CardTitle className="text-base font-semibold">Document Collection Activity</CardTitle>
                 <div className="flex items-center gap-4 text-sm">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-primary/50"></div>
+                    <div className="w-3 h-3 rounded-full bg-primary"></div>
                     <span className="text-muted-foreground">Received</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-orange-500"></div>
                     <span className="text-muted-foreground">Pending</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                    <span className="text-muted-foreground">Failed</span>
                   </div>
                 </div>
               </div>
@@ -355,7 +362,6 @@ export default function DashboardPage() {
               <ResponsiveContainer width="100%" height={280}>
                 <BarChart
                   data={collectionActivity}
-                  barGap={4}
                   barCategoryGap="20%"
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
@@ -380,15 +386,24 @@ export default function DashboardPage() {
                   />
                   <Bar
                     dataKey="received"
+                    stackId="a"
                     fill={COLORS.success}
-                    radius={[6, 6, 0, 0]}
-                    maxBarSize={40}
+                    radius={[0, 0, 0, 0]}
+                    maxBarSize={60}
                   />
                   <Bar
                     dataKey="pending"
+                    stackId="a"
                     fill={COLORS.warning}
+                    radius={[0, 0, 0, 0]}
+                    maxBarSize={60}
+                  />
+                  <Bar
+                    dataKey="failed"
+                    stackId="a"
+                    fill={COLORS.danger}
                     radius={[6, 6, 0, 0]}
-                    maxBarSize={40}
+                    maxBarSize={60}
                   />
                 </BarChart>
               </ResponsiveContainer>
