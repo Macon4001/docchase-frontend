@@ -321,7 +321,7 @@ export default function NewCampaignPage() {
                     </Link>
                   </div>
                 ) : (
-                  <div className="border rounded-lg divide-y max-h-64 overflow-y-auto">
+                  <div className="border rounded-lg divide-y">
                     {clients.map((client) => (
                       <div
                         key={client.id}
