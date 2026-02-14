@@ -80,6 +80,10 @@ class ApiClient {
     return this.request('/api/dashboard');
   }
 
+  async getDashboardActivity() {
+    return this.request('/api/dashboard/activity');
+  }
+
   // Clients
   async getClients() {
     return this.request('/api/clients');

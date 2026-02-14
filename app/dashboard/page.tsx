@@ -118,10 +118,17 @@ function StatCard({
   );
 }
 
+interface ActivityData {
+  date: string;
+  received: number;
+  pending: number;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const { onNewNotification } = useNotifications();
   const [data, setData] = useState<DashboardData | null>(null);
+  const [activity, setActivity] = useState<ActivityData[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
@@ -133,8 +140,12 @@ export default function DashboardPage() {
       } else {
         setRefreshing(true);
       }
-      const result = await apiClient.getDashboard();
-      setData(result);
+      const [dashboardResult, activityResult] = await Promise.all([
+        apiClient.getDashboard(),
+        apiClient.getDashboardActivity()
+      ]);
+      setData(dashboardResult);
+      setActivity(activityResult.activity || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load dashboard');
     } finally {
@@ -203,18 +214,23 @@ export default function DashboardPage() {
   const completionRate = data?.stats?.total ?
     Math.round((data.stats.received / data.stats.total) * 100) : 0;
 
-  // Generate last 7 days collection activity (mock data - you can replace with real API data)
-  const collectionActivity = Array.from({ length: 7 }, (_, i) => {
-    const date = subDays(new Date(), 6 - i);
-    const received = Math.floor(Math.random() * 5);
-    const pending = Math.floor(Math.random() * 3);
-    return {
-      date: format(date, 'MMM dd'),
-      received,
-      pending,
-      total: received + pending
-    };
-  });
+  // Format activity data for the chart
+  const collectionActivity = activity.length > 0
+    ? activity.map(item => ({
+        date: format(new Date(item.date), 'MMM dd'),
+        received: item.received,
+        pending: item.pending,
+        total: item.received + item.pending
+      }))
+    : Array.from({ length: 7 }, (_, i) => {
+        const date = subDays(new Date(), 6 - i);
+        return {
+          date: format(date, 'MMM dd'),
+          received: 0,
+          pending: 0,
+          total: 0
+        };
+      });
 
   const statusData = [
     { name: 'Received', value: data?.stats?.received || 0, color: COLORS.success },
