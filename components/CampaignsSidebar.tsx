@@ -67,7 +67,7 @@ export function CampaignsSidebar({ campaigns, selectedFilter, onFilterChange }: 
       <Card className="border-2">
         <CardHeader className="pb-4">
           <CardTitle className="text-xl flex items-center gap-2">
-            <LayoutGrid className="w-5 h-5 text-emerald-600" />
+            <LayoutGrid className="w-5 h-5 text-primary" />
             Campaign Overview
           </CardTitle>
         </CardHeader>
@@ -79,12 +79,12 @@ export function CampaignsSidebar({ campaigns, selectedFilter, onFilterChange }: 
               Statistics
             </h3>
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-primary/5 rounded-lg p-3 border border-emerald-100">
+              <div className="bg-primary/5 rounded-lg p-3 border border-primary/20">
                 <div className="flex items-center gap-2 mb-1">
-                  <CheckCircle className="w-4 h-4 text-emerald-600" />
-                  <span className="text-xs text-emerald-600 font-medium">Received</span>
+                  <CheckCircle className="w-4 h-4 text-primary" />
+                  <span className="text-xs text-primary font-medium">Received</span>
                 </div>
-                <div className="text-2xl font-bold text-emerald-700">{totalReceived.toString()}</div>
+                <div className="text-2xl font-bold text-primary">{totalReceived.toString()}</div>
               </div>
               <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
                 <div className="flex items-center gap-2 mb-1">
@@ -119,7 +119,7 @@ export function CampaignsSidebar({ campaigns, selectedFilter, onFilterChange }: 
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2.5">
                   <div
-                    className="bg-emerald-600 h-2.5 rounded-full transition-all duration-300"
+                    className="bg-primary h-2.5 rounded-full transition-all duration-300"
                     style={{ width: `${progressPercentage}%` }}
                   />
                 </div>
@@ -140,7 +140,7 @@ export function CampaignsSidebar({ campaigns, selectedFilter, onFilterChange }: 
                   variant={selectedFilter === filter.id ? 'default' : 'ghost'}
                   className={`w-full justify-between ${
                     selectedFilter === filter.id
-                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                      ? 'bg-primary hover:bg-primary/90 text-white'
                       : 'hover:bg-gray-100'
                   }`}
                   onClick={() => onFilterChange(filter.id)}
@@ -148,7 +148,7 @@ export function CampaignsSidebar({ campaigns, selectedFilter, onFilterChange }: 
                   <span className="capitalize">{filter.label}</span>
                   <Badge
                     variant={selectedFilter === filter.id ? 'secondary' : 'outline'}
-                    className={selectedFilter === filter.id ? 'bg-emerald-700 text-white border-emerald-800' : ''}
+                    className={selectedFilter === filter.id ? 'bg-primary/90 text-white border-primary' : ''}
                   >
                     {filter.count}
                   </Badge>
