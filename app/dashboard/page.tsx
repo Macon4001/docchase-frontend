@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, format, subDays } from 'date-fns';
 import { AuthClient } from '@/lib/auth-client';
 import { apiClient } from '@/lib/api';
 import { AppLayout } from '@/components/AppLayout';
@@ -19,7 +19,9 @@ import {
   Clock,
   AlertCircle,
   Plus,
-  ArrowUpRight
+  ArrowUpRight,
+  FileText,
+  MessageSquare
 } from 'lucide-react';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -51,7 +53,7 @@ interface DashboardData {
 }
 
 const COLORS = {
-  primary: '#6366f1',
+  primary: '#15a349',
   success: '#10b981',
   warning: '#f59e0b',
   danger: '#ef4444',
@@ -69,7 +71,8 @@ function StatCard({
   change,
   trend,
   icon: Icon,
-  color = 'blue'
+  color = 'blue',
+  subtitle
 }: {
   title: string;
   value: string | number;
@@ -77,6 +80,7 @@ function StatCard({
   trend?: 'up' | 'down';
   icon: any;
   color?: 'blue' | 'green' | 'orange' | 'red' | 'purple';
+  subtitle?: string;
 }) {
   const colorClasses = {
     blue: 'text-blue-600 bg-blue-50',
@@ -101,6 +105,9 @@ function StatCard({
                 </Badge>
               )}
             </div>
+            {subtitle && (
+              <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
+            )}
           </div>
           <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${colorClasses[color]}`}>
             <Icon className="w-6 h-6" />
@@ -192,27 +199,31 @@ export default function DashboardPage() {
     );
   }
 
-  // Prepare chart data
-  const revenueData = [
-    { date: '1 Jul', grossMargin: 35, revenue: 45 },
-    { date: '2 Jul', grossMargin: 45, revenue: 50 },
-    { date: '3 Jul', grossMargin: 25, revenue: 55 },
-    { date: '4 Jul', grossMargin: 40, revenue: 50 },
-    { date: '5 Jul', grossMargin: 55, revenue: 60 },
-    { date: '6 Jul', grossMargin: 60, revenue: 65 },
-    { date: '7 Jul', grossMargin: 35, revenue: 70 },
-    { date: '8 Jul', grossMargin: 45, revenue: 75 },
-    { date: '9 Jul', grossMargin: 50, revenue: 80 },
-    { date: '10 Jul', grossMargin: 55, revenue: 85 },
-    { date: '11 Jul', grossMargin: 45, revenue: 90 },
-    { date: '12 Jul', grossMargin: 60, revenue: 95 },
-  ];
+  // Calculate completion rate
+  const completionRate = data?.stats?.total ?
+    Math.round((data.stats.received / data.stats.total) * 100) : 0;
 
-  const categoryData = [
+  // Generate last 7 days collection activity (mock data - you can replace with real API data)
+  const collectionActivity = Array.from({ length: 7 }, (_, i) => {
+    const date = subDays(new Date(), 6 - i);
+    const received = Math.floor(Math.random() * 5);
+    const pending = Math.floor(Math.random() * 3);
+    return {
+      date: format(date, 'MMM dd'),
+      received,
+      pending,
+      total: received + pending
+    };
+  });
+
+  const statusData = [
     { name: 'Received', value: data?.stats?.received || 0, color: COLORS.success },
     { name: 'Pending', value: data?.stats?.pending || 0, color: COLORS.warning },
     { name: 'Failed', value: data?.stats?.failed || 0, color: COLORS.danger },
   ];
+
+  // Calculate average response time (mock - replace with real data)
+  const avgResponseTime = '2.5 days';
 
   return (
     <AppLayout>
@@ -238,68 +249,65 @@ export default function DashboardPage() {
           <StatCard
             title="Total Clients"
             value={data?.stats?.total || 0}
-            change="2.5%"
-            trend="up"
+            subtitle="In active campaigns"
             icon={Users}
             color="blue"
           />
           <StatCard
-            title="Total Revenue"
-            value={`$${((data?.stats?.received || 0) * 3500).toLocaleString()}`}
-            change="0.5%"
-            trend="up"
-            icon={TrendingUp}
-            color="green"
-          />
-          <StatCard
-            title="Received"
+            title="Documents Collected"
             value={data?.stats?.received || 0}
-            icon={CheckCircle2}
+            subtitle={`${completionRate}% completion rate`}
+            icon={FileText}
             color="green"
           />
           <StatCard
-            title="Pending"
+            title="Awaiting Documents"
             value={data?.stats?.pending || 0}
+            subtitle="Being chased"
             icon={Clock}
             color="orange"
+          />
+          <StatCard
+            title="Avg Response Time"
+            value={avgResponseTime}
+            subtitle="From initial message"
+            icon={MessageSquare}
+            color="purple"
           />
         </div>
 
         {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Product Sales Chart */}
+          {/* Collection Activity Chart */}
           <Card className="lg:col-span-2 border-border">
             <CardHeader className="border-b border-border">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-base font-semibold">Product sales</CardTitle>
+                <CardTitle className="text-base font-semibold">Document Collection Activity</CardTitle>
                 <div className="flex items-center gap-4 text-sm">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                    <span className="text-muted-foreground">Gross margin</span>
+                    <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+                    <span className="text-muted-foreground">Received</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-orange-500"></div>
-                    <span className="text-muted-foreground">Revenue</span>
+                    <span className="text-muted-foreground">Pending</span>
                   </div>
                 </div>
               </div>
               <div className="flex items-baseline gap-2 mt-2">
-                <span className="text-2xl font-bold">$52,187</span>
-                <Badge variant="outline" className="gap-1 border-0 text-emerald-700 bg-emerald-50">
-                  <TrendingUp className="w-3 h-3" />
-                  2.5%
-                </Badge>
+                <span className="text-2xl font-bold">{data?.stats?.received || 0}</span>
+                <span className="text-sm text-muted-foreground">documents collected this week</span>
               </div>
             </CardHeader>
             <CardContent className="p-6">
               <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={revenueData}>
+                <BarChart data={collectionActivity}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                   <XAxis dataKey="date" tick={{ fill: '#6b7280', fontSize: 12 }} />
                   <YAxis tick={{ fill: '#6b7280', fontSize: 12 }} />
                   <Tooltip />
-                  <Bar dataKey="grossMargin" fill={COLORS.blue} radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="revenue" fill={COLORS.orange} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="received" fill={COLORS.success} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="pending" fill={COLORS.warning} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -308,13 +316,14 @@ export default function DashboardPage() {
           {/* Status Distribution */}
           <Card className="border-border">
             <CardHeader className="border-b border-border">
-              <CardTitle className="text-base font-semibold">Document Status</CardTitle>
+              <CardTitle className="text-base font-semibold">Collection Status</CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">Current campaign breakdown</p>
             </CardHeader>
             <CardContent className="p-6">
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height={200}>
                 <PieChart>
                   <Pie
-                    data={categoryData}
+                    data={statusData}
                     cx="50%"
                     cy="50%"
                     innerRadius={60}
@@ -322,7 +331,7 @@ export default function DashboardPage() {
                     paddingAngle={2}
                     dataKey="value"
                   >
-                    {categoryData.map((entry, index) => (
+                    {statusData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
@@ -330,7 +339,7 @@ export default function DashboardPage() {
                 </PieChart>
               </ResponsiveContainer>
               <div className="mt-4 space-y-2">
-                {categoryData.map((item) => (
+                {statusData.map((item) => (
                   <div key={item.name} className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
@@ -348,7 +357,10 @@ export default function DashboardPage() {
         <Card className="border-border">
           <CardHeader className="border-b border-border">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base font-semibold">Recent Activity</CardTitle>
+              <div>
+                <CardTitle className="text-base font-semibold">Recent Activity</CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">Latest client interactions</p>
+              </div>
               <Link href="/clients">
                 <Button variant="ghost" size="sm" className="gap-1">
                   View all
@@ -392,7 +404,9 @@ export default function DashboardPage() {
                 ))
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
-                  No recent activity
+                  <FileText className="w-12 h-12 mx-auto mb-2 opacity-20" />
+                  <p>No recent activity</p>
+                  <p className="text-xs mt-1">Create a campaign to start collecting documents</p>
                 </div>
               )}
             </div>
