@@ -263,32 +263,32 @@ export default function DashboardPage() {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
-            title="Total Clients"
+            title="Total Chases"
             value={data?.stats?.total || 0}
-            subtitle="In active campaigns"
+            subtitle="Document requests sent"
             icon={Users}
             color="blue"
           />
           <StatCard
-            title="Documents Collected"
+            title="Received"
             value={data?.stats?.received || 0}
             subtitle={`${completionRate}% completion rate`}
-            icon={FileText}
+            icon={CheckCircle2}
             color="green"
           />
           <StatCard
-            title="Awaiting Documents"
+            title="Pending"
             value={data?.stats?.pending || 0}
             subtitle="Being chased"
             icon={Clock}
             color="orange"
           />
           <StatCard
-            title="Avg Response Time"
-            value={avgResponseTime}
-            subtitle="From initial message"
-            icon={MessageSquare}
-            color="purple"
+            title="Failed"
+            value={data?.stats?.failed || 0}
+            subtitle="Unsuccessful attempts"
+            icon={AlertCircle}
+            color="red"
           />
         </div>
 
@@ -311,8 +311,8 @@ export default function DashboardPage() {
                 </div>
               </div>
               <div className="flex items-baseline gap-2 mt-2">
-                <span className="text-2xl font-bold">{data?.stats?.received || 0}</span>
-                <span className="text-sm text-muted-foreground">documents collected this week</span>
+                <span className="text-2xl font-bold">{data?.stats?.total || 0}</span>
+                <span className="text-sm text-muted-foreground">total chases • {data?.stats?.received || 0} received</span>
               </div>
             </CardHeader>
             <CardContent className="p-6">
