@@ -130,7 +130,7 @@ export default function BlogPage() {
           <h1 className={`text-5xl md:text-6xl font-bold text-gray-900 mb-6 ${playfair.className}`}>
             Document Collection Insights
           </h1>
-          <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-2xl mx-auto font-medium">
             Subscribe to learn about automated document collection, best practices for accounting firms, and product updates.
           </p>
 
