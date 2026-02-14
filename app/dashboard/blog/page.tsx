@@ -367,17 +367,17 @@ export default function BlogAdminPage() {
             <Button
               onClick={handleCopyPrompt}
               variant="outline"
-              className="gap-2 border-purple-300 text-purple-700 hover:bg-purple-50"
+              className="gap-2 border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50 text-purple-700 hover:from-purple-100 hover:to-pink-100 hover:border-purple-300 shadow-sm hover:shadow-md transition-all duration-200"
             >
               {promptCopied ? (
                 <>
-                  <CheckCircle className="w-4 h-4" />
-                  Copied!
+                  <CheckCircle className="w-4 h-4 text-green-600" />
+                  <span className="font-medium">Copied to Clipboard!</span>
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-4 h-4" />
-                  Copy AI Prompt
+                  <Sparkles className="w-4 h-4 animate-pulse" />
+                  <span className="font-medium">Copy AI Prompt Template</span>
                 </>
               )}
             </Button>
