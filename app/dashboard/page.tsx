@@ -131,11 +131,25 @@ export default function DashboardPage() {
       const campaignsResult = await apiClient.getCampaigns();
       const campaigns = campaignsResult.campaigns || [];
 
+      console.log('📊 All campaigns:', campaigns.map((c: Campaign) => ({
+        name: c.name,
+        status: c.status,
+        total_clients: c.total_clients
+      })));
+
       // Find active campaign with most clients
       const activeCampaigns = campaigns.filter((c: Campaign) => c.status === 'active');
+
+      console.log('✅ Active campaigns:', activeCampaigns.map((c: Campaign) => ({
+        name: c.name,
+        total_clients: c.total_clients
+      })));
+
       const selectedCampaignFromList = activeCampaigns.sort((a: Campaign, b: Campaign) =>
         (b.total_clients || 0) - (a.total_clients || 0)
       )[0] || null;
+
+      console.log('🎯 Selected campaign:', selectedCampaignFromList?.name, 'with', selectedCampaignFromList?.total_clients, 'clients');
 
       // If we have a campaign, fetch its full details (like campaign detail page does)
       if (selectedCampaignFromList) {
