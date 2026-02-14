@@ -389,14 +389,14 @@ export default function DashboardPage() {
                     dataKey="received"
                     stackId="a"
                     fill={COLORS.success}
-                    radius={[0, 0, 6, 6]}
+                    radius={[6, 6, 0, 0]}
                     maxBarSize={60}
                   />
                   <Bar
                     dataKey="pending"
                     stackId="a"
                     fill={COLORS.warning}
-                    radius={[0, 0, 0, 0]}
+                    radius={[6, 6, 0, 0]}
                     maxBarSize={60}
                   />
                   <Bar
