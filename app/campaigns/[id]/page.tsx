@@ -50,7 +50,7 @@ export default function CampaignDetailPage() {
     total_clients: number;
     pending: number;
     received: number;
-    stuck: number;
+    failed: number;
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
@@ -365,9 +365,9 @@ export default function CampaignDetailPage() {
                         <p className="text-2xl font-bold text-emerald-700">{stats.received}</p>
                         <p className="text-sm text-emerald-600 mt-1">Received</p>
                       </div>
-                      <div className="bg-orange-50 rounded-lg p-4 text-center">
-                        <p className="text-2xl font-bold text-orange-700">{stats.stuck}</p>
-                        <p className="text-sm text-orange-600 mt-1">Stuck</p>
+                      <div className="bg-red-50 rounded-lg p-4 text-center">
+                        <p className="text-2xl font-bold text-red-700">{stats.failed}</p>
+                        <p className="text-sm text-red-600 mt-1">Failed</p>
                       </div>
                     </div>
 
@@ -385,8 +385,8 @@ export default function CampaignDetailPage() {
                               style={{ width: `${(stats.received / stats.total_clients) * 100}%` }}
                             />
                             <div
-                              className="bg-orange-400 transition-all duration-500"
-                              style={{ width: `${(stats.stuck / stats.total_clients) * 100}%` }}
+                              className="bg-red-500 transition-all duration-500"
+                              style={{ width: `${(stats.failed / stats.total_clients) * 100}%` }}
                             />
                           </div>
                         </div>
@@ -400,8 +400,8 @@ export default function CampaignDetailPage() {
                             <span>Pending ({stats.pending})</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <div className="w-3 h-3 rounded-full bg-orange-400"></div>
-                            <span>Stuck ({stats.stuck})</span>
+                            <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                            <span>Failed ({stats.failed})</span>
                           </div>
                         </div>
                       </div>
@@ -425,7 +425,7 @@ export default function CampaignDetailPage() {
                           <p className="text-sm font-medium text-blue-900">Campaign In Progress</p>
                           <p className="text-xs text-blue-700 mt-1">
                             Waiting for {stats.pending} client{stats.pending !== 1 ? 's' : ''} to respond.
-                            {stats.stuck > 0 && ` ${stats.stuck} client${stats.stuck !== 1 ? 's' : ''} flagged as stuck.`}
+                            {stats.failed > 0 && ` ${stats.failed} client${stats.failed !== 1 ? 's' : ''} flagged as failed.`}
                           </p>
                         </div>
                       </div>

@@ -23,7 +23,7 @@ interface Campaign {
   total_clients?: number;
   pending?: number;
   received?: number;
-  stuck?: number;
+  failed?: number;
 }
 
 interface CampaignsSidebarProps {
@@ -43,13 +43,13 @@ export function CampaignsSidebar({ campaigns, selectedFilter, onFilterChange }: 
   let totalClients = 0;
   let totalReceived = 0;
   let totalPending = 0;
-  let totalStuck = 0;
+  let totalFailed = 0;
 
   campaigns.forEach(campaign => {
     totalClients += Number(campaign.total_clients) || 0;
     totalReceived += Number(campaign.received) || 0;
     totalPending += Number(campaign.pending) || 0;
-    totalStuck += Number(campaign.stuck) || 0;
+    totalFailed += Number(campaign.failed) || 0;
   });
 
   const filters = [
@@ -93,12 +93,12 @@ export function CampaignsSidebar({ campaigns, selectedFilter, onFilterChange }: 
                 </div>
                 <div className="text-2xl font-bold text-blue-700">{totalPending.toString()}</div>
               </div>
-              <div className="bg-orange-50 rounded-lg p-3 border border-orange-100">
+              <div className="bg-red-50 rounded-lg p-3 border border-red-100">
                 <div className="flex items-center gap-2 mb-1">
-                  <AlertCircle className="w-4 h-4 text-orange-600" />
-                  <span className="text-xs text-orange-600 font-medium">Stuck</span>
+                  <AlertCircle className="w-4 h-4 text-red-600" />
+                  <span className="text-xs text-red-600 font-medium">Failed</span>
                 </div>
-                <div className="text-2xl font-bold text-orange-700">{totalStuck.toString()}</div>
+                <div className="text-2xl font-bold text-red-700">{totalFailed.toString()}</div>
               </div>
               <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
                 <div className="flex items-center gap-2 mb-1">

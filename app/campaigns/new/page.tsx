@@ -287,7 +287,7 @@ export default function NewCampaignPage() {
                   <ul className="list-disc list-inside mt-1 space-y-0.5 ml-2">
                     <li>First reminder after 3 days of no response</li>
                     <li>Second reminder after 6 days of no response</li>
-                    <li>Flagged as "stuck" after 9 days of no response</li>
+                    <li>Flagged as "failed" after 9 days of no response</li>
                   </ul>
                 </div>
               </div>

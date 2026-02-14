@@ -24,7 +24,7 @@ interface Campaign {
   total_clients?: number;
   pending?: number;
   received?: number;
-  stuck?: number;
+  failed?: number;
 }
 
 export default function CampaignsPage() {
@@ -210,9 +210,9 @@ export default function CampaignsPage() {
                           <div className="text-lg font-bold text-blue-700">{campaign.pending || 0}</div>
                           <div className="text-xs text-blue-600">Pending</div>
                         </div>
-                        <div className="bg-orange-50 rounded-lg p-2">
-                          <div className="text-lg font-bold text-orange-700">{campaign.stuck || 0}</div>
-                          <div className="text-xs text-orange-600">Stuck</div>
+                        <div className="bg-red-50 rounded-lg p-2">
+                          <div className="text-lg font-bold text-red-700">{campaign.failed || 0}</div>
+                          <div className="text-xs text-red-600">Failed</div>
                         </div>
                       </div>
                       <div className="mt-2 text-xs text-center text-gray-600">

@@ -45,7 +45,7 @@ export interface CampaignClient {
   id: string;
   campaign_id: string;
   client_id: string;
-  status: 'pending' | 'received' | 'stuck';
+  status: 'pending' | 'received' | 'failed';
   first_message_sent_at: Date | null;
   reminder_1_sent_at: Date | null;
   reminder_2_sent_at: Date | null;

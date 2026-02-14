@@ -40,7 +40,7 @@ interface Stats {
   total: number;
   received: number;
   pending: number;
-  stuck: number;
+  failed: number;
   clients: Client[];
 }
 
@@ -61,9 +61,9 @@ function StatusBadge({ status }: { status: string }) {
       label: 'Chasing',
       className: 'bg-amber-50 text-amber-700 border-amber-200'
     },
-    stuck: {
+    failed: {
       icon: <AlertCircle className="w-3 h-3" />,
-      label: 'Stuck',
+      label: 'Failed',
       className: 'bg-red-50 text-red-700 border-red-200'
     },
   };
@@ -315,13 +315,13 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
 
-              {/* Stuck */}
+              {/* Failed */}
               <Card className="border-none shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-red-50 to-red-100/50">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-red-700">Stuck</p>
-                      <p className="text-3xl font-bold text-red-900 mt-2">{data.stats.stuck}</p>
+                      <p className="text-sm font-medium text-red-700">Failed</p>
+                      <p className="text-3xl font-bold text-red-900 mt-2">{data.stats.failed}</p>
                     </div>
                     <div className="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center">
                       <AlertCircle className="w-6 h-6 text-red-600" />
