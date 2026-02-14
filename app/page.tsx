@@ -21,7 +21,8 @@ import {
   Zap,
   Shield,
   CreditCard,
-  Sparkles
+  Sparkles,
+  AlertCircle
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AuthClient } from "@/lib/auth-client";
@@ -289,52 +290,50 @@ export default function Home() {
       </section>
 
       {/* Problem Section */}
-      <section className="relative py-32 overflow-hidden bg-white">
+      <section className="relative py-32 overflow-hidden bg-gray-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <h2 className={`text-5xl md:text-6xl font-bold mb-6 leading-tight ${playfair.className}`} style={{ color: '#212b38' }}>
+            <Badge className="mb-6 px-4 py-2 bg-red-50 text-red-700 border-red-200 hover:bg-red-100">
+              <AlertCircle className="w-3.5 h-3.5 mr-2" />
+              THE PROBLEM
+            </Badge>
+            <h2 className={`text-4xl md:text-5xl font-bold mb-6 leading-tight ${playfair.className}`} style={{ color: '#212b38' }}>
               You're Wasting <span style={{ color: '#15a349' }}>80+ Hours</span>
               <br />
               Every Single Month
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
               Chasing documents is the biggest drain on your firm's productivity
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="relative p-8 rounded-xl border-2 border-gray-200 hover:border-primary/30 hover:shadow-lg transition-all bg-white group">
-              <div className="mb-6">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-red-50 group-hover:bg-red-100 transition-all">
-                  <MessageSquare className="w-6 h-6 text-red-600" />
-                </div>
+            <div className="p-8 bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-all">
+              <div className="w-14 h-14 rounded-xl bg-red-50 flex items-center justify-center mb-6">
+                <MessageSquare className="w-7 h-7 text-red-600" />
               </div>
-              <h3 className="text-xl font-bold mb-3 text-foreground">Endless Follow-ups</h3>
-              <p className="text-base text-muted-foreground leading-relaxed">
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Endless Follow-ups</h3>
+              <p className="text-gray-600 leading-relaxed">
                 The same WhatsApp messages. The same emails. Over and over just to get a single bank statement.
               </p>
             </div>
 
-            <div className="relative p-8 rounded-xl border-2 border-gray-200 hover:border-primary/30 hover:shadow-lg transition-all bg-white group">
-              <div className="mb-6">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-orange-50 group-hover:bg-orange-100 transition-all">
-                  <Clock className="w-6 h-6 text-orange-600" />
-                </div>
+            <div className="p-8 bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-all">
+              <div className="w-14 h-14 rounded-xl bg-orange-50 flex items-center justify-center mb-6">
+                <Clock className="w-7 h-7 text-orange-600" />
               </div>
-              <h3 className="text-xl font-bold mb-3 text-foreground">Missed Deadlines</h3>
-              <p className="text-base text-muted-foreground leading-relaxed">
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Missed Deadlines</h3>
+              <p className="text-gray-600 leading-relaxed">
                 VAT returns pushed back. Tax filing deadlines missed. All because a client "forgot" to respond.
               </p>
             </div>
 
-            <div className="relative p-8 rounded-xl border-2 border-gray-200 hover:border-primary/30 hover:shadow-lg transition-all bg-white group">
-              <div className="mb-6">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-yellow-50 group-hover:bg-yellow-100 transition-all">
-                  <Mail className="w-6 h-6 text-yellow-700" />
-                </div>
+            <div className="p-8 bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-all">
+              <div className="w-14 h-14 rounded-xl bg-yellow-50 flex items-center justify-center mb-6">
+                <Mail className="w-7 h-7 text-yellow-700" />
               </div>
-              <h3 className="text-xl font-bold mb-3 text-foreground">Lost in Email</h3>
-              <p className="text-base text-muted-foreground leading-relaxed">
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Lost in Email</h3>
+              <p className="text-gray-600 leading-relaxed">
                 Documents buried in inbox threads. Files scattered across WhatsApp, email, and shared drives.
               </p>
             </div>
@@ -345,10 +344,14 @@ export default function Home() {
       {/* How It Works - Animated Step Flow */}
       <section className="relative py-32 overflow-hidden" style={{ backgroundColor: '#d4fae2' }}>
         <div className="text-center mb-20">
-          <h2 className={`text-5xl md:text-6xl font-bold mb-6 ${playfair.className}`} style={{ color: '#212b38' }}>
+          <Badge className="mb-6 px-4 py-2 bg-white/80 text-gray-700 border-gray-300">
+            <Zap className="w-3.5 h-3.5 mr-2" />
+            HOW IT WORKS
+          </Badge>
+          <h2 className={`text-4xl md:text-5xl font-bold mb-6 ${playfair.className}`} style={{ color: '#212b38' }}>
             How It Actually Works
           </h2>
-          <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed">
             From client upload to organized Drive folders in six automated steps
           </p>
         </div>
@@ -360,116 +363,125 @@ export default function Home() {
       <section className="relative py-32 overflow-hidden bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <h2 className={`text-5xl md:text-6xl font-bold mb-6 ${playfair.className}`} style={{ color: '#212b38' }}>
+            <Badge className="mb-6 px-4 py-2 bg-primary/10 text-primary border-primary/20">
+              <Sparkles className="w-3.5 h-3.5 mr-2" />
+              FEATURES
+            </Badge>
+            <h2 className={`text-4xl md:text-5xl font-bold mb-6 ${playfair.className}`} style={{ color: '#212b38' }}>
               Built for Modern Accountants
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
               Every feature designed to eliminate the grunt work and give you time back
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card className="hover:shadow-xl hover:border-primary/20 transition-all duration-300 border-2 group overflow-hidden bg-white">
-              <CardHeader className="pb-4">
-                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-all">
-                  <Bot className="w-6 h-6 text-primary" />
-                </div>
-                <div className="mb-3">
-                  <CardTitle className="text-lg font-bold text-foreground mb-1">Powered by Claude AI</CardTitle>
-                  <p className="text-sm text-muted-foreground">Natural conversations that actually work</p>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Anthropic's Claude handles complex requests, understands context, and responds like a real assistant—not a bot.
-                </p>
-              </CardContent>
-            </Card>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="p-8 bg-white rounded-xl border border-gray-200 hover:border-primary/30 hover:shadow-lg transition-all">
+              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
+                <Bot className="w-7 h-7 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Powered by Claude AI</h3>
+              <p className="text-gray-600 leading-relaxed mb-4">
+                Anthropic's Claude handles complex requests, understands context, and responds like a real assistant—not a bot.
+              </p>
+              <button className="text-primary font-semibold text-sm hover:underline inline-flex items-center gap-2">
+                Learn more <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
 
-            <Card className="hover:shadow-xl hover:border-primary/20 transition-all duration-300 border-2 group overflow-hidden bg-white">
-              <CardHeader className="pb-4">
-                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-all">
-                  <Smartphone className="w-6 h-6 text-primary" />
-                </div>
-                <div className="mb-3">
-                  <CardTitle className="text-lg font-bold text-foreground mb-1">Native WhatsApp Integration</CardTitle>
-                  <p className="text-sm text-muted-foreground">No app downloads required</p>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Your clients already use WhatsApp daily. Gettingdocs meets them where they are via Twilio's enterprise infrastructure.
-                </p>
-              </CardContent>
-            </Card>
+            <div className="p-8 bg-white rounded-xl border border-gray-200 hover:border-primary/30 hover:shadow-lg transition-all">
+              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
+                <Smartphone className="w-7 h-7 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Native WhatsApp Integration</h3>
+              <p className="text-gray-600 leading-relaxed mb-4">
+                Your clients already use WhatsApp daily. Gettingdocs meets them where they are via Twilio's enterprise infrastructure.
+              </p>
+              <button className="text-primary font-semibold text-sm hover:underline inline-flex items-center gap-2">
+                Learn more <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
 
-            <Card className="hover:shadow-xl hover:border-primary/20 transition-all duration-300 border-2 group overflow-hidden bg-white">
-              <CardHeader className="pb-4">
-                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-all">
-                  <Bell className="w-6 h-6 text-primary" />
-                </div>
-                <div className="mb-3">
-                  <CardTitle className="text-lg font-bold text-foreground mb-1">Intelligent Reminders</CardTitle>
-                  <p className="text-sm text-muted-foreground">Set it and forget it</p>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Custom reminder schedules with escalation paths. Amy knows when to nudge gently and when to escalate to you.
-                </p>
-              </CardContent>
-            </Card>
+            <div className="p-8 bg-white rounded-xl border border-gray-200 hover:border-primary/30 hover:shadow-lg transition-all">
+              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
+                <Bell className="w-7 h-7 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Intelligent Reminders</h3>
+              <p className="text-gray-600 leading-relaxed mb-4">
+                Custom reminder schedules with escalation paths. Amy knows when to nudge gently and when to escalate to you.
+              </p>
+              <button className="text-primary font-semibold text-sm hover:underline inline-flex items-center gap-2">
+                Learn more <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
 
-            <Card className="hover:shadow-xl hover:border-primary/20 transition-all duration-300 border-2 group overflow-hidden bg-white">
-              <CardHeader className="pb-4">
-                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-all">
-                  <Cloud className="w-6 h-6 text-primary" />
-                </div>
-                <div className="mb-3">
-                  <CardTitle className="text-lg font-bold text-foreground mb-1">Automatic Cloud Sync</CardTitle>
-                  <p className="text-sm text-muted-foreground">Zero manual uploads</p>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Every received document lands directly in your Google Drive, organized by client and date automatically.
-                </p>
-              </CardContent>
-            </Card>
+            <div className="p-8 bg-white rounded-xl border border-gray-200 hover:border-primary/30 hover:shadow-lg transition-all">
+              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
+                <Cloud className="w-7 h-7 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Automatic Cloud Sync</h3>
+              <p className="text-gray-600 leading-relaxed mb-4">
+                Every received document lands directly in your Google Drive, organized by client and date automatically.
+              </p>
+              <button className="text-primary font-semibold text-sm hover:underline inline-flex items-center gap-2">
+                Learn more <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
 
-            <Card className="hover:shadow-xl hover:border-primary/20 transition-all duration-300 border-2 group overflow-hidden bg-white">
-              <CardHeader className="pb-4">
-                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-all">
-                  <FileSpreadsheet className="w-6 h-6 text-primary" />
-                </div>
-                <div className="mb-3">
-                  <CardTitle className="text-lg font-bold text-foreground mb-1">Smart Format Conversion</CardTitle>
-                  <p className="text-sm text-muted-foreground">Ready for your workflow</p>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Bank statements automatically converted to CSV via BankToFile. Import straight into Xero, QuickBooks, or Sage.
-                </p>
-              </CardContent>
-            </Card>
+            <div className="p-8 bg-white rounded-xl border border-gray-200 hover:border-primary/30 hover:shadow-lg transition-all">
+              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
+                <FileSpreadsheet className="w-7 h-7 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Smart Format Conversion</h3>
+              <p className="text-gray-600 leading-relaxed mb-4">
+                Bank statements automatically converted to CSV via BankToFile. Import straight into Xero, QuickBooks, or Sage.
+              </p>
+              <button className="text-primary font-semibold text-sm hover:underline inline-flex items-center gap-2">
+                Learn more <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
 
-            <Card className="hover:shadow-xl hover:border-primary/20 transition-all duration-300 border-2 group overflow-hidden bg-white">
-              <CardHeader className="pb-4">
-                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-all">
-                  <BarChart3 className="w-6 h-6 text-primary" />
-                </div>
-                <div className="mb-3">
-                  <CardTitle className="text-lg font-bold text-foreground mb-1">Real-Time Dashboard</CardTitle>
-                  <p className="text-sm text-muted-foreground">Full visibility, always</p>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Track every request, response, and reminder. Know exactly which clients need a nudge at a glance.
-                </p>
-              </CardContent>
-            </Card>
+            <div className="p-8 bg-white rounded-xl border border-gray-200 hover:border-primary/30 hover:shadow-lg transition-all">
+              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
+                <BarChart3 className="w-7 h-7 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Real-Time Dashboard</h3>
+              <p className="text-gray-600 leading-relaxed mb-4">
+                Track every request, response, and reminder. Know exactly which clients need a nudge at a glance.
+              </p>
+              <button className="text-primary font-semibold text-sm hover:underline inline-flex items-center gap-2">
+                Learn more <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Integrations Section */}
+      <section className="relative py-20 overflow-hidden bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <p className="text-sm font-semibold text-gray-600 tracking-wide uppercase mb-4">
+              Trusted by 100+ accounting firms
+            </p>
+            <h3 className="text-2xl font-bold text-gray-900 mb-8">
+              Integrates with your existing tools
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center">
+            <div className="flex items-center justify-center p-6 bg-white rounded-lg border border-gray-200 hover:border-primary/30 hover:shadow-md transition-all w-full h-24">
+              <Image src="/whatsapp-logo.png" alt="WhatsApp" width={100} height={100} className="w-16 h-16 object-contain grayscale hover:grayscale-0 transition-all" />
+            </div>
+            <div className="flex items-center justify-center p-6 bg-white rounded-lg border border-gray-200 hover:border-primary/30 hover:shadow-md transition-all w-full h-24">
+              <Image src="/google-drive-logo.png" alt="Google Drive" width={100} height={40} className="w-20 h-auto object-contain grayscale hover:grayscale-0 transition-all" />
+            </div>
+            <div className="flex items-center justify-center p-6 bg-white rounded-lg border border-gray-200 hover:border-primary/30 hover:shadow-md transition-all w-full h-24">
+              <div className="text-2xl font-bold text-gray-400">Xero</div>
+            </div>
+            <div className="flex items-center justify-center p-6 bg-white rounded-lg border border-gray-200 hover:border-primary/30 hover:shadow-md transition-all w-full h-24">
+              <div className="text-2xl font-bold text-gray-400">QuickBooks</div>
+            </div>
           </div>
         </div>
       </section>
@@ -509,6 +521,29 @@ export default function Home() {
               <div className={`text-7xl font-bold mb-4 ${playfair.className}`} style={{ color: '#15a349' }}>24/7</div>
               <div className="text-lg font-semibold text-foreground mb-2">Always Working</div>
               <div className="text-sm text-muted-foreground">Amy never sleeps or takes holidays</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonial Section */}
+      <section className="relative py-32 overflow-hidden bg-gray-900">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="mb-8">
+              <svg className="w-12 h-12 text-primary mx-auto mb-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+              </svg>
+            </div>
+            <blockquote className="text-2xl md:text-3xl font-medium text-white mb-8 leading-relaxed">
+              "Gettingdocs has transformed how we collect client documents. What used to take weeks now happens in days, and our team can focus on actual accounting work instead of chasing paperwork."
+            </blockquote>
+            <div className="flex flex-col items-center">
+              <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mb-3">
+                <span className="text-white font-bold text-lg">SJ</span>
+              </div>
+              <p className="text-white font-semibold">Sarah Johnson</p>
+              <p className="text-gray-400 text-sm">Head of Practice at SmithCo Accounting</p>
             </div>
           </div>
         </div>
@@ -568,6 +603,42 @@ export default function Home() {
                 <span className="text-base">Cancel anytime</span>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer CTA Section */}
+      <section className="relative py-24 overflow-hidden bg-gray-900">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className={`text-3xl md:text-4xl font-bold text-white mb-4 ${playfair.className}`}>
+            Discover the full scale of
+            <br />
+            <span className="text-primary">Gettingdocs capabilities</span>
+          </h2>
+          <p className="text-gray-400 text-lg mb-8 max-w-2xl mx-auto">
+            See how leading accounting firms are saving 80+ hours every month
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {isAuthenticated ? (
+              <Link href="/dashboard">
+                <Button size="lg" className="px-8 py-6 text-base font-semibold bg-white text-gray-900 hover:bg-gray-100">
+                  Get Started
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link href="/register">
+                  <Button size="lg" className="px-8 py-6 text-base font-semibold bg-white text-gray-900 hover:bg-gray-100">
+                    Get Started
+                  </Button>
+                </Link>
+                <Link href="/pricing">
+                  <Button size="lg" variant="outline" className="px-8 py-6 text-base font-semibold border-2 border-white text-white hover:bg-white/10">
+                    See Pricing
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </section>
