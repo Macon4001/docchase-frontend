@@ -161,9 +161,26 @@ export default function DashboardPage() {
 
         setCampaign(aggregatedCampaign);
 
-        // Load activity data
-        const activityResult = await apiClient.getDashboardActivity();
-        setActivity(activityResult.activity || []);
+        // Generate activity data from campaign creation dates and stats
+        // Group campaigns by date and aggregate their stats
+        const activityMap = new Map<string, { received: number; pending: number }>();
+
+        activeCampaigns.forEach((c: Campaign) => {
+          const date = c.created_at.split('T')[0]; // Get YYYY-MM-DD
+          const existing = activityMap.get(date) || { received: 0, pending: 0 };
+          activityMap.set(date, {
+            received: existing.received + Number(c.received || 0),
+            pending: existing.pending + Number(c.pending || 0),
+          });
+        });
+
+        // Convert to array and sort by date
+        const activityArray = Array.from(activityMap.entries())
+          .map(([date, stats]) => ({ date, ...stats }))
+          .sort((a, b) => a.date.localeCompare(b.date))
+          .slice(-7); // Last 7 days of activity
+
+        setActivity(activityArray);
       } else {
         setCampaign(null);
         setActivity([]);
