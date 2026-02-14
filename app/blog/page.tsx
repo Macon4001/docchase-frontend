@@ -9,6 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { formatDistanceToNow } from 'date-fns';
 import { apiClient } from '@/lib/api';
+import { AuthClient } from '@/lib/auth-client';
+import { Logo } from '@/components/Logo';
 import {
   FileText,
   ArrowRight,
@@ -39,9 +41,12 @@ export default function BlogPage() {
   const [email, setEmail] = useState('');
   const [subscribeLoading, setSubscribeLoading] = useState(false);
   const [subscribeMessage, setSubscribeMessage] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     loadPosts();
+    const session = AuthClient.getSession();
+    setIsAuthenticated(!!session);
   }, []);
 
   const loadPosts = async () => {
@@ -82,34 +87,35 @@ export default function BlogPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation Bar */}
-      <nav className="border-b">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+      {/* Navigation */}
+      <nav className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16 items-center">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">G</span>
-              </div>
-              <span className="font-semibold text-lg">Gettingdocs</span>
+              <Logo size={32} />
+              <span className="text-xl font-semibold">Gettingdocs</span>
             </Link>
-            <div className="flex items-center gap-8">
-              <Link href="/" className="text-sm text-gray-600 hover:text-gray-900">
-                Home
+            <div className="flex items-center gap-4">
+              <Link href="/blog">
+                <Button variant="ghost">Blog</Button>
               </Link>
-              <Link href="/blog" className="text-sm font-medium text-gray-900">
-                Blog
+              <Link href="/pricing">
+                <Button variant="ghost">Pricing</Button>
               </Link>
-              <Link href="/pricing" className="text-sm text-gray-600 hover:text-gray-900">
-                Pricing
-              </Link>
-              <Link href="/contact" className="text-sm text-gray-600 hover:text-gray-900">
-                Contact
-              </Link>
-              <Link href="/login">
-                <Button variant="outline" size="sm" className="text-sm">
-                  Get started
-                </Button>
-              </Link>
+              {isAuthenticated ? (
+                <Link href="/dashboard">
+                  <Button>Dashboard</Button>
+                </Link>
+              ) : (
+                <>
+                  <Link href="/login">
+                    <Button variant="ghost">Sign In</Button>
+                  </Link>
+                  <Link href="/register">
+                    <Button>Get Started</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -119,10 +125,10 @@ export default function BlogPage() {
       <section className="py-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            Inside Design: Stories and interviews
+            Document Collection Insights
           </h1>
           <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">
-            Subscribe to learn about new product features, the latest in technology, and updates.
+            Subscribe to learn about automated document collection, best practices for accounting firms, and product updates.
           </p>
 
           {/* Email Subscription Form */}
