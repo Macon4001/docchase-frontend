@@ -133,17 +133,30 @@ export default function DashboardPage() {
 
       // Find active campaign with most clients
       const activeCampaigns = campaigns.filter((c: Campaign) => c.status === 'active');
-      const selectedCampaign = activeCampaigns.sort((a: Campaign, b: Campaign) =>
+      const selectedCampaignFromList = activeCampaigns.sort((a: Campaign, b: Campaign) =>
         (b.total_clients || 0) - (a.total_clients || 0)
       )[0] || null;
 
-      setCampaign(selectedCampaign);
+      // If we have a campaign, fetch its full details (like campaign detail page does)
+      if (selectedCampaignFromList) {
+        const campaignDetails = await apiClient.getCampaign(selectedCampaignFromList.id);
 
-      // Load activity data if we have a campaign
-      if (selectedCampaign) {
+        // Merge the campaign data with stats
+        const fullCampaign: Campaign = {
+          ...campaignDetails.campaign,
+          total_clients: campaignDetails.stats?.total_clients,
+          received: campaignDetails.stats?.received,
+          pending: campaignDetails.stats?.pending,
+          failed: campaignDetails.stats?.failed,
+        };
+
+        setCampaign(fullCampaign);
+
+        // Load activity data
         const activityResult = await apiClient.getDashboardActivity();
         setActivity(activityResult.activity || []);
       } else {
+        setCampaign(null);
         setActivity([]);
       }
     } catch (err) {
