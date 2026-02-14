@@ -11,6 +11,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { apiClient } from '@/lib/api';
 import { AuthClient } from '@/lib/auth-client';
 import { Logo } from '@/components/Logo';
+import { Playfair_Display } from 'next/font/google';
 import {
   FileText,
   ArrowRight,
@@ -19,6 +20,8 @@ import {
   BookOpen,
   Home
 } from 'lucide-react';
+
+const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "700"] });
 
 interface BlogPost {
   id: string;
@@ -124,7 +127,7 @@ export default function BlogPage() {
       {/* Hero Section with Subscription */}
       <section className="py-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+          <h1 className={`text-5xl md:text-6xl font-bold text-gray-900 mb-6 ${playfair.className}`}>
             Document Collection Insights
           </h1>
           <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">
