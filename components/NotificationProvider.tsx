@@ -41,10 +41,18 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         if (newest) {
           console.log(`📢 [Global] Showing toast: "${newest.title}"`);
 
-          toast.success(newest.title, {
-            description: newest.message,
-            duration: 5000,
-          });
+          // Use error toast for failed messages and client stuck notifications
+          if (newest.type === 'message_failed' || newest.type === 'client_stuck') {
+            toast.error(newest.title, {
+              description: newest.message,
+              duration: 7000,
+            });
+          } else {
+            toast.success(newest.title, {
+              description: newest.message,
+              duration: 5000,
+            });
+          }
 
           console.log(`✅ [Global] Toast triggered!`);
         }
