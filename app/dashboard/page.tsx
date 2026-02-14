@@ -352,14 +352,44 @@ export default function DashboardPage() {
               </div>
             </CardHeader>
             <CardContent className="p-6">
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={collectionActivity}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis dataKey="date" tick={{ fill: '#6b7280', fontSize: 12 }} />
-                  <YAxis tick={{ fill: '#6b7280', fontSize: 12 }} />
-                  <Tooltip />
-                  <Bar dataKey="received" fill={COLORS.success} radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="pending" fill={COLORS.warning} radius={[4, 4, 0, 0]} />
+              <ResponsiveContainer width="100%" height={280}>
+                <BarChart
+                  data={collectionActivity}
+                  barGap={4}
+                  barCategoryGap="20%"
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+                  <XAxis
+                    dataKey="date"
+                    tick={{ fill: '#6b7280', fontSize: 12 }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    tick={{ fill: '#6b7280', fontSize: 12 }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'white',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                    }}
+                  />
+                  <Bar
+                    dataKey="received"
+                    fill={COLORS.success}
+                    radius={[6, 6, 0, 0]}
+                    maxBarSize={40}
+                  />
+                  <Bar
+                    dataKey="pending"
+                    fill={COLORS.warning}
+                    radius={[6, 6, 0, 0]}
+                    maxBarSize={40}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
