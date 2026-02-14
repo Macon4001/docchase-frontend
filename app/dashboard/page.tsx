@@ -30,26 +30,12 @@ interface Campaign {
   name: string;
   period: string;
   document_type: string;
-}
-
-interface Client {
-  id: string;
-  name: string;
   status: string;
-  updated_at: string;
-}
-
-interface Stats {
-  total: number;
-  received: number;
-  pending: number;
-  failed: number;
-  clients: Client[];
-}
-
-interface DashboardData {
-  campaign: Campaign | null;
-  stats: Stats | null;
+  total_clients?: number;
+  received?: number;
+  pending?: number;
+  failed?: number;
+  created_at: string;
 }
 
 const COLORS = {
@@ -127,7 +113,7 @@ interface ActivityData {
 export default function DashboardPage() {
   const router = useRouter();
   const { onNewNotification } = useNotifications();
-  const [data, setData] = useState<DashboardData | null>(null);
+  const [campaign, setCampaign] = useState<Campaign | null>(null);
   const [activity, setActivity] = useState<ActivityData[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -140,12 +126,26 @@ export default function DashboardPage() {
       } else {
         setRefreshing(true);
       }
-      const [dashboardResult, activityResult] = await Promise.all([
-        apiClient.getDashboard(),
-        apiClient.getDashboardActivity()
-      ]);
-      setData(dashboardResult);
-      setActivity(activityResult.activity || []);
+
+      // Get all campaigns (same as campaigns page)
+      const campaignsResult = await apiClient.getCampaigns();
+      const campaigns = campaignsResult.campaigns || [];
+
+      // Find active campaign with most clients
+      const activeCampaigns = campaigns.filter((c: Campaign) => c.status === 'active');
+      const selectedCampaign = activeCampaigns.sort((a: Campaign, b: Campaign) =>
+        (b.total_clients || 0) - (a.total_clients || 0)
+      )[0] || null;
+
+      setCampaign(selectedCampaign);
+
+      // Load activity data if we have a campaign
+      if (selectedCampaign) {
+        const activityResult = await apiClient.getDashboardActivity();
+        setActivity(activityResult.activity || []);
+      } else {
+        setActivity([]);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load dashboard');
     } finally {
@@ -211,8 +211,8 @@ export default function DashboardPage() {
   }
 
   // Calculate completion rate
-  const completionRate = data?.stats?.total ?
-    Math.round((data.stats.received / data.stats.total) * 100) : 0;
+  const completionRate = campaign?.total_clients ?
+    Math.round(((campaign.received || 0) / campaign.total_clients) * 100) : 0;
 
   // Format activity data for the chart
   const collectionActivity = activity.length > 0
@@ -233,13 +233,10 @@ export default function DashboardPage() {
       });
 
   const statusData = [
-    { name: 'Received', value: data?.stats?.received || 0, color: COLORS.success },
-    { name: 'Pending', value: data?.stats?.pending || 0, color: COLORS.warning },
-    { name: 'Failed', value: data?.stats?.failed || 0, color: COLORS.danger },
+    { name: 'Received', value: campaign?.received || 0, color: COLORS.success },
+    { name: 'Pending', value: campaign?.pending || 0, color: COLORS.warning },
+    { name: 'Failed', value: campaign?.failed || 0, color: COLORS.danger },
   ];
-
-  // Calculate average response time (mock - replace with real data)
-  const avgResponseTime = '2.5 days';
 
   return (
     <AppLayout>
@@ -249,7 +246,7 @@ export default function DashboardPage() {
           <div>
             <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              {data?.campaign?.name || 'Overview of your document collection'}
+              {campaign?.name || 'Overview of your document collection'}
             </p>
           </div>
           <Link href="/campaigns/new">
@@ -264,28 +261,28 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             title="Total Chases"
-            value={data?.stats?.total || 0}
+            value={campaign?.total_clients || 0}
             subtitle="Document requests sent"
             icon={Users}
             color="blue"
           />
           <StatCard
             title="Received"
-            value={data?.stats?.received || 0}
+            value={campaign?.received || 0}
             subtitle={`${completionRate}% completion rate`}
             icon={CheckCircle2}
             color="green"
           />
           <StatCard
             title="Pending"
-            value={data?.stats?.pending || 0}
+            value={campaign?.pending || 0}
             subtitle="Being chased"
             icon={Clock}
             color="orange"
           />
           <StatCard
             title="Failed"
-            value={data?.stats?.failed || 0}
+            value={campaign?.failed || 0}
             subtitle="Unsuccessful attempts"
             icon={AlertCircle}
             color="red"
@@ -311,8 +308,8 @@ export default function DashboardPage() {
                 </div>
               </div>
               <div className="flex items-baseline gap-2 mt-2">
-                <span className="text-2xl font-bold">{data?.stats?.total || 0}</span>
-                <span className="text-sm text-muted-foreground">total chases • {data?.stats?.received || 0} received</span>
+                <span className="text-2xl font-bold">{campaign?.total_clients || 0}</span>
+                <span className="text-sm text-muted-foreground">total chases • {campaign?.received || 0} received</span>
               </div>
             </CardHeader>
             <CardContent className="p-6">
@@ -369,65 +366,49 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Recent Clients */}
-        <Card className="border-border">
-          <CardHeader className="border-b border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-base font-semibold">Recent Activity</CardTitle>
-                <p className="text-sm text-muted-foreground mt-1">Latest client interactions</p>
-              </div>
-              <Link href="/clients">
-                <Button variant="ghost" size="sm" className="gap-1">
-                  View all
-                  <ArrowUpRight className="w-4 h-4" />
-                </Button>
-              </Link>
-            </div>
-          </CardHeader>
-          <CardContent className="p-6">
-            <div className="space-y-3">
-              {data?.stats?.clients && data.stats.clients.length > 0 ? (
-                data.stats.clients.slice(0, 5).map((client) => (
-                  <div
-                    key={client.id}
-                    className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold">
-                        {client.name.charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <p className="font-medium text-foreground">{client.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatDistanceToNow(new Date(client.updated_at), { addSuffix: true })}
-                        </p>
-                      </div>
-                    </div>
-                    <Badge
-                      variant="outline"
-                      className={
-                        client.status === 'received'
-                          ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-                          : client.status === 'pending'
-                          ? 'border-orange-200 bg-orange-50 text-orange-700'
-                          : 'border-red-200 bg-red-50 text-red-700'
-                      }
-                    >
-                      {client.status}
-                    </Badge>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <FileText className="w-12 h-12 mx-auto mb-2 opacity-20" />
-                  <p>No recent activity</p>
-                  <p className="text-xs mt-1">Create a campaign to start collecting documents</p>
+        {/* Campaign Quick Actions */}
+        {campaign && (
+          <Card className="border-border">
+            <CardHeader className="border-b border-border">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base font-semibold">Campaign Details</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {campaign.period} • {campaign.document_type.replace('_', ' ')}
+                  </p>
                 </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                <Link href={`/campaigns/${campaign.id}`}>
+                  <Button variant="ghost" size="sm" className="gap-1">
+                    View full details
+                    <ArrowUpRight className="w-4 h-4" />
+                  </Button>
+                </Link>
+              </div>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="grid grid-cols-3 gap-4">
+                <Link href={`/campaigns/${campaign.id}`} className="block">
+                  <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
+                    <Users className="w-5 h-5" />
+                    <span className="text-sm">View Clients</span>
+                  </Button>
+                </Link>
+                <Link href={`/campaigns/${campaign.id}/edit`} className="block">
+                  <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
+                    <FileText className="w-5 h-5" />
+                    <span className="text-sm">Edit Campaign</span>
+                  </Button>
+                </Link>
+                <Link href="/campaigns" className="block">
+                  <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
+                    <Plus className="w-5 h-5" />
+                    <span className="text-sm">All Campaigns</span>
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </AppLayout>
   );
