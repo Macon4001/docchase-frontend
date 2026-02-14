@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { apiClient } from '@/lib/api';
 import { AuthClient } from '@/lib/auth-client';
-import { DashboardLayout } from '@/components/DashboardLayout';
+import { AppLayout } from '@/components/AppLayout';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import { FileText, Play, ArrowLeft, CheckCircle2, Clock, Edit } from 'lucide-react';
 
@@ -159,7 +159,7 @@ export default function CampaignDetailPage() {
 
   if (!campaign) {
     return (
-      <DashboardLayout>
+      <AppLayout>
         <Alert variant="destructive">
           <AlertDescription>{error || 'Campaign not found'}</AlertDescription>
         </Alert>
@@ -169,12 +169,12 @@ export default function CampaignDetailPage() {
             Back to Campaigns
           </Button>
         </Link>
-      </DashboardLayout>
+      </AppLayout>
     );
   }
 
   return (
-    <DashboardLayout>
+    <AppLayout>
       <div className="mb-6">
           <Link href="/campaigns">
             <Button variant="ghost" size="sm">
@@ -454,6 +454,6 @@ export default function CampaignDetailPage() {
           currentCount={billingInfo?.chasesUsed}
           limit={billingInfo?.chaseLimit}
         />
-    </DashboardLayout>
+    </AppLayout>
   );
 }

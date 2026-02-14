@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Plus } from 'lucide-react';
 import { apiClient } from '@/lib/api';
 import { AuthClient } from '@/lib/auth-client';
-import { DashboardLayout } from '@/components/DashboardLayout';
+import { AppLayout } from '@/components/AppLayout';
 
 interface Client {
   id: string;
@@ -90,7 +90,7 @@ export default function ClientsPage() {
   }
 
   return (
-    <DashboardLayout>
+    <AppLayout>
       <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">Clients</h2>
           <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
@@ -268,6 +268,6 @@ export default function ClientsPage() {
             )}
           </CardContent>
         </Card>
-    </DashboardLayout>
+    </AppLayout>
   );
 }

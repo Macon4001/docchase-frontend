@@ -12,7 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowLeft } from 'lucide-react';
 import { apiClient } from '@/lib/api';
 import { AuthClient } from '@/lib/auth-client';
-import { DashboardLayout } from '@/components/DashboardLayout';
+import { AppLayout } from '@/components/AppLayout';
 
 interface Client {
   id: string;
@@ -123,7 +123,7 @@ export default function NewCampaignPage() {
   }
 
   return (
-    <DashboardLayout>
+    <AppLayout>
       <div className="max-w-3xl mx-auto">
         <Link
           href="/campaigns"
@@ -370,6 +370,6 @@ export default function NewCampaignPage() {
           </CardContent>
         </Card>
       </div>
-    </DashboardLayout>
+    </AppLayout>
   );
 }

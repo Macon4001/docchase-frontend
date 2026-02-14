@@ -12,7 +12,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ArrowLeft } from 'lucide-react';
 import { apiClient } from '@/lib/api';
 import { AuthClient } from '@/lib/auth-client';
-import { DashboardLayout } from '@/components/DashboardLayout';
+import { AppLayout } from '@/components/AppLayout';
 
 interface Campaign {
   id: string;
@@ -132,7 +132,7 @@ export default function EditCampaignPage() {
 
   if (!campaign) {
     return (
-      <DashboardLayout>
+      <AppLayout>
         <Alert variant="destructive">
           <AlertDescription>{error || 'Campaign not found'}</AlertDescription>
         </Alert>
@@ -142,12 +142,12 @@ export default function EditCampaignPage() {
             Back to Campaigns
           </Button>
         </Link>
-      </DashboardLayout>
+      </AppLayout>
     );
   }
 
   return (
-    <DashboardLayout>
+    <AppLayout>
       <div className="max-w-3xl mx-auto">
         <Link
           href={`/campaigns/${campaignId}`}
@@ -337,6 +337,6 @@ export default function EditCampaignPage() {
           </CardContent>
         </Card>
       </div>
-    </DashboardLayout>
+    </AppLayout>
   );
 }

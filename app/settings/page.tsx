@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthClient } from '@/lib/auth-client';
-import { DashboardLayout } from '@/components/DashboardLayout';
+import { AppLayout } from '@/components/AppLayout';
 import { Mail, FileText, FolderOpen, Rocket, AlertTriangle, User, Bot, Bell, AlertOctagon } from 'lucide-react';
 
 // Helper to ensure URL has protocol
@@ -348,7 +348,7 @@ function SettingsContent() {
   }
 
   return (
-    <DashboardLayout>
+    <AppLayout>
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -879,7 +879,7 @@ function SettingsContent() {
           </div>
         )}
       </div>
-    </DashboardLayout>
+    </AppLayout>
   );
 }
 

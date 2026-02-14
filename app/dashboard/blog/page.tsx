@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { formatDistanceToNow } from 'date-fns';
 import { AuthClient } from '@/lib/auth-client';
 import { apiClient } from '@/lib/api';
-import { DashboardLayout } from '@/components/DashboardLayout';
+import { AppLayout } from '@/components/AppLayout';
 import {
   Plus,
   Edit,
@@ -312,7 +312,7 @@ export default function BlogAdminPage() {
 
   if (!isAdmin) {
     return (
-      <DashboardLayout>
+      <AppLayout>
         <div className="max-w-2xl mx-auto mt-12">
           <Card className="border-red-200">
             <CardContent className="pt-6 text-center">
@@ -329,12 +329,12 @@ export default function BlogAdminPage() {
             </CardContent>
           </Card>
         </div>
-      </DashboardLayout>
+      </AppLayout>
     );
   }
 
   return (
-    <DashboardLayout>
+    <AppLayout>
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -658,6 +658,6 @@ export default function BlogAdminPage() {
           </div>
         )}
       </div>
-    </DashboardLayout>
+    </AppLayout>
   );
 }

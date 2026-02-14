@@ -4,48 +4,60 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Dashboard color scheme - Green theme #15a349 */
+    --background: 220 17% 97%;
+    --foreground: 222 47% 11%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 222 47% 11%;
     --primary: 145 75% 36%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 145 20% 96%;
-    --secondary-foreground: 145 75% 20%;
-    --muted: 145 20% 96%;
-    --muted-foreground: 145 10% 46%;
-    --accent: 145 20% 96%;
-    --accent-foreground: 145 75% 36%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 145 20% 91%;
-    --input: 145 20% 91%;
+    --secondary: 220 17% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 220 17% 96%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 220 17% 96%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
     --ring: 145 75% 36%;
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    /* Sidebar specific colors */
+    --sidebar: 220 17% 98%;
+    --sidebar-foreground: 220 9% 46%;
+    --sidebar-hover: 220 17% 95%;
+    --sidebar-active: 145 75% 36%;
   }
 
   .dark {
-    --background: 145 30% 8%;
-    --foreground: 145 20% 98%;
-    --card: 145 30% 10%;
-    --card-foreground: 145 20% 98%;
-    --popover: 145 30% 8%;
-    --popover-foreground: 145 20% 98%;
+    --background: 222 47% 11%;
+    --foreground: 220 17% 98%;
+    --card: 222 47% 15%;
+    --card-foreground: 220 17% 98%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 220 17% 98%;
     --primary: 145 75% 42%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 145 30% 15%;
-    --secondary-foreground: 145 20% 98%;
-    --muted: 145 30% 15%;
-    --muted-foreground: 145 20% 65%;
-    --accent: 145 30% 15%;
-    --accent-foreground: 145 20% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 145 30% 15%;
-    --input: 145 30% 15%;
+    --secondary: 222 47% 15%;
+    --secondary-foreground: 220 17% 98%;
+    --muted: 222 47% 15%;
+    --muted-foreground: 220 17% 65%;
+    --accent: 222 47% 15%;
+    --accent-foreground: 220 17% 98%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 222 47% 20%;
+    --input: 222 47% 20%;
     --ring: 145 75% 42%;
+
+    --sidebar: 222 47% 13%;
+    --sidebar-foreground: 220 17% 65%;
+    --sidebar-hover: 222 47% 18%;
+    --sidebar-active: 145 75% 42%;
   }
 }
 
