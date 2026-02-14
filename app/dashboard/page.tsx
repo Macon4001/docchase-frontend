@@ -364,6 +364,7 @@ export default function DashboardPage() {
                 <BarChart
                   data={collectionActivity}
                   barCategoryGap="20%"
+                  barGap={2}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
                   <XAxis
