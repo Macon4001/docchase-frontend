@@ -142,10 +142,10 @@ export default function DashboardPage() {
           pending: number;
           failed: number;
         }, c: Campaign) => ({
-          total_clients: acc.total_clients + (c.total_clients || 0),
-          received: acc.received + (c.received || 0),
-          pending: acc.pending + (c.pending || 0),
-          failed: acc.failed + (c.failed || 0),
+          total_clients: acc.total_clients + Number(c.total_clients || 0),
+          received: acc.received + Number(c.received || 0),
+          pending: acc.pending + Number(c.pending || 0),
+          failed: acc.failed + Number(c.failed || 0),
         }), { total_clients: 0, received: 0, pending: 0, failed: 0 });
 
         // Create a virtual "All Campaigns" campaign with aggregated stats
