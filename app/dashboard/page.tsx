@@ -39,7 +39,7 @@ interface Campaign {
 }
 
 const COLORS = {
-  primary: '#15a349',
+  primary: '#16a152',
   success: '#10b981',
   warning: '#f59e0b',
   danger: '#ef4444',
