@@ -108,6 +108,7 @@ interface ActivityData {
   date: string;
   received: number;
   pending: number;
+  failed: number;
 }
 
 export default function DashboardPage() {
