@@ -255,15 +255,26 @@ export default function DashboardPage() {
   const completionRate = campaign?.total_clients ?
     Math.round(((campaign.received || 0) / campaign.total_clients) * 100) : 0;
 
-  // Format activity data for the chart
+  // Format activity data for the chart with stacked values
   const collectionActivity = activity.length > 0
-    ? activity.map(item => ({
-        date: format(new Date(item.date), 'MMM dd'),
-        received: item.received,
-        pending: item.pending,
-        failed: item.failed || 0,
-        total: item.received + item.pending + (item.failed || 0)
-      }))
+    ? activity.map(item => {
+        const received = item.received;
+        const pending = item.pending;
+        const failed = item.failed || 0;
+        return {
+          date: format(new Date(item.date), 'MMM dd'),
+          received: received,
+          pending: pending,
+          failed: failed,
+          // For manual stacking with gaps
+          receivedStart: 0,
+          receivedEnd: received,
+          pendingStart: received,
+          pendingEnd: received + pending,
+          failedStart: received + pending,
+          failedEnd: received + pending + failed,
+        };
+      })
     : Array.from({ length: 7 }, (_, i) => {
         const date = subDays(new Date(), 6 - i);
         return {
@@ -271,7 +282,12 @@ export default function DashboardPage() {
           received: 0,
           pending: 0,
           failed: 0,
-          total: 0
+          receivedStart: 0,
+          receivedEnd: 0,
+          pendingStart: 0,
+          pendingEnd: 0,
+          failedStart: 0,
+          failedEnd: 0,
         };
       });
 
@@ -388,21 +404,21 @@ export default function DashboardPage() {
                   />
                   <Bar
                     dataKey="received"
-                    stackId="a"
+                    stackId="received"
                     fill={COLORS.success}
                     radius={[6, 6, 6, 6]}
                     maxBarSize={60}
                   />
                   <Bar
                     dataKey="pending"
-                    stackId="a"
+                    stackId="pending"
                     fill={COLORS.warning}
                     radius={[6, 6, 6, 6]}
                     maxBarSize={60}
                   />
                   <Bar
                     dataKey="failed"
-                    stackId="a"
+                    stackId="failed"
                     fill={COLORS.danger}
                     radius={[6, 6, 6, 6]}
                     maxBarSize={60}
