@@ -136,7 +136,12 @@ export default function DashboardPage() {
 
       if (activeCampaigns.length > 0) {
         // Aggregate stats across ALL active campaigns
-        const aggregatedStats = activeCampaigns.reduce((acc, c) => ({
+        const aggregatedStats = activeCampaigns.reduce((acc: {
+          total_clients: number;
+          received: number;
+          pending: number;
+          failed: number;
+        }, c: Campaign) => ({
           total_clients: acc.total_clients + (c.total_clients || 0),
           received: acc.received + (c.received || 0),
           pending: acc.pending + (c.pending || 0),
