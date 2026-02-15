@@ -487,40 +487,22 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="relative py-32 overflow-hidden" style={{ backgroundColor: '#d4fae2' }}>
+      <section className="relative py-24 overflow-hidden bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <h2 className={`text-5xl md:text-6xl font-bold mb-6 ${playfair.className}`} style={{ color: '#212b38' }}>
-              The Numbers Don't Lie
-            </h2>
-            <p className="text-xl text-gray-700 max-w-2xl mx-auto">
-              Real firms seeing measurable impact within the first month
-            </p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className={`text-7xl font-bold mb-4 ${playfair.className}`} style={{ color: '#15a349' }}>90%</div>
-              <div className="text-lg font-semibold text-foreground mb-2">Less Time Chasing</div>
-              <div className="text-sm text-muted-foreground">Average 80+ hours saved monthly</div>
+          <div className="grid sm:grid-cols-3 gap-16 text-center">
+            <div>
+              <div className={`text-6xl font-bold mb-2 ${playfair.className} text-gray-900`}>2021</div>
+              <div className="text-base text-gray-600">Founded</div>
             </div>
 
-            <div className="text-center">
-              <div className={`text-7xl font-bold mb-4 ${playfair.className}`} style={{ color: '#15a349' }}>3×</div>
-              <div className="text-lg font-semibold text-foreground mb-2">Faster Collection</div>
-              <div className="text-sm text-muted-foreground">Documents arrive days, not weeks</div>
+            <div>
+              <div className={`text-6xl font-bold mb-2 ${playfair.className} text-gray-900`}>100+</div>
+              <div className="text-base text-gray-600">Accounting Firms</div>
             </div>
 
-            <div className="text-center">
-              <div className={`text-7xl font-bold mb-4 ${playfair.className}`} style={{ color: '#15a349' }}>100%</div>
-              <div className="text-lg font-semibold text-foreground mb-2">Tracked & Organized</div>
-              <div className="text-sm text-muted-foreground">Never lose a document again</div>
-            </div>
-
-            <div className="text-center">
-              <div className={`text-7xl font-bold mb-4 ${playfair.className}`} style={{ color: '#15a349' }}>24/7</div>
-              <div className="text-lg font-semibold text-foreground mb-2">Always Working</div>
-              <div className="text-sm text-muted-foreground">Amy never sleeps or takes holidays</div>
+            <div>
+              <div className={`text-6xl font-bold mb-2 ${playfair.className} text-gray-900`}>1k+</div>
+              <div className="text-base text-gray-600">Documents Collected</div>
             </div>
           </div>
         </div>
@@ -550,58 +532,41 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative py-32 overflow-hidden bg-white">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative py-32 overflow-hidden bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className={`text-5xl sm:text-6xl md:text-7xl font-bold mb-6 ${playfair.className}`} style={{ color: '#212b38' }}>
+            <h2 className={`text-4xl sm:text-5xl font-bold mb-6 ${playfair.className} text-gray-900`}>
               Stop Chasing.
               <br />
-              <span className="bg-gradient-to-r from-primary to-emerald-600 bg-clip-text text-transparent">
+              <span className="text-primary">
                 Start Collecting.
               </span>
             </h2>
-            <p className="text-xl sm:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Join accounting firms already saving 80+ hours per month on document collection
+            <p className="text-lg text-gray-600 mb-10 max-w-2xl mx-auto">
+              Join 100+ accounting firms already saving 80+ hours per month on document collection
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               {isAuthenticated ? (
                 <Link href="/dashboard">
-                  <Button size="lg" className="h-14 px-10 text-lg font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-primary/90 shadow-2xl hover:shadow-3xl transition-all">
+                  <Button size="lg" className="px-8 py-6 text-base font-semibold bg-primary hover:bg-primary/90 shadow-md">
                     Go to Dashboard
-                    <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </Link>
               ) : (
                 <>
                   <Link href="/register">
-                    <Button size="lg" className="h-14 px-10 text-lg font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-primary/90 shadow-2xl hover:shadow-3xl transition-all">
+                    <Button size="lg" className="px-8 py-6 text-base font-semibold bg-primary hover:bg-primary/90 shadow-md">
                       Start Free Trial
-                      <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
                   </Link>
                   <Link href="/login">
-                    <Button size="lg" variant="outline" className="h-14 px-10 text-lg font-semibold border-2 hover:bg-gray-50">
+                    <Button size="lg" variant="outline" className="px-8 py-6 text-base font-semibold border-2 hover:bg-gray-100">
                       Sign In
                     </Button>
                   </Link>
                 </>
               )}
-            </div>
-
-            <div className="flex flex-wrap justify-center items-center gap-6 text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-primary" />
-                <span className="text-base">5 minute setup</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-primary" />
-                <span className="text-base">No credit card required</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-primary" />
-                <span className="text-base">Cancel anytime</span>
-              </div>
             </div>
           </div>
         </div>
